@@ -1,11 +1,39 @@
 {
     "name": "@cmmv/blog",
     "version": "0.0.1",
-    "private": true,
     "description": "Blog plugin for CMMV",
+    "keywords": [
+        "cmmv",
+        "plugin",
+        "blog",
+        "cms",
+        "content",
+        "management",
+        "system"
+    ],
+    "license": "MIT",
+    "author": "Andre Ferreira",
     "packageManager": "pnpm@10.6.5",
+    "exports": {
+        "./admin": "./dist/admin/index.js",
+        "./api": "./dist/api/index.js",
+        "./client": "./dist/client/index.js",
+        "./contracts": "./dist/contracts/index.js"
+    },
+    "files": [
+        "dist",
+        "package.json",
+        "README.md"
+    ],
+    "engines": {
+        "node": ">= 20.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "dev": "turbo run dev",
+        "build": "turbo run build --filter=@cmmv/blog",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\""
     },
