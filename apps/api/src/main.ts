@@ -2,7 +2,7 @@ import "./config";
 
 import { Application } from "@cmmv/core";
 import { DefaultAdapter, DefaultHTTPModule } from "@cmmv/http";
-import { RepositoryModule } from "@cmmv/repository";
+import { RepositoryModule, Repository } from "@cmmv/repository";
 import { BlogModule } from "@cmmv/blog/api";
 
 Application.create({
@@ -12,4 +12,5 @@ Application.create({
         RepositoryModule,
         BlogModule
     ],
+    providers: [Repository]
 });

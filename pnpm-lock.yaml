@@ -68,6 +68,9 @@ importers:
 
   packages/plugin:
     dependencies:
+      '@cmmv/auth':
+        specifier: ^0.9.19
+        version: 0.9.19(encoding@0.1.13)
       '@cmmv/core':
         specifier: ^0.9.19
         version: 0.9.19
