@@ -1,0 +1,19 @@
+{
+    "name": "cmmv-blog",
+    "version": "0.0.1",
+    "private": true,
+    "description": "Blog package for CMMV",
+    "scripts": {
+        "dev": "vite --clearScreen false",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "lint": "eslint \"src/**/*.ts\""
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+        "eslint": "^9.23.0",
+        "typescript": "^5.8.2",
+        "vite": "^6.2.3"
+    }
+}

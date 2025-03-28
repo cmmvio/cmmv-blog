@@ -1,0 +1,12 @@
+{
+    "extends": "@repo/typescript-config/vite.json",
+    "include": ["src"],
+    "compilerOptions": {
+        "paths": {
+            "@cmmv/blog": ["../../packages/plugin"],
+            "@cmmv/blog/*": ["../../packages/plugin/*"],
+            "@cmmv/theme-default": ["../../packages/theme-default"],
+            "@cmmv/theme-default/*": ["../../packages/theme-default/*"]
+        }
+    }
+}

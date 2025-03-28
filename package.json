@@ -1,0 +1,17 @@
+{
+    "name": "@cmmv/blog",
+    "version": "0.0.1",
+    "private": true,
+    "description": "Blog plugin for CMMV",
+    "packageManager": "pnpm@10.6.5",
+    "scripts": {
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    },
+    "devDependencies": {
+        "eslint": "^9.23.0",
+        "prettier": "^3.5.3",
+        "turbo": "^2.4.4"
+    }
+}

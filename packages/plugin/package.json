@@ -1,0 +1,27 @@
+{
+    "name": "@cmmv/blog",
+    "version": "0.0.1",
+    "description": "Blog package for CMMV",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": "./dist/index.js",
+        "./admin": "./dist/admin/index.js",
+        "./api": "./dist/api/index.js",
+        "./client": "./dist/client/index.js",
+        "./contracts": "./dist/contracts/index.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup"
+    },
+    "devDependencies": {
+        "tsup": "^8.4.0",
+        "typescript": "^5.8.2"
+    },
+    "dependencies": {
+        "@cmmv/core": "^0.9.19"
+    }
+}

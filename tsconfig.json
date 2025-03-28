@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "outDir": "dist",
+        "baseUrl": ".",
+        "paths": {
+            "@cmmv/blog": ["packages/plugin"],
+            "@cmmv/theme-default": ["packages/themeDefault"]
+        }
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["dist", "node_modules"]
+}
