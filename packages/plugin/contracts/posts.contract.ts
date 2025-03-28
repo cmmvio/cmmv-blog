@@ -3,6 +3,10 @@ import {
     ContractField
 } from "@cmmv/core";
 
+import {
+    UserContract
+} from "@cmmv/auth";
+
 @Contract({
     namespace: 'Blog',
     controllerName: 'Posts',
@@ -18,6 +22,26 @@ import {
     }
 })
 export class PostsContract extends AbstractContract {
+    @ContractField({
+        protoType: 'string',
+        objectType: 'object',
+        entityType: 'UserEntity',
+        protoRepeated: false,
+        nullable: false,
+        index: true,
+        exclude: true,
+        readOnly: true,
+        link: [
+            {
+                contract: UserContract,
+                contractName: 'UserContract',
+                entityName: 'user',
+                field: 'id',
+            },
+        ],
+    })
+    author: string;
+
     @ContractField({
         protoType: 'string',
         nullable: false,
@@ -39,4 +63,19 @@ export class PostsContract extends AbstractContract {
         ],
     })
     title!: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: false,
+        validations: [
+            {
+                type: 'IsString',
+                message: 'The content must be a string',
+            },
+
+        ],
+    })
+    content!: string;
+
+
 }
