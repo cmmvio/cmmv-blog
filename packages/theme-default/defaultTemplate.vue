@@ -100,6 +100,8 @@
 
                     <!-- Posts Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <router-view />
+
                         <article v-for="post in filteredPosts" :key="post.id" class="bg-white rounded-lg shadow overflow-hidden">
                             <img :src="post.image" :alt="post.title" class="w-full h-48 object-cover">
                             <div class="p-6">
@@ -154,136 +156,19 @@
             </div>
         </div>
     </div>
-
-    <!-- Router View for Post Details -->
-    <router-view />
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-
-// Estado
 const searchQuery = ref('')
+const categories = ref([])
+const tags = ref([])
 const selectedCategory = ref(null)
 const selectedTag = ref(null)
-const currentPage = ref(1)
-const postsPerPage = 10
-
-// Mock data (substituir por dados reais da API)
-const categories = ref([
-    { id: 1, name: 'Tecnologia', count: 12 },
-    { id: 2, name: 'Desenvolvimento', count: 8 },
-    { id: 3, name: 'Design', count: 5 },
-    { id: 4, name: 'Negócios', count: 3 },
-])
-
-const tags = ref([
-    { id: 1, name: 'JavaScript' },
-    { id: 2, name: 'Vue.js' },
-    { id: 3, name: 'TypeScript' },
-    { id: 4, name: 'Node.js' },
-    { id: 5, name: 'API' },
-])
-
-const posts = ref([
-    {
-        id: 1,
-        title: 'Introdução ao Vue 3',
-        slug: 'introducao-vue-3',
-        excerpt: 'Aprenda os conceitos básicos do Vue 3 e como começar seu primeiro projeto...',
-        content: '',
-        image: 'https://picsum.photos/600/400',
-        publishedAt: '2023-12-01',
-        category: { id: 1, name: 'Tecnologia' },
-        tags: [{ id: 2, name: 'Vue.js' }, { id: 1, name: 'JavaScript' }]
-    },
-    // Adicionar mais posts aqui
-])
-
-// Computed Properties
 const filteredPosts = computed(() => {
-    let filtered = posts.value
-
-    // Filtrar por categoria
-    if (selectedCategory.value) {
-        filtered = filtered.filter(post => post.category.id === selectedCategory.value.id)
-    }
-
-    // Filtrar por tag
-    if (selectedTag.value) {
-        filtered = filtered.filter(post =>
-            post.tags.some(tag => tag.id === selectedTag.value.id)
-        )
-    }
-
-    // Filtrar por busca
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase()
-        filtered = filtered.filter(post =>
-            post.title.toLowerCase().includes(query) ||
-            post.excerpt.toLowerCase().includes(query)
-        )
-    }
-
-    // Paginação
-    const start = (currentPage.value - 1) * postsPerPage
-    const end = start + postsPerPage
-    return filtered.slice(start, end)
+    return []
 })
-
-const totalPages = computed(() =>
-    Math.ceil(posts.value.length / postsPerPage)
-)
-
-// Métodos
-const handleSearch = () => {
-    currentPage.value = 1
-}
-
-const filterByCategory = (category) => {
-    selectedCategory.value = category
-    selectedTag.value = null
-    currentPage.value = 1
-}
-
-const filterByTag = (tag) => {
-    selectedTag.value = tag
-    selectedCategory.value = null
-    currentPage.value = 1
-}
-
-const clearCategory = () => {
-    selectedCategory.value = null
-}
-
-const clearTag = () => {
-    selectedTag.value = null
-}
-
-const clearSearch = () => {
-    searchQuery.value = ''
-}
-
-const prevPage = () => {
-    if (currentPage.value > 1) {
-        currentPage.value--
-    }
-}
-
-const nextPage = () => {
-    if (currentPage.value < totalPages.value) {
-        currentPage.value++
-    }
-}
-
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
-}
+const totalPages = computed(() => 1)
 </script>
 
 <style scoped>

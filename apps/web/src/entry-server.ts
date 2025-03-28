@@ -4,18 +4,29 @@ import { createRouter } from './routes';
 import { renderToString } from 'vue/server-renderer';
 
 export async function render(url: string) {
-    const app = createSSRApp(App);
-    const router = createRouter();
+    const app = createSSRApp(App)
+    const router = createRouter()
 
-    router.push(url);
-    await router.isReady();
+    router.push(url)
+    await router.isReady()
 
-    const matchedRoute = router.currentRoute.value;
-    const data = matchedRoute.meta?.loadData ? await matchedRoute.meta.loadData() : {};
+    globalThis.__SSR_DATA__ = {}
 
-    app.provide('preloaded', data);
-    app.use(router);
+    app.use(router)
 
-    const html = await renderToString(app);
-    return { html, data };
+    await renderToString(app)
+    const resolvedData = await resolveSSRData(globalThis.__SSR_DATA__)
+    app.provide('preloaded', resolvedData)
+
+    const html = await renderToString(app)
+    return { html, data: resolvedData }
+}
+
+async function resolveSSRData(obj: Record<string, Promise<any>>) {
+    const keys = Object.keys(obj)
+    const resolvedEntries = await Promise.all(
+        keys.map(async (key) => [key, await obj[key]])
+    )
+
+    return Object.fromEntries(resolvedEntries)
 }
