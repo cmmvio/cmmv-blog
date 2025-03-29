@@ -24,7 +24,7 @@
     "dependencies": {
         "@cmmv/blog": "workspace:plugin",
         "@cmmv/auth": "^0.9.19",
-        "@cmmv/cli": "^0.9.1",
+        "@cmmv/cli": "^0.10.2",
         "@cmmv/http": "^0.9.19",
         "@cmmv/repository": "^0.9.19"
     }

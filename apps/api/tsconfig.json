@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "declaration": true,
         "removeComments": true,
         "emitDecoratorMetadata": true,
@@ -54,6 +54,6 @@
             "@g/*": [".generated/*"]
         }
     },
-    "include": ["packages/**/*", "src/**/*.ts", ".generated/**/*.ts"],
+    "include": ["packages/**/*", "src/**/*.ts", ".generated/**/*.ts", "../../packages/plugin/api/posts.controller.ts"],
     "exclude": ["node_modules", "dist", "src/protos", "**/*.spec.ts"]
 }
