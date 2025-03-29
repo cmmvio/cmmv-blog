@@ -1,13 +1,16 @@
-import { createSSRApp } from 'vue' // use SSR-aware
-import App from './App.vue'
-import { createRouter } from './routes'
+import { createSSRApp } from 'vue'
 
-const app = createSSRApp(App)
-const router = createRouter()
+export async function createClientEntry(router: any, App: any) {
+    const app = createSSRApp(App)
 
-app.provide('preloaded', (window as any).__PRELOADED__ || {})
-app.use(router)
+    app.provide('preloaded', (window as any).__CMMV_DATA__ || {})
+    app.use(router)
 
-router.isReady().then(() => {
-  app.mount('#app', true)
-})
+    router.isReady().then(() => {
+        app.mount('#app', true)
+    })
+
+    return app;
+}
+
+

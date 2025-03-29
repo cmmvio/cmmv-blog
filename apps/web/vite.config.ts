@@ -14,17 +14,15 @@ export default defineConfig(({ mode }) => {
         resolve: {
             preserveSymlinks: true,
             alias: {
-                '@cmmv/theme-default': path.resolve(__dirname, '../../packages/theme-default'),
                 '@cmmv/client': path.resolve(__dirname, '../../packages/plugin/src/client')
             }
         },
         server: {
             proxy: {
                 '/api': {
-                    target: env.VITE_API_URL || 'http://localhost:3000',
+                    target: env.VITE_API_URL || 'http://localhost:3001',
                     changeOrigin: true,
                     secure: false,
-                    rewrite: (path) => path.replace(/^\/api/, ''),
                     configure: (proxy) => {
                         proxy.on('proxyReq', (proxyReq, req) => {
                             const refreshToken = req.headers['refresh-token']

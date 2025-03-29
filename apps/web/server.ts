@@ -26,8 +26,7 @@ async function start() {
                 const { html: appHtml, data } = await render(url);
 
                 const finalHtml = template
-                    .replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`)
-                    .replace('__DATA__', JSON.stringify(data));
+                    .replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div><script>window.__CMMV_DATA__ = ${JSON.stringify(data)};</script>`);
 
                 res.setHeader('Content-Type', 'text/html');
                 res.end(finalHtml);

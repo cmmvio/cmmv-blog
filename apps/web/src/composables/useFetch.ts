@@ -1,7 +1,6 @@
-import { ref, inject, App, getCurrentInstance } from 'vue'
+import { ref, inject, App } from 'vue'
 
 type FetchMap = Record<string, Promise<any>>
-type FetchedResult = Record<string, any>
 const PRELOADED_KEY = Symbol('preloaded')
 
 let ssrData: FetchMap = {}
@@ -14,10 +13,10 @@ export async function useFetch<T>(url: string, key: string) {
         if (!globalThis.__SSR_DATA__)
             globalThis.__SSR_DATA__ = {}
 
-        globalThis.__SSR_DATA__[key] = await fetch(url).then(res => res.json())
+        globalThis.__SSR_DATA__[key] = await fetch(url).then(res => res.json()).then(data => data.result)
         data.value = globalThis.__SSR_DATA__[key];
     } else if (!import.meta.env.SSR && data.value === null) {
-        data[key] = await fetch(url).then(res => res.json());
+        data[key] = await fetch(url).then(res => res.json()).then(data => data.result);
     }
 
     return { data }

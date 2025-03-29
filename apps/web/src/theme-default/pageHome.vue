@@ -8,5 +8,5 @@
 
 <script setup lang="ts">
 import { useFetch } from '../composables/useFetch';
-const { data: posts } = await useFetch("http://localhost:3001/api/posts", 'posts')
+const { data: posts } = await useFetch("http://localhost:3000/api/posts", 'posts')
 </script>

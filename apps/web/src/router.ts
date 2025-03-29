@@ -3,9 +3,8 @@ import {
     createRouter as _createRouter
 } from 'vue-router';
 
-import { DefaultTemplate } from '@cmmv/theme-default';
-
-import Home from './pages/Home.vue';
+import DefaultTemplate from './theme-default/defaultTemplate.vue';
+import Home from './theme-default/pageHome.vue';
 
 export function createRouter() {
     return _createRouter({

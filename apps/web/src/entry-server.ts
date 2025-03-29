@@ -1,6 +1,6 @@
 import { createSSRApp } from 'vue';
 import App from './App.vue';
-import { createRouter } from './routes';
+import { createRouter } from './router';
 import { renderToString } from 'vue/server-renderer';
 
 export async function render(url: string) {
@@ -24,6 +24,7 @@ export async function render(url: string) {
 
 async function resolveSSRData(obj: Record<string, Promise<any>>) {
     const keys = Object.keys(obj)
+
     const resolvedEntries = await Promise.all(
         keys.map(async (key) => [key, await obj[key]])
     )

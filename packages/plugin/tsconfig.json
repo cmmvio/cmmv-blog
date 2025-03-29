@@ -3,6 +3,10 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "strictPropertyInitialization": false
+        "strictPropertyInitialization": false,
+        "paths": {
+            "@generated": ["../../apps/api/.generated"],
+            "@generated/*": ["../../apps/api/.generated/*"]
+        }
     }
 }
