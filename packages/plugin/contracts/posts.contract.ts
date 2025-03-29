@@ -7,6 +7,10 @@ import {
     UserContract
 } from "@cmmv/auth";
 
+import {
+    CategoriesContract
+} from "./categories.contract";
+
 @Contract({
     namespace: 'Blog',
     controllerName: 'Posts',
@@ -18,7 +22,8 @@ import {
     options: {
         moduleContract: true,
         databaseSchemaName: "blog_posts",
-        databaseTimestamps: true
+        databaseTimestamps: true,
+        databaseFakeDelete: true
     }
 })
 export class PostsContract extends AbstractContract {
@@ -41,6 +46,15 @@ export class PostsContract extends AbstractContract {
         ],
     })
     author: string;
+
+    @ContractField({
+        protoType: 'array',
+        nullable: false,
+        objectType: 'object',
+        entityType: 'UserContract',
+        protoRepeated: true,
+    })
+    authors: string[];
 
     @ContractField({
         protoType: 'string',
@@ -66,6 +80,31 @@ export class PostsContract extends AbstractContract {
 
     @ContractField({
         protoType: 'string',
+        nullable: true,
+        validations: [
+            {
+                type: 'MaxLength',
+                value: 140,
+                message: 'The excerpt must be less than 140 characters',
+            },
+        ],
+    })
+    excerpt?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    lexicalContent?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    mobileDocument?: string;
+
+    @ContractField({
+        protoType: 'string',
         nullable: false,
         validations: [
             {
@@ -77,5 +116,144 @@ export class PostsContract extends AbstractContract {
     })
     content!: string;
 
+    @ContractField({
+        protoType: 'array',
+        nullable: false,
+        objectType: 'object',
+        entityType: 'CategoriesEntity',
+        protoRepeated: true,
+        exclude: true,
+        link: [
+            {
+                createRelationship: true,
+                contract: CategoriesContract,
+                contractName: 'CategoriesContract',
+                entityName: 'category',
+                field: 'id',
+                array: true
+            },
+        ],
+    })
+    categories: string[];
 
+    @ContractField({
+        protoType: 'string',
+        nullable: false,
+        validations: [
+            {
+                type: 'IsString',
+                message: 'The slug must be a string',
+            },
+        ],
+    })
+    slug!: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    metaTitle?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    metaDescription?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    metaKeywords?: string;
+
+    @ContractField({
+        protoType: 'int64',
+        nullable: true
+    })
+    publishedAt?: number;
+
+    @ContractField({
+        protoType: 'int64',
+        nullable: true
+    })
+    autoPublishAt?: number;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    image?: string;
+
+    @ContractField({
+        protoType: 'boolean',
+        nullable: false,
+        defaultValue: false
+    })
+    featured!: boolean;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    featureImage?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    featureImageAlt?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    featureImageCaption?: string;
+
+    @ContractField({
+        protoType: 'array',
+        nullable: false,
+        objectType: 'string[]',
+        protoRepeated: true,
+        array: true
+    })
+    tags: string[];
+
+    @ContractField({
+        protoType: 'string',
+        nullable: false,
+        defaultValue: 'post'
+    })
+    type: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: false,
+        defaultValue: 'draft'
+    })
+    status: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: false,
+        defaultValue: 'public'
+    })
+    visibility: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    codeInjectionHead?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    codeInjectionBody?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    canonicalUrl?: string;
 }

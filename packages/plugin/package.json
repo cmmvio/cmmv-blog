@@ -10,8 +10,8 @@
         "typescript": "^5.8.2"
     },
     "dependencies": {
-        "@cmmv/auth": "^0.9.19",
-        "@cmmv/core": "^0.9.19",
-        "@cmmv/http": "^0.9.19"
+        "@cmmv/auth": "^0.9.20",
+        "@cmmv/core": "^0.9.20",
+        "@cmmv/http": "^0.9.20"
     }
 }

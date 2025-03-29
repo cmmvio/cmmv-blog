@@ -15,13 +15,8 @@ import {
    Queries, Param, Body, Req, RouterSchema
 } from "@cmmv/http";
 
-import {
-    PostsService
-} from "@generated/services/blog/posts.service"
-
 @Controller('api')
 export class PostsController {
-    constructor(private readonly postsservice: PostsService) {}
 
     @Get("/posts", {
         contract: Application.getContract("PostsContract"),
@@ -30,6 +25,7 @@ export class PostsController {
         exposeFilters: true
     })
     async get(@Queries() queries: any, @Req() req: any) {
-        return this.postsservice.getAll(queries, req);
+        //Application.
+        //return this.postsservice.getAll(queries, req);
     }
 }
