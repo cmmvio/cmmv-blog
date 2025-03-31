@@ -4,28 +4,31 @@
     "private": true,
     "description": "Blog API sample",
     "dev": {
-		"watch": [
-			"src",
+        "watch": [
+            "src",
             "../packages/plugin"
-		],
-		"ignore": [
+        ],
+        "ignore": [
             ".generated",
-			"**/*.spec.ts",
-			"src/app.module.ts",
+            "**/*.spec.ts",
+            "src/app.module.ts",
             "database.sqlite-journal",
             "database.sqlite"
-		]
-	},
+        ]
+    },
     "scripts": {
         "dev": "cmmv dev --watch",
         "build": "cmmv build",
         "start": "cmmv start"
     },
     "dependencies": {
+        "@cmmv/auth": "latest",
         "@cmmv/blog": "workspace:plugin",
-        "@cmmv/auth": "^0.9.20",
-        "@cmmv/cli": "^0.10.2",
-        "@cmmv/http": "^0.9.20",
-        "@cmmv/repository": "^0.9.20"
+        "@cmmv/cli": "latest",
+        "@cmmv/http": "latest",
+        "@cmmv/repository": "latest"
+    },
+    "devDependencies": {
+        "@cmmv/sandbox": "latest"
     }
 }

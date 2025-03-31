@@ -110,8 +110,7 @@ export class PostsContract extends AbstractContract {
             {
                 type: 'IsString',
                 message: 'The content must be a string',
-            },
-
+            }
         ],
     })
     content!: string;
