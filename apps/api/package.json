@@ -6,7 +6,9 @@
     "dev": {
         "watch": [
             "src",
-            "../packages/plugin"
+            "../packages/plugin",
+            "../../packages/plugin/api",
+            "../../packages/plugin/contracts"
         ],
         "ignore": [
             ".generated",

@@ -1,6 +1,7 @@
 import {
     Contract, AbstractContract,
-    ContractField
+    ContractField, ContractMessage,
+    ContractService
 } from "@cmmv/core";
 
 @Contract({
@@ -26,6 +27,12 @@ export class CategoriesContract extends AbstractContract {
 
     @ContractField({
         protoType: 'string',
+        nullable: false,
+    })
+    slug!: string;
+
+    @ContractField({
+        protoType: 'string',
         nullable: true
     })
     parentCategory!: string;
@@ -42,4 +49,42 @@ export class CategoriesContract extends AbstractContract {
         nullable: true
     })
     navigationLabel!: string;
+
+    @ContractMessage({
+        name: "PublicCategoriesListResponse",
+        properties: {
+            name: {
+                type: "string",
+                required: true
+            },
+            slug: {
+                type: "string",
+                required: true
+            },
+            parentCategory: {
+                type: "string",
+                required: false
+            },
+            active: {
+                type: "bool",
+                required: true
+            },
+            navigationLabel: {
+                type: "string",
+                required: false
+            }
+        }
+    })
+    PublicCategoriesListResponse!: {};
+
+    @ContractService({
+        name: "PublicCategoriesList",
+        path: "api/categories",
+        method: "GET",
+        auth: false,
+        functionName: "getAll",
+        createBoilerplate: false,
+        response: "PublicCategoriesListResponse"
+    })
+    PublicCategoriesList!: Function;
 }

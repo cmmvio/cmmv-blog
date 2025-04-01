@@ -29,7 +29,7 @@ export class AuthorProfileContract extends AbstractContract {
     coverImage?: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     bio?: string;

@@ -6,8 +6,10 @@ export default {
             view: "./views/posts.view.ts"
         }
     },
-    
+
     views: {
 
     }
 }
+
+export * from "./client";

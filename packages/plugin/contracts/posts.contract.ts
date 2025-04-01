@@ -92,19 +92,19 @@ export class PostsContract extends AbstractContract {
     excerpt?: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     lexicalContent?: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     mobileDocument?: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: false,
         validations: [
             {
@@ -239,13 +239,13 @@ export class PostsContract extends AbstractContract {
     visibility: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     codeInjectionHead?: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     codeInjectionBody?: string;

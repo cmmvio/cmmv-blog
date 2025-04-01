@@ -1,11 +1,11 @@
 {
-    "name": "cmmv-blog",
+    "name": "cmmv-blog-admin",
     "version": "0.0.1",
     "private": true,
-    "description": "Blog package for CMMV",
+    "description": "Blog admin package for CMMV",
     "type": "module",
     "scripts": {
-        "dev": "tsx server.ts",
+        "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
         "lint": "eslint \"src/**/*.ts\""
@@ -25,6 +25,15 @@
     "dependencies": {
         "@cmmv/blog": "workspace:*",
         "@tailwindcss/vite": "^4.0.17",
+        "@tiptap/extension-floating-menu": "^2.11.7",
+        "@tiptap/extension-image": "^2.11.7",
+        "@tiptap/extension-link": "^2.11.7",
+        "@tiptap/extension-placeholder": "^2.11.7",
+        "@tiptap/extension-text-align": "^2.11.7",
+        "@tiptap/extension-underline": "^2.11.7",
+        "@tiptap/pm": "^2.11.7",
+        "@tiptap/starter-kit": "^2.11.7",
+        "@tiptap/vue-3": "^2.11.7",
         "lightningcss": "^1.29.3",
         "tailwindcss": "^4.0.17",
         "vue": "^3.5.13",

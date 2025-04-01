@@ -85,7 +85,7 @@ export class CommentsContract extends AbstractContract {
     status: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: false
     })
     content!: string;

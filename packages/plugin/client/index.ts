@@ -12,3 +12,7 @@ export default {
     angular
 }
 
+export type {
+    ICategory
+} from './interfaces';
+

@@ -41,7 +41,7 @@ export class PostsHistoryContract extends AbstractContract {
     post: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     lexicalContent?: string;

@@ -5,6 +5,7 @@ import { PostsModule } from './posts.module';
 import { CategoriesModule } from './categories.modules';
 import { CommentsModule } from './comments.module';
 import { MembersModule } from './members.module';
+import { BlogSettingsModule } from './settings.module';
 
 export const BlogModule = new Module('blog', {
     configs: [BlogConfig],
@@ -12,6 +13,7 @@ export const BlogModule = new Module('blog', {
         PostsModule,
         CategoriesModule,
         CommentsModule,
-        MembersModule
+        MembersModule,
+        BlogSettingsModule
     ]
 });

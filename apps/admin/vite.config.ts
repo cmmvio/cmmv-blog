@@ -21,27 +21,13 @@ export default defineConfig(({ mode }) => {
             }
         },
         server: {
-            port: 3001,
+            port: 3005,
             host: true,
             proxy: {
                 '/api': {
-                    target: env.VITE_API_URL || 'http://localhost:3001',
+                    target: env.VITE_API_URL || 'http://localhost:3000',
                     changeOrigin: true,
                     secure: false,
-                    configure: (proxy) => {
-                        proxy.on('proxyReq', (proxyReq, req) => {
-                            const refreshToken = req.headers['refresh-token']
-
-                            if (refreshToken)
-                                proxyReq.setHeader('refresh-token', refreshToken)
-                        })
-                    },
-                },
-                '/admin': {
-                    target: env.VITE_API_URL || 'http://localhost:3002',
-                    changeOrigin: true,
-                    secure: false,
-                    rewrite: (path) => path.replace(/^\/admin/, ''),
                     configure: (proxy) => {
                         proxy.on('proxyReq', (proxyReq, req) => {
                             const refreshToken = req.headers['refresh-token']

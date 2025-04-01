@@ -46,27 +46,10 @@
                                     :class="{'text-blue-600 font-medium': selectedCategory?.id === category.id}"
                                 >
                                     {{ category.name }}
-                                    <span class="text-sm text-gray-400">({{ category.count }})</span>
+                                    <span class="text-sm text-gray-400">({{ category.totalPosts }})</span>
                                 </a>
                             </li>
                         </ul>
-                    </div>
-
-                    <!-- Tags Cloud -->
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h2 class="text-lg font-semibold mb-4">Tags</h2>
-                        <div class="flex flex-wrap gap-2">
-                            <a
-                                v-for="tag in tags"
-                                :key="tag.id"
-                                href="#"
-                                @click.prevent="filterByTag(tag)"
-                                class="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-600 hover:bg-blue-100 hover:text-blue-600"
-                                :class="{'bg-blue-100 text-blue-600': selectedTag?.id === tag.id}"
-                            >
-                                {{ tag.name }}
-                            </a>
-                        </div>
                     </div>
                 </aside>
 
@@ -81,76 +64,12 @@
                                     <button @click="clearCategory" class="ml-2 hover:text-blue-800">×</button>
                                 </span>
                             </template>
-                            <template v-if="selectedTag">
-                                <span>Tag:</span>
-                                <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full flex items-center">
-                                    {{ selectedTag.name }}
-                                    <button @click="clearTag" class="ml-2 hover:text-blue-800">×</button>
-                                </span>
-                            </template>
-                            <template v-if="searchQuery">
-                                <span>Busca:</span>
-                                <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full flex items-center">
-                                    "{{ searchQuery }}"
-                                    <button @click="clearSearch" class="ml-2 hover:text-blue-800">×</button>
-                                </span>
-                            </template>
                         </div>
                     </div>
 
                     <!-- Posts Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <router-view />
-
-                        <article v-for="post in filteredPosts" :key="post.id" class="bg-white rounded-lg shadow overflow-hidden">
-                            <img :src="post.image" :alt="post.title" class="w-full h-48 object-cover">
-                            <div class="p-6">
-                                <div class="flex items-center gap-2 mb-3">
-                                    <span
-                                        v-for="tag in post.tags"
-                                        :key="tag.id"
-                                        class="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600"
-                                    >
-                                        {{ tag.name }}
-                                    </span>
-                                </div>
-                                <h2 class="text-xl font-semibold mb-2">
-                                    <router-link :to="`/post/${post.slug}`" class="text-gray-800 hover:text-blue-600">
-                                        {{ post.title }}
-                                    </router-link>
-                                </h2>
-                                <p class="text-gray-600 mb-4 line-clamp-3">{{ post.excerpt }}</p>
-                                <div class="flex items-center justify-between text-sm text-gray-500">
-                                    <span>{{ formatDate(post.publishedAt) }}</span>
-                                    <router-link :to="`/post/${post.slug}`" class="text-blue-600 hover:text-blue-800">
-                                        Ler mais →
-                                    </router-link>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div v-if="totalPages > 1" class="mt-8 flex justify-center">
-                        <div class="flex items-center gap-2">
-                            <button
-                                @click="prevPage"
-                                :disabled="currentPage === 1"
-                                class="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                            >
-                                ← Anterior
-                            </button>
-                            <span class="px-4 py-2 text-sm text-gray-600">
-                                Página {{ currentPage }} de {{ totalPages }}
-                            </span>
-                            <button
-                                @click="nextPage"
-                                :disabled="currentPage === totalPages"
-                                class="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                            >
-                                Próxima →
-                            </button>
-                        </div>
                     </div>
                 </main>
             </div>
@@ -160,14 +79,33 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { ICategory, vue3 } from '@cmmv/blog/client';
+const blogAPI = vue3.useBlog();
+
 const searchQuery = ref('')
-const categories = ref([])
+const categories = ref<ICategory[]>(await blogAPI.getAllCategories())
 const tags = ref([])
-const selectedCategory = ref(null)
+const selectedCategory = ref<ICategory | null>(null)
 const selectedTag = ref(null)
 const filteredPosts = computed(() => {
     return []
 })
 const totalPages = computed(() => 1)
+
+const handleSearch = () => {
+    console.log(searchQuery.value)
+}
+
+const filterByCategory = (category: any) => {
+    console.log(category)
+}
+
+const filterByTag = (tag: any) => {
+    console.log(tag)
+}
+
+const clearCategory = () => {
+    selectedCategory.value = null
+}
 </script>
 
