@@ -3,7 +3,46 @@ import {
     ContractField
 } from "@cmmv/core";
 
+import {
+    UserContract
+} from "@cmmv/auth";
+
+@Contract({
+    namespace: 'Blog',
+    controllerName: "Profiles",
+    protoPackage: "blog",
+    subPath: "/blog",
+    generateController: true,
+    generateBoilerplates: false,
+    auth: true,
+    options: {
+        moduleContract: true,
+        databaseSchemaName: "blog_authors_profiles",
+        databaseTimestamps: true
+    }
+})
 export class AuthorProfileContract extends AbstractContract {
+    @ContractField({
+        protoType: 'string',
+        objectType: 'object',
+        entityType: 'UserEntity',
+        protoRepeated: false,
+        nullable: false,
+        index: true,
+        exclude: true,
+        readOnly: true,
+        link: [
+            {
+                createRelationship: true,
+                contract: UserContract,
+                contractName: 'UserContract',
+                entityName: 'user',
+                field: 'id',
+            },
+        ],
+    })
+    user: string;
+
     @ContractField({
         protoType: 'string',
         nullable: false
@@ -17,13 +56,13 @@ export class AuthorProfileContract extends AbstractContract {
     slug!: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     image?: string;
 
     @ContractField({
-        protoType: 'string',
+        protoType: 'text',
         nullable: true
     })
     coverImage?: string;

@@ -156,17 +156,26 @@
                         <span class="ml-3 transition-opacity duration-200"
                             :class="isCollapsed ? 'opacity-0 absolute' : 'opacity-100'">Settings</span>
                     </router-link>
-    </nav>
+                </nav>
             </div>
 
-            <div
-                class="absolute bottom-0 left-0 right-0 border-t border-neutral-700 p-4 bg-neutral-800 transition-all duration-300">
+            <div class="absolute bottom-0 left-0 right-0 border-t border-neutral-700 p-4 bg-neutral-800 transition-all duration-300">
                 <div class="flex items-center" :class="{ 'justify-center': isCollapsed }">
-                    <img class="h-8 w-8 rounded-full" src="#" alt="User avatar" />
+                    <div v-if="user" class="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-blue-600 text-white">
+                        <img
+                            v-if="userAvatar"
+                            :src="userAvatar"
+                            :alt="userDisplayName"
+                            class="h-full w-full object-cover"
+                        />
+                        <span v-else class="text-sm font-medium">{{ userInitials }}</span>
+                    </div>
+                    <div v-else class="h-8 w-8 rounded-full bg-neutral-600"></div>
+
                     <div class="ml-3 transition-opacity duration-200"
                         :class="isCollapsed ? 'opacity-0 absolute' : 'opacity-100'">
-                        <p class="text-sm font-medium text-neutral-200">Admin User</p>
-                        <p class="text-xs text-neutral-400">View Profile</p>
+                        <p class="text-sm font-medium text-neutral-200">{{ userDisplayName }}</p>
+                        <p class="text-xs text-neutral-400"><router-link to="/profile">View Profile</router-link></p>
                     </div>
                 </div>
             </div>
@@ -189,7 +198,7 @@
 
             <!-- Main content -->
             <main class="flex-1 bg-neutral-900 p-4 overflow-y-auto">
-    <router-view />
+                <router-view />
             </main>
 
         </div>
@@ -197,19 +206,68 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAdminClient } from '@cmmv/blog/admin/client'
+
+const api = useAdminClient()
+api.checkSession();
 
 const route = useRoute()
 const isCollapsed = ref(false)
 const isMobileMenuHidden = ref(true)
 const currentYear = ref(new Date().getFullYear())
+const user = ref(null)
 
 const currentPageTitle = computed(() => {
     const routePath = route.path.split('/').pop()
     if (!routePath) return 'Dashboard'
     return routePath.charAt(0).toUpperCase() + routePath.slice(1)
 })
+
+// Get user display name based on profile
+const userDisplayName = computed(() => {
+    if (!user.value) return 'Loading...'
+
+    // Check for profile data structure
+    if (user.value.profile && user.value.profile.name) {
+        return user.value.profile.name
+    }
+
+    // Otherwise use email
+    const email = user.value.email || ''
+    return email.length > 10 ? `${email.substring(0, 10)}...` : email
+})
+
+// Get user initials for avatar fallback
+const userInitials = computed(() => {
+    if (!user.value) return '?'
+
+    if (user.value.profile && user.value.profile.name) {
+        return user.value.profile.name.substring(0, 1).toUpperCase()
+    }
+
+    // Fallback to email initial
+    return user.value.email ? user.value.email.substring(0, 1).toUpperCase() : '?'
+})
+
+// Use actual profile image instead of Gravatar
+const userAvatar = computed(() => {
+    if (user.value && user.value.profile && user.value.profile.image) {
+        return user.value.profile.image
+    }
+    return null
+})
+
+// Add a function to refresh the user profile
+const refreshUserProfile = async () => {
+    try {
+        user.value = await api.getProfile()
+        console.log('User profile refreshed:', user.value)
+    } catch (error) {
+        console.error('Failed to refresh user profile:', error)
+    }
+}
 
 function toggleSidebar() {
     isCollapsed.value = !isCollapsed.value
@@ -220,10 +278,57 @@ function toggleMobileMenu() {
     isMobileMenuHidden.value = !isMobileMenuHidden.value
 }
 
-onMounted(() => {
+onMounted(async () => {
     const savedPreference = localStorage.getItem('sidebarCollapsed')
-    if (savedPreference !== null) {
+
+    if (savedPreference !== null)
         isCollapsed.value = savedPreference === 'true'
+
+    try {
+        user.value = await api.getProfile()
+        console.log('User profile loaded:', user.value)
+
+        // Watch for route changes to /profile
+        watch(() => route.path, (newPath, oldPath) => {
+            // If coming from profile page, refresh user data
+            if (oldPath.includes('/profile')) {
+                refreshUserProfile()
+            }
+        })
+    } catch (error) {
+        console.error('Failed to load user profile:', error)
     }
 })
 </script>
+
+<style>
+/* Custom scrollbar styling for dark mode */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #262626; /* neutral-800 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040; /* neutral-700 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #525252; /* neutral-600 */
+}
+
+::-webkit-scrollbar-corner {
+  background: #262626; /* neutral-800 */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #262626; /* thumb track */
+}
+</style>

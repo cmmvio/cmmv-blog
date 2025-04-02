@@ -5,6 +5,7 @@ export * from './author-profile.contract';
 export * from './posts.contract';
 export * from './posts-history.contract';
 export * from './posts-meta.contract';
+export * from './posts-tags.contract';
 
 // Comments
 export * from './comments.contract';

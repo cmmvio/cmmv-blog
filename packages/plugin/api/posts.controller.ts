@@ -15,8 +15,13 @@ import {
    Queries, Param, Body, Req, RouterSchema
 } from "@cmmv/http";
 
+import {
+    PostsPublicService
+} from "./posts.service";
+
 @Controller('api')
 export class PostsController {
+    constructor(private readonly postsPublicService: PostsPublicService) {}
 
     @Get("/posts", {
         contract: Application.getContract("PostsContract"),
@@ -28,4 +33,21 @@ export class PostsController {
         //Application.
         //return this.postsservice.getAll(queries, req);
     }
+
+    @Get("/posts/tags", {
+        contract: Application.getContract("PostsTagsContract"),
+        schema: RouterSchema.GetAll,
+        summary: "Returns Posts Tags records by filter",
+        exposeFilters: true
+    })
+    async getTags(@Queries() queries: any, @Req() req: any) {
+        return this.postsPublicService.getTags();
+    }
+
+    @Post("/posts/draft")
+    @Auth("post:insert")
+    async draftPost(@Body() body: any, @Req() req: any) {
+        return this.postsPublicService.draftPost(body);
+    }
+
 }

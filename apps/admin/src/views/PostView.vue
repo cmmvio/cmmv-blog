@@ -26,12 +26,17 @@
 
                 <div class="flex items-center space-x-3">
                     <button
+                        @click="saveDraft"
+                        class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors">
+                        Save Draft
+                    </button>
+                    <button
                         class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors">
                         Preview
                     </button>
                     <button
                         class="px-3 py-1.5 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 transition-colors"
-                        @click="savePost">
+                        @click="confirmPublish">
                         {{ postStatus === 'published' ? 'Update' : 'Publish' }}
                     </button>
                     <button @click="toggleSidebar" class="ml-2 text-neutral-400 hover:text-white p-1">
@@ -162,17 +167,23 @@
                     <div v-show="expandedSections.tags" class="p-4 pt-0 space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-neutral-400 mb-1">Categories</label>
-                            <div class="relative">
-                                <select
-                                    v-model="post.categories"
-                                    multiple
-                                    class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                >
-                                    <option value="technology">Technology</option>
-                                    <option value="design">Design</option>
-                                    <option value="business">Business</option>
-                                    <option value="lifestyle">Lifestyle</option>
-                                </select>
+                            <div v-if="loadingCategories" class="text-sm text-neutral-400">Loading categories...</div>
+                            <div v-else class="space-y-2 max-h-48 overflow-y-auto p-2 bg-neutral-700 border border-neutral-600 rounded-md">
+                                <div v-for="category in categories" :key="category.id" class="flex items-center">
+                                    <input
+                                        :id="'category-' + category.id"
+                                        type="checkbox"
+                                        :value="category.id"
+                                        v-model="post.categories"
+                                        class="h-4 w-4 rounded border-neutral-600 text-blue-600 focus:ring-blue-500 bg-neutral-700"
+                                    />
+                                    <label :for="'category-' + category.id" class="ml-2 text-sm text-neutral-300">
+                                        {{ category.name }}
+                                    </label>
+                                </div>
+                                <div v-if="categories.length === 0" class="text-sm text-neutral-400 p-1">
+                                    No categories found
+                                </div>
                             </div>
                         </div>
 
@@ -189,11 +200,16 @@
                                 </div>
                                 <input
                                     v-model="newTag"
-                                    @keydown.enter="addTag"
+                                    @keydown.enter.prevent="addTag"
+                                    @change="handleTagSelect"
                                     type="text"
+                                    list="available-tags"
                                     placeholder="Add tag..."
                                     class="flex-1 min-w-[100px] bg-transparent border-none outline-none text-sm"
                                 />
+                                <datalist id="available-tags" v-if="availableTags.length > 0">
+                                    <option v-for="tag in availableTags" :key="tag.id" :value="tag.name"></option>
+                                </datalist>
                             </div>
                         </div>
 
@@ -688,6 +704,46 @@
             </svg>
         </div>
     </template>
+
+    <!-- Publish Confirmation Dialog -->
+    <div v-if="showPublishDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
+        <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
+            <div class="p-6 border-b border-neutral-700">
+                <h3 class="text-lg font-medium text-white">Confirm Publication</h3>
+            </div>
+            <div class="p-6">
+                <p class="text-neutral-300 mb-4">
+                    Are you sure you want to publish this post? It will be publicly visible on your blog.
+                </p>
+                <p class="text-sm text-neutral-400 mb-6">
+                    You can always set it back to draft later.
+                </p>
+
+                <div class="flex justify-end space-x-3">
+                    <button
+                        @click="showPublishDialog = false"
+                        class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        @click="publishPost"
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
+                        :disabled="publishLoading"
+                    >
+                        <span v-if="publishLoading" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Publishing...
+                        </span>
+                        <span v-else>Publish Now</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -698,7 +754,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
+import { useAdminClient } from '@cmmv/blog/admin/client'
 
+const adminClient = useAdminClient()
 const router = useRouter()
 const sidebarOpen = ref(false)
 const activeTab = ref('basic')
@@ -706,6 +764,45 @@ const newTag = ref('')
 const scheduleDate = ref('')
 const websiteUrl = ref('https://yourblog.com')
 const slugManuallyEdited = ref(false)
+
+// Add state for categories and tags
+const categories = ref([])
+const allTags = ref([])
+const loadingCategories = ref(false)
+const loadingTags = ref(false)
+
+// Load categories and tags
+async function loadCategories() {
+  try {
+    loadingCategories.value = true
+    const response = await adminClient.getCategories({
+      limit: 100,
+      sort: 'asc',
+      sortBy: 'name'
+    })
+    categories.value = response.data || []
+    loadingCategories.value = false
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+    loadingCategories.value = false
+  }
+}
+
+async function loadTags() {
+  try {
+    loadingTags.value = true
+    const response = await adminClient.getTags({
+      limit: 100,
+      sort: 'asc',
+      sortBy: 'name'
+    })
+    allTags.value = response.data || []
+    loadingTags.value = false
+  } catch (error) {
+    console.error('Failed to load tags:', error)
+    loadingTags.value = false
+  }
+}
 
 const expandedSections = ref({
     basic: true,  // Open the first section by default
@@ -932,6 +1029,8 @@ function insertDivider() {
 }
 
 onMounted(() => {
+    loadCategories()
+    loadTags()
     document.addEventListener('click', handleGlobalClick)
 })
 
@@ -991,11 +1090,27 @@ function goBack() {
     router.back()
 }
 
+// Add a computed property to filter available tags
+const availableTags = computed(() => {
+  // Filter out tags that are already selected
+  return allTags.value.filter(tag => !post.value.tags.includes(tag.name));
+});
+
+// Update the addTag function
 function addTag() {
-    if (newTag.value.trim() && !post.value.tags.includes(newTag.value.trim())) {
-        post.value.tags.push(newTag.value.trim())
-        newTag.value = ''
-    }
+  if (newTag.value.trim() && !post.value.tags.includes(newTag.value.trim())) {
+    post.value.tags.push(newTag.value.trim());
+    newTag.value = '';
+  }
+}
+
+// Add a handler for when a tag is selected from the autocomplete
+function handleTagSelect(event) {
+  const selectedValue = event.target.value.trim();
+  if (selectedValue && !post.value.tags.includes(selectedValue)) {
+    post.value.tags.push(selectedValue);
+    newTag.value = '';
+  }
 }
 
 function removeTag(index) {
@@ -1027,8 +1142,15 @@ function savePost() {
 
     console.log('Saving post with payload:', JSON.stringify(payload, null, 2))
 
-    // Here you would typically make an API call to save the post
-    // For now, just log the payload
+    // Mock API call with a promise
+    return new Promise((resolve, reject) => {
+        // Simulate API delay
+        setTimeout(() => {
+            // Here you would make an actual API call
+            // For now, just resolve the promise for demo purposes
+            resolve(true)
+        }, 1000)
+    })
 }
 
 // Add new state for blocks sidebar and + button
@@ -1045,6 +1167,41 @@ function toggleBlocks() {
     if (blocksOpen.value) {
         hideAddButton()
     }
+}
+
+// Add new state for publish dialog and loading
+const showPublishDialog = ref(false)
+const publishLoading = ref(false)
+
+function confirmPublish() {
+    // If already published, just update
+    if (post.value.status === 'published') {
+        savePost()
+    } else {
+        // Show confirmation dialog
+        showPublishDialog.value = true
+    }
+}
+
+function publishPost() {
+    publishLoading.value = true
+    post.value.status = 'published'
+    post.value.publishedAt = new Date().toISOString()
+
+    savePost()
+        .then(() => {
+            showPublishDialog.value = false
+            publishLoading.value = false
+        })
+        .catch(error => {
+            console.error('Failed to publish post:', error)
+            publishLoading.value = false
+        })
+}
+
+function saveDraft() {
+    post.value.status = 'draft'
+    savePost()
 }
 </script>
 

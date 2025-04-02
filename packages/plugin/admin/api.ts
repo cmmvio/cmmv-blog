@@ -89,6 +89,31 @@ export function useApi() {
         }
     }
 
+    const getSettings = async () => {
+        const response = await fetch(`api/settings`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const data: any = await response.json();
+        return data.result ? data.result : null;
+    }
+
+    const saveSetup = async (data: any) => {
+        const response = await fetch(`api/setup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+
+        const responseData: any = await response.json();
+        return responseData.result ? responseData.result : null;
+    }
+
     const logout = () => {
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
@@ -99,9 +124,10 @@ export function useApi() {
     }
 
     const checkSession = async () => {
-        //const result = await authRequest('auth/check', 'GET')
+        const result = await authRequest('auth/check', 'GET')
 
-        //if (result && (result.status === 401 || result.status === 403)) refreshAuth()
+        if (result && (result.status === 401 || result.status === 403))
+            refreshAuth()
     }
 
     const refreshAuth = async () => {
@@ -126,8 +152,10 @@ export function useApi() {
         getHeaders,
         authRequest,
         checkSession,
+        getSettings,
         login,
         logout,
+        saveSetup,
         ...methods,
     }
 }

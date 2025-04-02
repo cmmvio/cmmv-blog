@@ -50,6 +50,19 @@ export class CategoriesContract extends AbstractContract {
     })
     navigationLabel!: string;
 
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    description?: string;
+
+    @ContractField({
+        protoType: 'number',
+        nullable: true,
+        defaultValue: 0
+    })
+    postCount!: number;
+
     @ContractMessage({
         name: "PublicCategoriesListResponse",
         properties: {

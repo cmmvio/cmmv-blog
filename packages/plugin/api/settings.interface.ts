@@ -6,3 +6,23 @@ export interface ISettings {
     type: string;
     flags: string[];
 }
+
+
+export interface ISetup {
+    admin: {
+        email: string;
+        password: string;
+    },
+    blog: {
+        title: string;
+        description: string;
+        url: string;
+    },
+    settings: {
+        postsPerPage: number;
+        enableComments: boolean;
+        moderateComments: boolean;
+        language: string;
+        timezone: string;
+    }
+}

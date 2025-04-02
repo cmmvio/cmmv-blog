@@ -4,6 +4,7 @@ import {
     PostsContract,
     PostsHistoryContract,
     PostsMetaContract,
+    PostsTagsContract
 } from '../contracts';
 
 import { PostsController } from "./posts.controller";
@@ -13,6 +14,7 @@ export const PostsModule = new Module('blog_posts', {
     contracts: [
         PostsContract,
         PostsHistoryContract,
-        PostsMetaContract
+        PostsMetaContract,
+        PostsTagsContract
     ]
 });
