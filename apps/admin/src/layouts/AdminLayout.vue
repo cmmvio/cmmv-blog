@@ -2,9 +2,9 @@
     <div class="min-h-screen bg-neutral-900 flex">
         <!-- Sidebar -->
         <aside
-            class="fixed h-full z-30 transition-all duration-300 ease-in-out bg-neutral-800 border-r border-neutral-700 shadow-md"
+            class="fixed h-full z-30 transition-all duration-300 ease-in-out bg-neutral-900 border-r border-neutral-800 shadow-md"
             :class="{ 'w-20': isCollapsed, 'w-50': !isCollapsed, '-translate-x-full md:translate-x-0': isMobileMenuHidden }">
-            <div class="flex items-center justify-between h-16 px-4 border-b border-neutral-700">
+            <div class="flex items-center justify-between h-16 px-4 border-b border-neutral-800">
                 <div class="flex items-center">
                     <img src="/favicon-32x32.png" alt="Blog Logo" class="h-8 transition-all duration-300"
                         :class="{ 'scale-90': isCollapsed }" />
@@ -116,6 +116,34 @@
                     </router-link>
 
                     <div class="pt-4 pb-1" v-if="!isCollapsed">
+                        <p class="px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Users</p>
+                    </div>
+
+                    <router-link to="/authors"
+                        class="flex items-center px-4 py-2 text-neutral-300 hover:bg-neutral-700 hover:text-white rounded-md group transition-all duration-200"
+                        :class="{ 'justify-center': isCollapsed }" :title="isCollapsed ? 'Authors' : ''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 group-hover:text-white"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="ml-3 transition-opacity duration-200"
+                            :class="isCollapsed ? 'opacity-0 absolute' : 'opacity-100'">Authors</span>
+                    </router-link>
+
+                    <router-link to="/members"
+                        class="flex items-center px-4 py-2 text-neutral-300 hover:bg-neutral-700 hover:text-white rounded-md group transition-all duration-200"
+                        :class="{ 'justify-center': isCollapsed }" :title="isCollapsed ? 'Members' : ''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 group-hover:text-white"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="ml-3 transition-opacity duration-200"
+                            :class="isCollapsed ? 'opacity-0 absolute' : 'opacity-100'">Members</span>
+                    </router-link>
+
+                    <div class="pt-4 pb-1" v-if="!isCollapsed">
                         <p class="px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Advanced</p>
                     </div>
 
@@ -159,7 +187,7 @@
                 </nav>
             </div>
 
-            <div class="absolute bottom-0 left-0 right-0 border-t border-neutral-700 p-4 bg-neutral-800 transition-all duration-300">
+            <div class="absolute bottom-0 left-0 right-0 border-t border-neutral-800 p-4 bg-neutral-800 transition-all duration-300">
                 <div class="flex items-center" :class="{ 'justify-center': isCollapsed }">
                     <div v-if="user" class="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-blue-600 text-white">
                         <img
@@ -184,7 +212,6 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col transition-all duration-300 overflow-hidden"
             :class="{ 'md:ml-20': isCollapsed, 'md:ml-50': !isCollapsed }">
-            <!-- Mobile menu button -->
             <div class="lg:hidden absolute top-4 left-4 z-50">
                 <button @click="toggleMobileMenu"
                     class="p-2 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-700 transition-colors duration-200">
@@ -196,11 +223,9 @@
                 </button>
             </div>
 
-            <!-- Main content -->
             <main class="flex-1 bg-neutral-900 p-4 overflow-y-auto">
                 <router-view />
             </main>
-
         </div>
     </div>
 </template>
@@ -225,41 +250,32 @@ const currentPageTitle = computed(() => {
     return routePath.charAt(0).toUpperCase() + routePath.slice(1)
 })
 
-// Get user display name based on profile
 const userDisplayName = computed(() => {
     if (!user.value) return 'Loading...'
 
-    // Check for profile data structure
-    if (user.value.profile && user.value.profile.name) {
+    if (user.value.profile && user.value.profile.name)
         return user.value.profile.name
-    }
 
-    // Otherwise use email
     const email = user.value.email || ''
     return email.length > 10 ? `${email.substring(0, 10)}...` : email
 })
 
-// Get user initials for avatar fallback
 const userInitials = computed(() => {
     if (!user.value) return '?'
 
-    if (user.value.profile && user.value.profile.name) {
+    if (user.value.profile && user.value.profile.name)
         return user.value.profile.name.substring(0, 1).toUpperCase()
-    }
 
-    // Fallback to email initial
     return user.value.email ? user.value.email.substring(0, 1).toUpperCase() : '?'
 })
 
-// Use actual profile image instead of Gravatar
 const userAvatar = computed(() => {
-    if (user.value && user.value.profile && user.value.profile.image) {
+    if (user.value && user.value.profile && user.value.profile.image)
         return user.value.profile.image
-    }
+
     return null
 })
 
-// Add a function to refresh the user profile
 const refreshUserProfile = async () => {
     try {
         user.value = await api.getProfile()
@@ -288,12 +304,9 @@ onMounted(async () => {
         user.value = await api.getProfile()
         console.log('User profile loaded:', user.value)
 
-        // Watch for route changes to /profile
         watch(() => route.path, (newPath, oldPath) => {
-            // If coming from profile page, refresh user data
-            if (oldPath.includes('/profile')) {
+            if (oldPath.includes('/profile'))
                 refreshUserProfile()
-            }
         })
     } catch (error) {
         console.error('Failed to load user profile:', error)
@@ -302,33 +315,30 @@ onMounted(async () => {
 </script>
 
 <style>
-/* Custom scrollbar styling for dark mode */
-/* For Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #262626; /* neutral-800 */
+  background: #262626;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #404040; /* neutral-700 */
+  background: #404040;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #525252; /* neutral-600 */
+  background: #525252;
 }
 
 ::-webkit-scrollbar-corner {
-  background: #262626; /* neutral-800 */
+  background: #262626;
 }
 
-/* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #404040 #262626; /* thumb track */
+  scrollbar-color: #404040 #262626;
 }
 </style>

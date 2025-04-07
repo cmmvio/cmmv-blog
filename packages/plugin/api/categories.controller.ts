@@ -1,6 +1,6 @@
 import {
     Controller, Get, RouterSchema,
-    Queries, Req
+    Queries, Req, Response
 } from "@cmmv/http";
 
 import {
@@ -11,7 +11,7 @@ import {
     CategoriesPublicService
 } from "./categories.service";
 
-@Controller("api")
+@Controller("blog")
 export class CategoriesPublicController {
     constructor(
         private readonly categoriesPublicService: CategoriesPublicService
@@ -21,9 +21,11 @@ export class CategoriesPublicController {
         contract: Application.getContract("CategoriesContract"),
         schema: RouterSchema.GetAll,
         summary: "Returns all categories",
-        exposeFilters: true
+        exposeFilters: true,
+        exclude: true
     })
-    async get(@Queries() queries: any, @Req() req: any) {
-        return this.categoriesPublicService.getAll(queries, req);
+    async get(@Queries() queries: any, @Response() res: any, @Req() req: any) {
+        const categories = await this.categoriesPublicService.getAll(queries, req);
+        res.code(200).contentType("text/json").send(categories)
     }
 }

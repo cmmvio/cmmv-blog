@@ -21,7 +21,7 @@ export function useApi() {
                 if (!headers) headers = {}
 
                 const response = await fetch(
-                    `api/${path}`,
+                    `/api/${path}`,
                     method == 'GET'
                         ? {
                             method: method,
@@ -44,12 +44,13 @@ export function useApi() {
 
                 const contentType = response.headers.get('content-type')?.split(';')[0]
 
+                if (response.status !== 200)
+                    return null;
+
                 const data: any =
                     contentType === 'application/json' || contentType === 'text/json'
                         ? await response.json()
                         : await response.text()
-
-                if (response.status === 401 || response.status === 403) await refreshAuth()
 
                 if (data.result) {
                     return {
@@ -101,6 +102,16 @@ export function useApi() {
         return data.result ? data.result : null;
     }
 
+    const getRootSettings = async () => {
+        const response = await authRequest(`settings-root`, 'GET');
+        return response.data ? response.data : null;
+    }
+
+    const updateSettings = async (data: any) => {
+        const response = await authRequest(`settings`, 'PUT', data);
+        return response.data ? response.data : null;
+    }
+
     const saveSetup = async (data: any) => {
         const response = await fetch(`api/setup`, {
             method: 'POST',
@@ -126,7 +137,7 @@ export function useApi() {
     const checkSession = async () => {
         const result = await authRequest('auth/check', 'GET')
 
-        if (result && (result.status === 401 || result.status === 403))
+        if (!result)
             refreshAuth()
     }
 
@@ -139,6 +150,11 @@ export function useApi() {
             localStorage.setItem('token', result.token)
             token.value = result.token
         } else {
+            localStorage.removeItem('token')
+            localStorage.removeItem('refreshToken')
+            token.value = null
+            refreshToken.value = null
+            user.value = null
             router.push('/login')
         }
     }
@@ -153,6 +169,8 @@ export function useApi() {
         authRequest,
         checkSession,
         getSettings,
+        getRootSettings,
+        updateSettings,
         login,
         logout,
         saveSetup,

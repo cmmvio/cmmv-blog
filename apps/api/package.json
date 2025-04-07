@@ -28,7 +28,8 @@
         "@cmmv/blog": "workspace:plugin",
         "@cmmv/cli": "latest",
         "@cmmv/http": "latest",
-        "@cmmv/repository": "latest"
+        "@cmmv/repository": "latest",
+        "sharp": "^0.34.0"
     },
     "devDependencies": {
         "@cmmv/sandbox": "latest"

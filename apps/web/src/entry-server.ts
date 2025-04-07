@@ -11,6 +11,7 @@ export async function render(url: string) {
     await router.isReady()
 
     globalThis.__SSR_DATA__ = {}
+    globalThis.__SSR_METADATA__ = {}
 
     app.use(router)
 
@@ -19,7 +20,7 @@ export async function render(url: string) {
     app.provide('preloaded', resolvedData)
 
     const html = await renderToString(app)
-    return { html, data: resolvedData }
+    return { html, data: resolvedData, metadata: globalThis.__SSR_METADATA__}
 }
 
 async function resolveSSRData(obj: Record<string, Promise<any>>) {

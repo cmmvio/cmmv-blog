@@ -187,17 +187,12 @@ body {
 </style>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 
 const adminClient = useAdminClient()
 const router = useRouter()
-
-const setupFinish = await adminClient.getSettings();
-
-if(!setupFinish.setupFinish)
-    router.push('/setup')
 
 const loading = ref(false)
 const errors = ref({
@@ -262,4 +257,11 @@ const handleSubmit = async () => {
         showNotification('Error!', 'Unable to login')
     }
 }
+
+onMounted(async () => {
+    const setupFinish = await adminClient.getSettings();
+
+    if(!setupFinish.setupFinish)
+        router.push('/setup')
+})
 </script>

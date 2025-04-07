@@ -4,7 +4,10 @@ import {
 } from 'vue-router';
 
 import DefaultTemplate from './theme-default/defaultTemplate.vue';
+import PostTemplate from './theme-default/postTemplate.vue';
 import Home from './theme-default/pageHome.vue';
+import PreviewPage from './theme-default/previewPage.vue';
+
 
 export function createRouter() {
     return _createRouter({
@@ -18,16 +21,14 @@ export function createRouter() {
                     component: Home
                 }],
             },
-            /*{
-                path: '/posts',
-                component: Posts,
-                meta: {
-                    loadData: async () => {
-                        const res = await fetch('http://localhost:4000/api/posts');
-                        return { posts: await res.json() };
-                    }
-                }
-            }*/
+            {
+                path: '/preview/:id',
+                component: PostTemplate,
+                children: [{
+                    path: '',
+                    component: PreviewPage
+                }]
+            }
         ]
     });
 }

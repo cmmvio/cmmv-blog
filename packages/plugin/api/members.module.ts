@@ -4,8 +4,16 @@ import {
     MemberContract
 } from '../contracts';
 
-export const MembersModule = new Module('blog_members', {
-    contracts: [
-        MemberContract
-    ],
+import {
+    MembersPublicService
+} from "./members.service";
+
+import {
+    MembersPublicController
+} from "./members.controller";
+
+export const MembersModule = new Module('blog_members_public', {
+    contracts: [MemberContract],
+    controllers: [MembersPublicController],
+    providers: [MembersPublicService]
 });

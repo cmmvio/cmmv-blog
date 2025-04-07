@@ -22,7 +22,7 @@
         <!-- Filters and Search -->
         <div class="bg-neutral-800 rounded-lg p-4 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                <div class="relative flex-1 flex items-center gap-2">
+                <div class="relative flex-1 flex items-center">
                     <div class="relative flex-grow">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,17 +33,15 @@
                             v-model="filters.search"
                             type="text"
                             placeholder="Search categories..."
-                            class="bg-neutral-700 border border-neutral-600 text-white pl-10 pr-4 py-2 rounded-l-md w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            class="bg-neutral-700 h-10 border border-neutral-800 text-white pl-10 pr-4 py-2 rounded-l-md w-full focus:outline-none focus:ring-0"
                         >
                     </div>
                     <select
                         v-model="filters.searchField"
-                        class="bg-neutral-700 border border-neutral-600 text-white px-3 py-2 rounded-r-md focus:outline-none focus:ring-1 focus:ring-blue-500 border-l-0"
+                        class="bg-neutral-700 w-56 h-10 border border-neutral-800 text-white px-3 py-2 rounded-r-md focus:outline-none focus:ring-0 border-l-0"
                     >
                         <option value="name">Name</option>
                         <option value="slug">Slug</option>
-                        <option value="parentCategory">Parent</option>
-                        <option value="navigationLabel">Navigation</option>
                     </select>
                 </div>
             </div>
@@ -135,7 +133,7 @@
                                 {{ category.name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-400">
-                                <a :href="`/blog/category/${category.slug}`" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline">
+                                <a :href="`${blogUrl}/category/${category.slug}`" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline">
                                     {{ category.slug }}
                                 </a>
                             </td>
@@ -215,7 +213,7 @@
         </div>
 
         <!-- Add/Edit Category Dialog -->
-        <div v-if="showDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+        <div v-if="showDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
             <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
                 <div class="p-6 border-b border-neutral-700 flex justify-between items-center">
                     <h3 class="text-lg font-medium text-white">{{ isEditing ? 'Edit Category' : 'Add Category' }}</h3>
@@ -323,7 +321,7 @@
         </div>
 
         <!-- Delete Confirmation Dialog -->
-        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
             <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
                 <div class="p-6 border-b border-neutral-700">
                     <h3 class="text-lg font-medium text-white">Confirm Deletion</h3>
@@ -443,6 +441,23 @@ const filters = ref({
     sortOrder: 'asc',
     page: 1
 })
+
+// First, add the blogUrl ref after other state declarations
+const blogUrl = ref('');
+
+// Add the loadBlogUrl function
+const loadBlogUrl = async () => {
+    try {
+        const settings = await adminClient.getRootSettings();
+        const urlSetting = settings.find(s => s.key === 'blog.url');
+        if (urlSetting) {
+            blogUrl.value = urlSetting.value.replace(/\/$/, ''); // Remove trailing slash if present
+        }
+    } catch (err) {
+        console.error('Failed to load blog URL:', err);
+        blogUrl.value = '';
+    }
+};
 
 // Computed
 const paginationPages = computed(() => {
@@ -710,6 +725,7 @@ const toggleSort = (column) => {
 // Initial load
 onMounted(() => {
     loadCategories()
+    loadBlogUrl()
 })
 
 // Update the updateSlugAndLabel method to always generate a new slug when name changes

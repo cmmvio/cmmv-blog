@@ -21,7 +21,9 @@ export interface IDraftPost {
     status: string;
     visibility: string;
     type: string;
+    author: string;
     authors: string[];
+    meta?: any
 }
 
 export interface IPostMetadata {

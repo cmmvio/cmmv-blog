@@ -21,7 +21,8 @@ import {
 export class PostsTagsContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
-        nullable: false
+        nullable: false,
+        unique: true
     })
     name!: string;
 

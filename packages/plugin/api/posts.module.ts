@@ -8,9 +8,11 @@ import {
 } from '../contracts';
 
 import { PostsController } from "./posts.controller";
+import { PostsPublicService } from "./posts.service";
 
 export const PostsModule = new Module('blog_posts', {
-    providers: [PostsController],
+    controllers: [PostsController],
+    providers: [PostsPublicService],
     contracts: [
         PostsContract,
         PostsHistoryContract,

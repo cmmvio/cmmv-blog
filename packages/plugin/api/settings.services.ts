@@ -1,4 +1,5 @@
 import * as crypto from "crypto";
+
 import {
     Service
 } from "@cmmv/core";
@@ -14,6 +15,11 @@ import {
 
 @Service("blog_settings")
 export class BlogSettingsService {
+    /**
+     * Get the setup data
+     * @param setupData - The setup data
+     * @returns {Promise<any>}
+     */
     public async getSetup(setupData: ISetup) : Promise<any> {
         const SettingsRepository = Repository.getEntity("SettingsEntity");
 
@@ -41,7 +47,6 @@ export class BlogSettingsService {
             .createHash('sha256')
             .update(setupData.admin.password)
             .digest('hex');
-
 
         const user = await Repository.insert(UserEntity, {
             root: true,
@@ -108,14 +113,53 @@ export class BlogSettingsService {
      * Get all settings
      * @returns {Promise<any>}
      */
-    public async getSettings() : Promise<ISettings[]> {
+    public async getSettings() : Promise<{ [key: string]: any }> {
         const SettingsRepository = Repository.getEntity("SettingsEntity");
+        let settingsResult: { [key: string]: any } = {};
 
-        const settings = await Repository.findAll(SettingsRepository, {}, [], {
+        const settings = await Repository.findAll(SettingsRepository, {
+            limit: 1000
+        }, [], {
             select: [ "group", "key", "value", "type", "flags" ]
         });
 
-        return settings ? settings.data : [];
+        if(settings) {
+            for(const setting of settings.data) {
+                if(setting.flags.includes("PUBLIC")){
+                    settingsResult[setting.key] = setting.value;
+
+                    switch(setting.type) {
+                        case "boolean":
+                            settingsResult[setting.key] = setting.value === "true";
+                            break;
+                        case "number":
+                            settingsResult[setting.key] = parseInt(setting.value);
+                            break;
+                        case "string":
+                            settingsResult[setting.key] = setting.value;
+                            break;
+                    }
+                }
+            }
+        }
+
+        return settingsResult;
+    }
+
+    /**
+     * Get all settings
+     * @returns {Promise<ISettings[]>}
+     */
+    public async getAllSettings() : Promise<any> {
+        const SettingsRepository = Repository.getEntity("SettingsEntity");
+
+        const settings = await Repository.findAll(SettingsRepository, {
+            limit: 1000
+        }, [], {
+            select: [ "group", "key", "value", "type", "flags" ]
+        });
+
+        return settings ? settings : [];
     }
 
     /**
@@ -138,17 +182,26 @@ export class BlogSettingsService {
      * @param {ISettings} setting - The setting to upsert
      * @returns {Promise<ISettings>}
      */
-    public async upsertSetting(setting: { [key: string]: any }) : Promise<{ message: string }> {
+    public async upsertSetting(settings: ISettings[]) : Promise<{ message: string }> {
         const SettingsRepository = Repository.getEntity("SettingsEntity");
 
-        for (const key in setting) {
-            const setting = await Repository.findOne(SettingsRepository, { key }, {
+        for (const setting of settings) {
+            const settingStoraged = await Repository.findOne(SettingsRepository, { key: setting.key }, {
                 select: [ "group", "key", "value", "type", "flags" ]
             });
 
-            if (setting) {
-                await Repository.update(SettingsRepository, setting.id, {
-                    value: setting[key]
+            if (settingStoraged) {
+                await Repository.updateOne(SettingsRepository, { key: setting.key }, {
+                    value: setting.value
+                });
+            }
+            else {
+                await Repository.insert(SettingsRepository, {
+                    group: "blog",
+                    key: setting.key,
+                    value: setting.value,
+                    type: setting.type,
+                    flags: setting.flags
                 });
             }
         }

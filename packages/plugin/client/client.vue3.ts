@@ -18,7 +18,7 @@ export const useApi = () => {
                 globalThis.__SSR_DATA__ = {};
 
             try {
-                globalThis.__SSR_DATA__[cacheKey] = await fetch(`${baseUrl}/api/${path}`)
+                globalThis.__SSR_DATA__[cacheKey] = await fetch(`${baseUrl}/${path}`)
                     .then(res => res.json())
                     .then(data => data.result || data);
 
@@ -30,7 +30,7 @@ export const useApi = () => {
 
         else if (!import.meta.env.SSR && data.value === null) {
             try {
-                const response = await fetch(`${baseUrl}/api/${path}`);
+                const response = await fetch(`${baseUrl}/${path}`);
                 const result = await response.json();
                 data.value = result.result || result;
             } catch (error) {
@@ -71,16 +71,40 @@ export const useApi = () => {
 
 export const useBlog = () => {
     const categories = ref<any[]>([]);
+    const tags = ref<any[]>([]);
+    const settings = ref<any[]>([]);
     const api = useApi();
 
     const getAllCategories = async () => {
-        const { data } = await api.get<any[]>("categories", "categories");
+        const { data } = await api.get<any[]>("blog/categories", "categories");
         categories.value = data.value || [];
+        return data.value || [];
+    };
+
+    const getAllTags = async () => {
+        const { data } = await api.get<any[]>("blog/posts/tags", "tags");
+        tags.value = data.value || [];
+        return data.value || [];
+    };
+
+    const getAllSettings = async () => {
+        const { data } = await api.get<any[]>("blog/settings", "settings");
+        settings.value = data.value || [];
+        return data.value || [];
+    };
+
+    const getPostById = async (id: string) => {
+        const { data } = await api.get<any[]>(`blog/posts/${id}`, "post");
         return data.value || [];
     };
 
     return {
         getAllCategories,
-        categories
+        getAllTags,
+        getAllSettings,
+        getPostById,
+        categories,
+        tags,
+        settings
     };
 };

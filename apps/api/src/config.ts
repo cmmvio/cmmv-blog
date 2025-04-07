@@ -1,4 +1,7 @@
+import * as dotenv from "dotenv";
 import { Config } from "@cmmv/core";
+
+dotenv.config();
 
 Config.assign({
     env: process.env.NODE_ENV,

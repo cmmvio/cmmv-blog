@@ -23,7 +23,10 @@ async function start() {
                 template = await vite.transformIndexHtml(url, template);
 
                 const { render } = await vite.ssrLoadModule('/src/entry-server.ts');
-                const { html: appHtml, data } = await render(url);
+                const { html: appHtml, data, metadata } = await render(url);
+
+                for(const key in metadata)
+                    template = template.replace(`{${key}}`, metadata[key]);
 
                 const finalHtml = template
                     .replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div><script>window.__CMMV_DATA__ = ${JSON.stringify(data)};</script>`);

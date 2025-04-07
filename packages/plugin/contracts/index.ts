@@ -1,5 +1,6 @@
 export * from './categories.contract';
 export * from './author-profile.contract';
+export * from './medias.contract';
 
 // Posts
 export * from './posts.contract';

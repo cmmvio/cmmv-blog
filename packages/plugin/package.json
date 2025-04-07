@@ -12,6 +12,7 @@
     "dependencies": {
         "@cmmv/auth": "latest",
         "@cmmv/core": "latest",
-        "@cmmv/http": "latest"
+        "@cmmv/http": "latest",
+        "sharp": "^0.34.0"
     }
 }

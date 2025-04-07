@@ -392,7 +392,7 @@ body {
 </style>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 
@@ -405,22 +405,24 @@ const steps = [
     { id: 'settings', name: 'Settings' }
 ]
 
+const setupFinish = ref(localStorage.getItem('setupFinish') === 'true');
+
+if(setupFinish.value)
+    router.push('/');
+
 const currentStep = ref(0)
 const loading = ref(false)
 const errors = ref({})
 
 const setupData = ref({
-    // Admin account
     adminEmail: '',
     adminPassword: '',
     adminPasswordConfirm: '',
 
-    // Blog info
     blogTitle: '',
     blogDescription: '',
     blogUrl: '',
 
-    // Advanced settings
     postsPerPage: 10,
     enableComments: true,
     moderateComments: true,
@@ -475,7 +477,6 @@ const validateCurrentStep = () => {
             isValid = false
         }
     } else if (currentStep.value === 1) {
-        // Validate blog info
         if (!setupData.value.blogTitle) {
             errors.value.blogTitle = 'Blog title is required'
             isValid = false
@@ -509,7 +510,6 @@ const finishSetup = async () => {
     try {
         loading.value = true
 
-        // Prepare the setup data
         const setupConfig = {
             admin: {
                 email: setupData.value.adminEmail,
@@ -530,20 +530,26 @@ const finishSetup = async () => {
             setupFinish: true
         }
 
-        // Send setup data to API
         await adminClient.saveSetup(setupConfig)
 
-        // Login with the new admin account
         await adminClient.login({
             username: setupData.value.adminEmail,
             password: setupData.value.adminPassword
         })
 
-        // Redirect to dashboard
         router.push('/')
     } catch (err) {
         loading.value = false
         showNotification('Error!', 'Failed to complete setup: ' + (err.message || 'Unknown error'))
     }
 }
+
+onMounted(async () => {
+    const setupFinish = await adminClient.getSettings();
+
+    if(setupFinish.setupFinish){
+        localStorage.setItem('setupFinish', true);
+        router.push('/');
+    }
+})
 </script>

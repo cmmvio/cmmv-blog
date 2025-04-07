@@ -24,13 +24,13 @@ export class BlogProfileController {
         private readonly blogProfileService: BlogProfileService
     ) {}
 
-    @Get("profile")
+    @Get("profile", { exclude: true })
     @Auth()
     public async getProfile(@User() user: any) {
         return this.blogProfileService.getProfile(user);
     }
 
-    @Put("profile")
+    @Put("profile", { exclude: true })
     @Auth()
     public async updateProfile(@User() user: any, @Body() profile: IProfile) {
         return this.blogProfileService.updateProfile(user, profile);

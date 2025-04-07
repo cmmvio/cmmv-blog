@@ -7,7 +7,6 @@ export interface ISettings {
     flags: string[];
 }
 
-
 export interface ISetup {
     admin: {
         email: string;

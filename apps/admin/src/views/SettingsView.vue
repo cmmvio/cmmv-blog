@@ -40,14 +40,14 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Site Title</label>
-                            <input v-model="settings.general.siteTitle" type="text"
+                            <input v-model="settings.title" type="text"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="My Awesome Blog" />
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Tagline</label>
-                            <input v-model="settings.general.tagline" type="text"
+                            <input v-model="settings.description" type="text"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="Just another CMMV blog" />
                             <p class="text-xs text-neutral-500">In a few words, explain what this site is about.</p>
@@ -57,7 +57,7 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Admin Email</label>
-                            <input v-model="settings.general.adminEmail" type="email"
+                            <input v-model="settings.adminEmail" type="email"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="admin@example.com" />
                             <p class="text-xs text-neutral-500">This address is used for admin purposes.</p>
@@ -65,7 +65,7 @@
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Site Language</label>
-                            <select v-model="settings.general.language"
+                            <select v-model="settings.language"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="en_US">English (United States)</option>
                                 <option value="pt_BR">Portuguese (Brazil)</option>
@@ -78,7 +78,7 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Site URL</label>
-                        <input v-model="settings.general.siteUrl" type="text"
+                        <input v-model="settings.url" type="text"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="https://example.com" />
                     </div>
@@ -86,7 +86,7 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Default Category</label>
-                            <select v-model="settings.general.defaultCategory"
+                            <select v-model="settings.defaultCategory"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="uncategorized">Uncategorized</option>
                                 <option value="news">News</option>
@@ -97,7 +97,7 @@
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Default Post Format</label>
-                            <select v-model="settings.general.defaultPostFormat"
+                            <select v-model="settings.defaultPostFormat"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="standard">Standard</option>
                                 <option value="aside">Aside</option>
@@ -124,7 +124,7 @@
                         <div class="flex items-center space-x-4">
                             <div
                                 class="w-16 h-16 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600">
-                                <img v-if="settings.appearance.logo" :src="settings.appearance.logo" alt="Site logo"
+                                <img v-if="settings.logo" :src="settings.logo" alt="Site logo"
                                     class="max-w-full max-h-full p-1" />
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-neutral-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -137,7 +137,7 @@
                                     class="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-sm rounded-md transition-colors">
                                     Select Logo
                                 </button>
-                                <button v-if="settings.appearance.logo"
+                                <button v-if="settings.logo"
                                     class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
                                     Remove
                                 </button>
@@ -151,7 +151,7 @@
                         <div class="flex items-center space-x-4">
                             <div
                                 class="w-10 h-10 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600">
-                                <img v-if="settings.appearance.favicon" :src="settings.appearance.favicon" alt="Favicon"
+                                <img v-if="settings.favicon" :src="settings.favicon" alt="Favicon"
                                     class="max-w-full max-h-full p-1" />
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neutral-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,7 +164,7 @@
                                     class="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-sm rounded-md transition-colors">
                                     Select Favicon
                                 </button>
-                                <button v-if="settings.appearance.favicon"
+                                <button v-if="settings.favicon"
                                     class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
                                     Remove
                                 </button>
@@ -176,9 +176,9 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Primary Color</label>
                         <div class="flex items-center space-x-3">
-                            <input v-model="settings.appearance.primaryColor" type="color"
+                            <input v-model="settings.primaryColor" type="color"
                                 class="w-10 h-10 p-0 border-0 rounded bg-transparent cursor-pointer" />
-                            <input v-model="settings.appearance.primaryColor" type="text"
+                            <input v-model="settings.primaryColor" type="text"
                                 class="w-32 px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="#3490dc" />
                         </div>
@@ -187,9 +187,9 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Secondary Color</label>
                         <div class="flex items-center space-x-3">
-                            <input v-model="settings.appearance.secondaryColor" type="color"
+                            <input v-model="settings.secondaryColor" type="color"
                                 class="w-10 h-10 p-0 border-0 rounded bg-transparent cursor-pointer" />
-                            <input v-model="settings.appearance.secondaryColor" type="text"
+                            <input v-model="settings.secondaryColor" type="text"
                                 class="w-32 px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="#38c172" />
                         </div>
@@ -197,7 +197,7 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Font Family</label>
-                        <select v-model="settings.appearance.fontFamily"
+                        <select v-model="settings.fontFamily"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                             <option value="sans-serif">Sans-serif (system default)</option>
                             <option value="serif">Serif (system default)</option>
@@ -224,23 +224,23 @@
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <input id="latest-posts" type="radio" value="latest_posts"
-                                    v-model="settings.reading.homepageDisplay"
+                                    v-model="settings.homepageDisplay"
                                     class="h-4 w-4 mr-2 text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="latest-posts" class="text-sm text-neutral-300">Latest posts</label>
                             </div>
                             <div class="flex items-center">
                                 <input id="static-page" type="radio" value="static_page"
-                                    v-model="settings.reading.homepageDisplay"
+                                    v-model="settings.homepageDisplay"
                                     class="h-4 w-4 mr-2 text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="static-page" class="text-sm text-neutral-300">A static page</label>
                             </div>
                         </div>
                     </div>
 
-                    <div v-if="settings.reading.homepageDisplay === 'static_page'" class="grid gap-6 md:grid-cols-2">
+                    <div v-if="settings.homepageDisplay === 'static_page'" class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Homepage</label>
-                            <select v-model="settings.reading.homepage"
+                            <select v-model="settings.homepage"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="about">About Us</option>
                                 <option value="home">Home</option>
@@ -251,7 +251,7 @@
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Posts page</label>
-                            <select v-model="settings.reading.postsPage"
+                            <select v-model="settings.postsPage"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="blog">Blog</option>
                                 <option value="news">News</option>
@@ -263,13 +263,13 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Posts per page</label>
-                            <input v-model="settings.reading.postsPerPage" type="number" min="1" max="50"
+                            <input v-model="settings.postsperpage" type="number" min="1" max="50"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500" />
                         </div>
 
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">RSS feed shows</label>
-                            <input v-model="settings.reading.rssFeedItems" type="number" min="1" max="50"
+                            <input v-model="settings.rssFeedItems" type="number" min="1" max="50"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500" />
                             <p class="text-xs text-neutral-500">Number of items to display in RSS feed</p>
                         </div>
@@ -280,13 +280,13 @@
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <input id="show-full-text" type="radio" value="full_text"
-                                    v-model="settings.reading.feedContent"
+                                    v-model="settings.feedContent"
                                     class="h-4 w-4 mr-2 text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="show-full-text" class="text-sm text-neutral-300">Full text</label>
                             </div>
                             <div class="flex items-center">
                                 <input id="show-excerpt" type="radio" value="excerpt"
-                                    v-model="settings.reading.feedContent"
+                                    v-model="settings.feedContent"
                                     class="h-4 w-4 mr-2 text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="show-excerpt" class="text-sm text-neutral-300">Excerpt</label>
                             </div>
@@ -307,21 +307,21 @@
                         <h3 class="text-base font-medium text-neutral-300">Default article settings</h3>
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <input id="allow-comments" type="checkbox" v-model="settings.discussion.allowComments"
+                                <input id="allow-comments" type="checkbox" v-model="settings.enablecomments"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="allow-comments" class="text-sm text-neutral-300">Allow people to submit
                                     comments on new posts</label>
                             </div>
                             <div class="flex items-center">
                                 <input id="comment-approval" type="checkbox"
-                                    v-model="settings.discussion.commentApproval"
+                                    v-model="settings.moderatecomments"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="comment-approval" class="text-sm text-neutral-300">Comment must be manually
                                     approved</label>
                             </div>
                             <div class="flex items-center">
                                 <input id="require-name-email" type="checkbox"
-                                    v-model="settings.discussion.requireNameEmail"
+                                    v-model="settings.requireNameEmail"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="require-name-email" class="text-sm text-neutral-300">Comment author must
                                     fill out name and email</label>
@@ -333,14 +333,14 @@
                         <h3 class="text-base font-medium text-neutral-300">Other comment settings</h3>
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <input id="nested-comments" type="checkbox" v-model="settings.discussion.nestedComments"
+                                <input id="nested-comments" type="checkbox" v-model="settings.nestedComments"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="nested-comments" class="text-sm text-neutral-300">Enable threaded (nested)
                                     comments</label>
                             </div>
                             <div class="flex items-center">
                                 <input id="comment-pagination" type="checkbox"
-                                    v-model="settings.discussion.commentPagination"
+                                    v-model="settings.commentPagination"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="comment-pagination" class="text-sm text-neutral-300">Break comments into
                                     pages</label>
@@ -351,7 +351,7 @@
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="block text-sm font-medium text-neutral-300">Comments per page</label>
-                            <input v-model="settings.discussion.commentsPerPage" type="number" min="1" max="100"
+                            <input v-model="settings.commentsPerPage" type="number" min="1" max="100"
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500" />
                             <p class="text-xs text-neutral-500">Only if comment pagination is enabled</p>
                         </div>
@@ -361,14 +361,14 @@
                             <div class="space-y-2">
                                 <div class="flex items-center">
                                     <input id="email-me-comments" type="checkbox"
-                                        v-model="settings.discussion.emailOnComment"
+                                        v-model="settings.emailOnComment"
                                         class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                     <label for="email-me-comments" class="text-sm text-neutral-300">Email me whenever
                                         anyone posts a comment</label>
                                 </div>
                                 <div class="flex items-center">
                                     <input id="email-me-moderation" type="checkbox"
-                                        v-model="settings.discussion.emailOnModeration"
+                                        v-model="settings.emailOnModeration"
                                         class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                     <label for="email-me-moderation" class="text-sm text-neutral-300">Email me whenever
                                         a comment is held for moderation</label>
@@ -392,7 +392,7 @@
                         <div class="flex items-center">
                             <span
                                 class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://facebook.com/</span>
-                            <input v-model="settings.social.facebook" type="text"
+                            <input v-model="settings.facebook" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="yourusername" />
                         </div>
@@ -403,7 +403,7 @@
                         <div class="flex items-center">
                             <span
                                 class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://twitter.com/</span>
-                            <input v-model="settings.social.twitter" type="text"
+                            <input v-model="settings.twitter" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="yourusername" />
                         </div>
@@ -414,7 +414,7 @@
                         <div class="flex items-center">
                             <span
                                 class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://instagram.com/</span>
-                            <input v-model="settings.social.instagram" type="text"
+                            <input v-model="settings.instagram" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="yourusername" />
                         </div>
@@ -425,7 +425,7 @@
                         <div class="flex items-center">
                             <span
                                 class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://linkedin.com/in/</span>
-                            <input v-model="settings.social.linkedin" type="text"
+                            <input v-model="settings.linkedin" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="yourusername" />
                         </div>
@@ -436,7 +436,7 @@
                         <div class="flex items-center">
                             <span
                                 class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://youtube.com/c/</span>
-                            <input v-model="settings.social.youtube" type="text"
+                            <input v-model="settings.youtube" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="yourchannel" />
                         </div>
@@ -447,7 +447,7 @@
                         <div class="flex items-center">
                             <span
                                 class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://github.com/</span>
-                            <input v-model="settings.social.github" type="text"
+                            <input v-model="settings.github" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="yourusername" />
                         </div>
@@ -465,7 +465,7 @@
                 <div class="space-y-6">
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Analytics Code</label>
-                        <textarea v-model="settings.advanced.analyticsCode" rows="4"
+                        <textarea v-model="settings.analyticsCode" rows="4"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono text-sm"
                             placeholder="<!-- Google Analytics or other tracking code -->"></textarea>
                         <p class="text-xs text-neutral-500">Paste your Google Analytics, Tag Manager or other tracking
@@ -474,7 +474,7 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Custom CSS</label>
-                        <textarea v-model="settings.advanced.customCss" rows="4"
+                        <textarea v-model="settings.customCss" rows="4"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono text-sm"
                             placeholder="/* Add your custom CSS here */"></textarea>
                         <p class="text-xs text-neutral-500">Add custom CSS to your site. This will be included in the
@@ -483,7 +483,7 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Custom JavaScript</label>
-                        <textarea v-model="settings.advanced.customJs" rows="4"
+                        <textarea v-model="settings.customJs" rows="4"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono text-sm"
                             placeholder="/* Add your custom JavaScript here */"></textarea>
                         <p class="text-xs text-neutral-500">Add custom JavaScript to your site. This will be included in
@@ -492,7 +492,7 @@
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Robots.txt Content</label>
-                        <textarea v-model="settings.advanced.robotsTxt" rows="4"
+                        <textarea v-model="settings.robotsTxt" rows="4"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono text-sm"
                             placeholder="User-agent: *&#10;Allow: /"></textarea>
                         <p class="text-xs text-neutral-500">Customize your robots.txt file to control search engine
@@ -502,19 +502,37 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast notifications -->
+    <div v-if="notification.show"
+        class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
+        :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
+    >
+        <span v-if="notification.type === 'success'" class="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        <span v-else class="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        <span>{{ notification.message }}</span>
+        <button @click="notification.show = false" class="ml-4 text-white hover:text-neutral-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 
 const adminClient = useAdminClient()
 
-adminClient.getSettings().then((settings) => {
-    console.log(settings)
-})
-
-// Tabs
 const tabs = [
     { id: 'general', name: 'General' },
     { id: 'appearance', name: 'Appearance' },
@@ -524,66 +542,184 @@ const tabs = [
     { id: 'advanced', name: 'Advanced' },
 ]
 const activeTab = ref('general')
+const isLoading = ref(true)
+const originalSettings = ref([])
 
-// Settings data structure with default values
 const settings = ref({
-    general: {
-        siteTitle: 'CMMV Blog',
-        tagline: 'Just another awesome blog',
-        adminEmail: 'admin@example.com',
-        language: 'en_US',
-        siteUrl: 'https://example.com',
-        defaultCategory: 'uncategorized',
-        defaultPostFormat: 'standard'
-    },
-    appearance: {
-        logo: '',
-        favicon: '',
-        primaryColor: '#3490dc',
-        secondaryColor: '#38c172',
-        fontFamily: 'sans-serif'
-    },
-    reading: {
-        homepageDisplay: 'latest_posts',
-        homepage: 'home',
-        postsPage: 'blog',
-        postsPerPage: 10,
-        rssFeedItems: 10,
-        feedContent: 'full_text'
-    },
-    discussion: {
-        allowComments: true,
-        commentApproval: true,
-        requireNameEmail: true,
-        nestedComments: true,
-        commentPagination: false,
-        commentsPerPage: 50,
-        emailOnComment: true,
-        emailOnModeration: true
-    },
-    social: {
-        facebook: '',
-        twitter: '',
-        instagram: '',
-        linkedin: '',
-        youtube: '',
-        github: ''
-    },
-    advanced: {
-        analyticsCode: '',
-        customCss: '',
-        customJs: '',
-        robotsTxt: 'User-agent: *\nAllow: /'
-    }
+    // General
+    title: '',
+    description: '',
+    url: '',
+    language: 'en',
+    timezone: 'UTC',
+    adminEmail: '',
+    defaultCategory: '',
+    defaultPostFormat: '',
+
+    // Appearance
+    logo: '',
+    favicon: '',
+    primaryColor: '#3490dc',
+    secondaryColor: '#38c172',
+    fontFamily: 'sans-serif',
+
+    // Reading
+    homepageDisplay: 'latest_posts',
+    homepage: 'home',
+    postsPage: 'blog',
+    postsperpage: 10,
+    rssFeedItems: 10,
+    feedContent: 'full_text',
+
+    // Discussion
+    enablecomments: true,
+    moderatecomments: true,
+    requireNameEmail: true,
+    nestedComments: true,
+    commentPagination: false,
+    commentsPerPage: 50,
+    emailOnComment: true,
+    emailOnModeration: true,
+
+    // Social
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
+    youtube: '',
+    github: '',
+
+    // Advanced
+    analyticsCode: '',
+    customCss: '',
+    customJs: '',
+    robotsTxt: 'User-agent: *\nAllow: /'
 })
 
-// Function to save the current section
-function saveCurrentSection() {
-    const sectionToSave = activeTab.value
-
-    console.log(`Saving ${sectionToSave} settings:`, settings.value[sectionToSave])
-
-    // Display a success toast or notification
-    alert(`Settings saved successfully!`)
+const tabFieldMap = {
+    general: ['title', 'description', 'url', 'language', 'timezone', 'adminEmail'],
+    appearance: ['logo', 'favicon', 'primaryColor', 'secondaryColor', 'fontFamily'],
+    reading: ['homepageDisplay', 'homepage', 'postsPage', 'postsperpage', 'rssFeedItems', 'feedContent'],
+    discussion: ['enablecomments', 'moderatecomments', 'requireNameEmail', 'nestedComments',
+                'commentPagination', 'commentsPerPage', 'emailOnComment', 'emailOnModeration'],
+    social: ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'github'],
+    advanced: ['analyticsCode', 'customCss', 'customJs', 'robotsTxt']
 }
+
+const mapApiSettingsToForm = (apiSettings) => {
+    originalSettings.value = apiSettings
+
+    apiSettings.forEach(setting => {
+        const { key, value, type } = setting
+
+        if (!key.startsWith('blog.')) return
+
+        const fieldName = key.replace('blog.', '')
+
+        if (fieldName in settings.value) {
+            let convertedValue = value
+
+            if (type === 'boolean') {
+                convertedValue = value === '1' || value === 'true'
+            } else if (type === 'number') {
+                convertedValue = parseInt(value, 10)
+            }
+
+            settings.value[fieldName] = convertedValue
+        }
+    })
+}
+
+const mapFormToApiSettings = () => {
+    const apiSettings = [...originalSettings.value]
+
+    const settingsMap = new Map()
+    apiSettings.forEach((setting, index) => {
+        settingsMap.set(setting.key, { value: setting.value, index })
+    })
+
+    for (const field in settings.value) {
+        const key = `blog.${field}`
+        const value = settings.value[field]
+
+        let type = typeof value
+        if (type === 'number') {
+            type = 'number'
+        } else if (type === 'boolean') {
+            type = 'boolean'
+        } else {
+            type = 'string'
+        }
+
+        let apiValue = value
+        if (type === 'boolean') {
+            apiValue = value ? '1' : '0'
+        } else if (value !== null && value !== undefined) {
+            apiValue = String(value)
+        }
+
+        if (settingsMap.has(key)) {
+            const { index } = settingsMap.get(key)
+            apiSettings[index].value = apiValue
+        }
+        else if (value !== null && value !== undefined && value !== '') {
+            apiSettings.push({
+                group: 'blog',
+                key,
+                value: apiValue,
+                type,
+                flags: ['PUBLIC']
+            })
+        }
+    }
+
+    return apiSettings
+}
+
+const loadSettings = async () => {
+    try {
+        isLoading.value = true
+        const apiSettings = await adminClient.getRootSettings()
+        mapApiSettingsToForm(apiSettings)
+    } catch (error) {
+        console.error('Failed to load settings:', error)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+const notification = ref({
+    show: false,
+    type: 'success',
+    message: '',
+    duration: 3000
+})
+
+const showNotification = (type, message) => {
+    notification.value = {
+        show: true,
+        type,
+        message,
+        duration: 3000
+    }
+
+    setTimeout(() => {
+        notification.value.show = false
+    }, notification.value.duration)
+}
+
+const saveCurrentSection = async () => {
+    try {
+        const apiSettings = mapFormToApiSettings()
+        await adminClient.updateSettings(apiSettings)
+        showNotification('success', 'Settings saved successfully!')
+    } catch (error) {
+        console.error('Failed to save settings:', error)
+        showNotification('error', 'Failed to save settings: ' + (error.message || 'Unknown error'))
+    }
+}
+
+onMounted(() => {
+    loadSettings()
+})
 </script>

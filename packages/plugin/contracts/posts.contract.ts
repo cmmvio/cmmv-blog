@@ -124,7 +124,7 @@ export class PostsContract extends AbstractContract {
         exclude: true,
         link: [
             {
-                createRelationship: true,
+                createRelationship: false,
                 contract: CategoriesContract,
                 contractName: 'CategoriesContract',
                 entityName: 'category',

@@ -7,6 +7,14 @@ export const useAdminClient = () => {
         return await api.getSettings();
     };
 
+    const getRootSettings = async () => {
+        return await api.getRootSettings();
+    };
+
+    const updateSettings = async (data: any) => {
+        return await api.updateSettings(data);
+    };
+
     const saveSetup = async (data: any) => {
         return await api.saveSetup(data);
     };
@@ -68,9 +76,48 @@ export const useAdminClient = () => {
         return await api.login(data);
     };
 
+    const logout = async () => {
+        return await api.logout();
+    };
+
+    const savePost = async (data: any) => {
+        return await api.authRequest('blog/posts', 'POST', data);
+    };
+
+    const getPosts = async (queries: any) => {
+        return await api.authRequest('blog/posts', 'GET', queries);
+    };
+
+    const getPost = async (id: string) => {
+        return await api.authRequest(`blog/posts/${id}`, 'GET');
+    };
+
+    const updatePost = async (id: string, data: any) => {
+        return await api.authRequest(`blog/posts/${id}`, 'PUT', data);
+    };
+
+    const getAuthors = async () => {
+        return await api.authRequest('authors', 'GET');
+    };
+
+    const createAuthor = async (data: any) => {
+        return await api.authRequest('authors', 'POST', data);
+    };
+
+    const deleteAuthor = async (id: string) => {
+        return await api.authRequest(`authors/${id}`, 'DELETE');
+    };
+
+    const createMember = async (data: any) => {
+        return await api.authRequest('members', 'POST', data);
+    };
+
     return {
         login,
+        logout,
         checkSession,
+        getRootSettings,
+        updateSettings,
         getProfile,
         updateProfile,
         getCategories,
@@ -82,6 +129,14 @@ export const useAdminClient = () => {
         insertTag,
         updateTag,
         deleteTag,
-        saveSetup
+        saveSetup,
+        savePost,
+        getPost,
+        getPosts,
+        updatePost,
+        getAuthors,
+        createAuthor,
+        deleteAuthor,
+        createMember
     }
 };

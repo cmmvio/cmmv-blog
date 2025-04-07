@@ -13,6 +13,7 @@ export default {
 }
 
 export type {
-    ICategory
+    ICategory,
+    ITag
 } from './interfaces';
 

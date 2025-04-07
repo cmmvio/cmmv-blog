@@ -16,9 +16,14 @@ export class CategoriesPublicService {
      */
     async getAll(queries: any, req: any) {
         const CategoriesEntity = Repository.getEntity("CategoriesEntity");
-        const categories = await Repository.findAll(CategoriesEntity, queries, [], {
-            select: [ "id", "name", "slug", "parentCategory", "active", "navigationLabel" ]
+
+        const categories = await Repository.findAll(CategoriesEntity, {
+            limit: 1000,
+            active: true
+        }, [], {
+            select: [ "id", "name", "slug", "parentCategory", "active", "navigationLabel", "postCount" ]
         });
+
         return (categories) ? JSON.stringify(categories.data) : [];
     }
 }

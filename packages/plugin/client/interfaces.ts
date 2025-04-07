@@ -7,3 +7,11 @@ export type ICategory = {
     navigationLabel: string;
     totalPosts: number;
 }
+
+export type ITag = {
+    id: string;
+    name: string;
+    slug: string;
+    postCount: number;
+}
+
