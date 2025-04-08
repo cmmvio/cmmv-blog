@@ -3,31 +3,52 @@ import {
     createRouter as _createRouter
 } from 'vue-router';
 
-import DefaultTemplate from './theme-default/defaultTemplate.vue';
-import PostTemplate from './theme-default/postTemplate.vue';
-import Home from './theme-default/pageHome.vue';
-import PreviewPage from './theme-default/previewPage.vue';
+import TemplateDefault from './theme-default/templateDefault.vue';
+import TemplatePost from './theme-default/templatePost.vue';
 
-
+import PageHome from './theme-default/pageHome.vue';
+import PagePost from './theme-default/pagePost.vue';
+import PageCategory from './theme-default/pageCategory.vue';
+import PagePage from './theme-default/pagePage.vue';
 export function createRouter() {
     return _createRouter({
         history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
         routes: [
             {
                 path: '/',
-                component: DefaultTemplate,
+                component: TemplateDefault,
                 children: [{
                     path: '',
-                    component: Home
+                    component: PageHome
                 }],
             },
             {
                 path: '/preview/:id',
-                component: PostTemplate,
+                component: TemplatePost,
                 children: [{
                     path: '',
-                    component: PreviewPage
+                    component: PagePost
                 }]
+            },
+            {
+                path: '/preview-page/:id',
+                component: TemplatePost,
+                children: [{
+                    path: '',
+                    component: PagePage
+                }]
+            },
+            {
+                path: '/post/:slug',
+                component: TemplatePost,
+                children: [{
+                    path: '',
+                    component: PagePost
+                }]
+            },
+            {
+                path: '/category/:slug',
+                component: PageCategory
             }
         ]
     });

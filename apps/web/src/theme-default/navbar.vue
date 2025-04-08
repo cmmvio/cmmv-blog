@@ -12,15 +12,16 @@
 
     <!-- Sidebar -->
     <aside
-        class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-20 transform transition-transform duration-300 ease-in-out"
+        class="fixed inset-y-0 left-0 w-64 border-r border-gray-100 bg-white z-20 transform transition-transform duration-300 ease-in-out"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
     >
         <div class="h-full flex flex-col">
             <!-- Logo -->
             <div class="p-6 border-b border-gray-100">
-                <router-link to="/" class="flex items-center">
-                    <span class="text-2xl font-bold text-gray-800">Blog CMMV</span>
-                </router-link>
+                <a href="/" class="flex flex-col">
+                    <span class="text-2xl font-bold text-gray-800">{{ settings['blog.title'] }}</span>
+                    <label class="text-sm text-gray-400">{{ settings['blog.description'] }}</label>
+                </a>
             </div>
 
             <!-- Sidebar Content -->
@@ -41,13 +42,11 @@
                 <ul class="space-y-2">
                     <li v-for="category in categories" :key="category.id">
                         <a
-                            href="#"
-                            @click.prevent="filterByCategory(category)"
+                            :href="`/category/${category.slug}`"
                             class="text-gray-600 hover:text-blue-600 flex items-center justify-between"
-                            :class="{'text-blue-600 font-medium': selectedCategory?.id === category.id}"
                         >
                             {{ category.name }}
-                            <span class="text-sm text-gray-400">({{ category.totalPosts }})</span>
+                            <span class="text-sm text-gray-400">({{ category.postCount }})</span>
                         </a>
                     </li>
                 </ul>
@@ -61,16 +60,12 @@ import { ref } from 'vue'
 import { ICategory, vue3 } from '@cmmv/blog/client';
 
 const blogAPI = vue3.useBlog();
-const sidebarOpen = ref(false)
+const settings = ref<any>(await blogAPI.getAllSettings());
 const categories = ref<ICategory[]>(await blogAPI.getAllCategories())
-const selectedCategory = ref<ICategory | null>(null)
+
+const sidebarOpen = ref(false)
 
 const toggleSidebar = () => {
-    console.log('toggleSidebar', sidebarOpen.value)
     sidebarOpen.value = !sidebarOpen.value
-}
-
-const filterByCategory = (category: any) => {
-    selectedCategory.value = category
 }
 </script>

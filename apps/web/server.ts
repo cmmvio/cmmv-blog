@@ -29,11 +29,13 @@ async function start() {
                     template = template.replace(`{${key}}`, metadata[key]);
 
                 const finalHtml = template
-                    .replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div><script>window.__CMMV_DATA__ = ${JSON.stringify(data)};</script>`);
+                    .replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`);
 
                 res.setHeader('Content-Type', 'text/html');
                 res.end(finalHtml);
             } catch (e) {
+                console.log('TO AKI')
+                console.log(e);
                 vite.ssrFixStacktrace(e as Error);
                 res.statusCode = 500;
                 res.end((e as Error).message);

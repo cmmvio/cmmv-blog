@@ -99,6 +99,24 @@ export class AuthorProfileContract extends AbstractContract {
 
     @ContractField({
         protoType: 'string',
+        nullable: true
+    })
+    instagram?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    linkedin?: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: true
+    })
+    github?: string;
+
+    @ContractField({
+        protoType: 'string',
         nullable: true,
         defaultValue: 'en'
     })

@@ -10,6 +10,9 @@ export interface IProfile {
     location: string;
     facebook: string;
     twitter: string;
+    instagram: string;
+    linkedin: string;
+    github: string;
     locale: string;
     visibility: string;
     metaTitle: string;

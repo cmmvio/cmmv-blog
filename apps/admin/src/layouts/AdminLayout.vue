@@ -302,7 +302,6 @@ onMounted(async () => {
 
     try {
         user.value = await api.getProfile()
-        console.log('User profile loaded:', user.value)
 
         watch(() => route.path, (newPath, oldPath) => {
             if (oldPath.includes('/profile'))

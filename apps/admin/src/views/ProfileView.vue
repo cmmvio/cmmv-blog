@@ -188,6 +188,54 @@
                                 />
                             </div>
                         </div>
+
+                        <div>
+                            <label for="instagram" class="block text-sm font-medium text-neutral-300 mb-1">Instagram</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-600 bg-neutral-800 text-neutral-400 text-sm">
+                                    instagram.com/
+                                </span>
+                                <input
+                                    id="instagram"
+                                    v-model="profile.instagram"
+                                    type="text"
+                                    class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-r-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                                    placeholder="username"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="linkedin" class="block text-sm font-medium text-neutral-300 mb-1">LinkedIn</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-600 bg-neutral-800 text-neutral-400 text-sm">
+                                    linkedin.com/in/
+                                </span>
+                                <input
+                                    id="linkedin"
+                                    v-model="profile.linkedin"
+                                    type="text"
+                                    class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-r-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                                    placeholder="username"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="github" class="block text-sm font-medium text-neutral-300 mb-1">Github</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-600 bg-neutral-800 text-neutral-400 text-sm">
+                                    github.com/
+                                </span>
+                                <input
+                                    id="github"
+                                    v-model="profile.github"
+                                    type="text"
+                                    class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-r-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-white"
+                                    placeholder="username"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

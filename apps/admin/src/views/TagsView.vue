@@ -393,17 +393,32 @@ const paginationPages = computed(() => {
         return Array.from({ length: totalPages }, (_, i) => i + 1)
     }
 
-    // Always include first page, last page, current page, and one page before/after current
     const current = pagination.value.current
-    const pages = [1]
+    const pages = []
 
-    if (current > 2) pages.push('...')
+    // Always show first page
+    pages.push(1)
 
-    if (current > 1 && current < totalPages) pages.push(current)
+    if (current > 3) {
+        pages.push('...')
+    }
 
-    if (current < totalPages - 1) pages.push('...')
+    // Pages around current
+    const start = Math.max(2, current - 1)
+    const end = Math.min(totalPages - 1, current + 1)
 
-    if (totalPages > 1) pages.push(totalPages)
+    for (let i = start; i <= end; i++) {
+        pages.push(i)
+    }
+
+    if (current < totalPages - 2) {
+        pages.push('...')
+    }
+
+    // Always show last page if more than 1 page
+    if (totalPages > 1) {
+        pages.push(totalPages)
+    }
 
     return pages
 })

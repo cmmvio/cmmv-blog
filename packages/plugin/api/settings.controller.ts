@@ -1,6 +1,6 @@
 import {
     Controller, Get, Param,
-    Post, Body, Put
+    Post, Body, Put, Response
 } from "@cmmv/http";
 
 import {
@@ -26,9 +26,10 @@ export class BlogSettingsController {
         return this.blogSettingsService.getSetup(setupData);
     }
 
-    @Get('settings', { exclude: true })
-    public async getSettings() {
-        return this.blogSettingsService.getSettings();
+    @Get('api/settings', { exclude: true })
+    public async getSettings(@Response() res: any) {
+        const settings = await this.blogSettingsService.getSettings();
+        res.code(200).json(settings);
     }
 
     @Get('settings-root', { exclude: true })

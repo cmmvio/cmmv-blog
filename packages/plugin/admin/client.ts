@@ -19,6 +19,7 @@ export const useAdminClient = () => {
         return await api.saveSetup(data);
     };
 
+    //Profile
     const getProfile = async () => {
         return await await api.authRequest('profile', 'GET');
     };
@@ -27,6 +28,7 @@ export const useAdminClient = () => {
         return await api.authRequest('profile', 'PUT', data);
     };
 
+    //Categories
     const getCategories = async (filters: Record<string, string>) => {
         const urlQueries = new URLSearchParams(filters).toString();
         const response = await api.authRequest(`categories?${urlQueries}`, 'GET');
@@ -48,8 +50,10 @@ export const useAdminClient = () => {
         return response;
     };
 
-    const getTags = async () => {
-        const response = await api.authRequest('tags', 'GET');
+    //Tags
+    const getTags = async (filters: Record<string, string>) => {
+        const urlQueries = new URLSearchParams(filters).toString();
+        const response = await api.authRequest(`tags?${urlQueries}`, 'GET');
         return response;
     };
 
@@ -80,6 +84,7 @@ export const useAdminClient = () => {
         return await api.logout();
     };
 
+    //Posts
     const savePost = async (data: any) => {
         return await api.authRequest('blog/posts', 'POST', data);
     };
@@ -96,6 +101,28 @@ export const useAdminClient = () => {
         return await api.authRequest(`blog/posts/${id}`, 'PUT', data);
     };
 
+    //Pages
+    const savePage = async (data: any) => {
+        return await api.authRequest('blog/pages', 'POST', data);
+    };
+
+    const getPages = async (queries: any) => {
+        return await api.authRequest('blog/pages', 'GET', queries);
+    };
+
+    const getPage = async (id: string) => {
+        return await api.authRequest(`blog/pages/${id}`, 'GET');
+    };
+
+    const updatePage = async (id: string, data: any) => {
+        return await api.authRequest(`blog/pages/${id}`, 'PUT', data);
+    };
+
+    const deletePage = async (id: string) => {
+        return await api.authRequest(`blog/pages/${id}`, 'DELETE');
+    };
+
+    //Authors
     const getAuthors = async () => {
         return await api.authRequest('authors', 'GET');
     };
@@ -108,6 +135,7 @@ export const useAdminClient = () => {
         return await api.authRequest(`authors/${id}`, 'DELETE');
     };
 
+    //Members
     const createMember = async (data: any) => {
         return await api.authRequest('members', 'POST', data);
     };
@@ -137,6 +165,11 @@ export const useAdminClient = () => {
         getAuthors,
         createAuthor,
         deleteAuthor,
-        createMember
+        createMember,
+        savePage,
+        getPages,
+        getPage,
+        updatePage,
+        deletePage
     }
 };

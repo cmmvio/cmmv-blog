@@ -5,7 +5,7 @@ export type ICategory = {
     parentCategory: string;
     active: boolean;
     navigationLabel: string;
-    totalPosts: number;
+    postCount: number;
 }
 
 export type ITag = {

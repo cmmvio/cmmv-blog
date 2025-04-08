@@ -13,6 +13,9 @@
         "@cmmv/auth": "latest",
         "@cmmv/core": "latest",
         "@cmmv/http": "latest",
+        "@lexical/html": "^0.30.0",
+        "jsdom": "^26.0.0",
+        "lexical": "^0.30.0",
         "sharp": "^0.34.0"
     }
 }

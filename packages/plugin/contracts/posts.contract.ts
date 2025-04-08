@@ -50,7 +50,7 @@ export class PostsContract extends AbstractContract {
     @ContractField({
         protoType: 'array',
         nullable: false,
-        objectType: 'object',
+        objectType: 'string',
         entityType: 'UserContract',
         protoRepeated: true,
     })
@@ -91,7 +91,7 @@ export class PostsContract extends AbstractContract {
     })
     excerpt?: string;
 
-    @ContractField({
+    /*@ContractField({
         protoType: 'text',
         nullable: true
     })
@@ -101,7 +101,7 @@ export class PostsContract extends AbstractContract {
         protoType: 'text',
         nullable: true
     })
-    mobileDocument?: string;
+    mobileDocument?: string;*/
 
     @ContractField({
         protoType: 'text',
@@ -118,7 +118,7 @@ export class PostsContract extends AbstractContract {
     @ContractField({
         protoType: 'array',
         nullable: false,
-        objectType: 'object',
+        objectType: 'string',
         entityType: 'CategoriesEntity',
         protoRepeated: true,
         exclude: true,
@@ -166,10 +166,10 @@ export class PostsContract extends AbstractContract {
     metaKeywords?: string;
 
     @ContractField({
-        protoType: 'int64',
+        protoType: 'datetime',
         nullable: true
     })
-    publishedAt?: number;
+    publishedAt?: Date;
 
     @ContractField({
         protoType: 'int64',
@@ -210,12 +210,12 @@ export class PostsContract extends AbstractContract {
 
     @ContractField({
         protoType: 'array',
-        nullable: false,
-        objectType: 'string[]',
+        nullable: true,
+        objectType: 'string',
         protoRepeated: true,
         array: true
     })
-    tags: string[];
+    tags?: string[];
 
     @ContractField({
         protoType: 'string',

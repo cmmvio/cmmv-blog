@@ -1,16 +1,13 @@
 import { createSSRApp } from 'vue'
+import { createRouter } from './router'
+import App from './App.vue';
 
-export async function createClientEntry(router: any, App: any) {
-    const app = createSSRApp(App)
+const app = createSSRApp(App)
+const router = createRouter()
 
-    app.provide('preloaded', (window as any).__CMMV_DATA__ || {})
-    app.use(router)
+app.provide('preloaded', (window as any).__CMMV_DATA__ || {})
+app.use(router)
 
-    router.isReady().then(() => {
-        app.mount('#app', true)
-    })
-
-    return app;
-}
-
-
+router.isReady().then(() => {
+    app.mount('#app', true)
+})

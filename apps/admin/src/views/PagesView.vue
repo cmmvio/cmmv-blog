@@ -2,9 +2,9 @@
     <div class="space-y-6">
         <!-- Header with actions -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold text-white">Posts</h1>
+            <h1 class="text-2xl font-bold text-white">Pages</h1>
             <div class="flex space-x-3">
-                <a href="/post"
+                <a href="/page"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -27,16 +27,6 @@
                             <option value="published">Published</option>
                             <option value="draft">Draft</option>
                             <option value="scheduled">Scheduled</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center">
-                        <label for="filter-category" class="mr-2 text-sm text-neutral-400">Category:</label>
-                        <select id="filter-category" v-model="filters.category"
-                            class="bg-neutral-700 border border-neutral-600 text-white rounded-md px-3 py-1.5 text-sm">
-                            <option value="">All</option>
-                            <option value="technology">Technology</option>
-                            <option value="design">Design</option>
-                            <option value="business">Business</option>
                         </select>
                     </div>
                 </div>
@@ -65,25 +55,6 @@
         </div>
 
         <template v-else>
-            <!-- Bulk Actions -->
-            <div class="flex items-center mb-4 gap-2">
-                <select v-model="bulkAction"
-                    class="bg-neutral-700 border border-neutral-600 text-white rounded-md px-3 py-1.5 text-sm">
-                    <option value="">Bulk Actions</option>
-                    <option value="publish">Publish</option>
-                    <option value="draft">Move to Draft</option>
-                    <option value="trash">Move to Trash</option>
-                </select>
-                <button @click="applyBulkAction"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                    :disabled="!selectedPosts.length || !bulkAction">
-                    Apply
-                </button>
-                <span v-if="selectedPosts.length" class="text-sm text-neutral-400 ml-2">
-                    {{ selectedPosts.length }} selected
-                </span>
-            </div>
-
             <!-- Mobile Card View -->
             <div class="block md:hidden space-y-4 mb-6">
                 <div v-for="post in paginatedPosts" :key="post.id" class="bg-neutral-800 rounded-lg overflow-hidden">
@@ -110,25 +81,6 @@
                                      :style="{ backgroundImage: `url(${post.authorImage})` }"></div>
                                 <div v-else class="h-5 w-5 rounded-full bg-neutral-600 flex-shrink-0 mr-2"></div>
                                 {{ post.author }}
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="text-neutral-400 text-sm w-24">Categories:</div>
-                            <div class="flex flex-wrap gap-1">
-
-                                <span v-for="category in (post.categoryNames || [])" :key="category"
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
-                                    {{ category }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="text-neutral-400 text-sm w-24">Tags:</div>
-                            <div class="flex flex-wrap gap-1">
-                                <span v-for="tag in (post.tags || [])" :key="tag"
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-700 text-neutral-300">
-                                    {{ tag }}
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -172,8 +124,6 @@
                                 </th>
                                 <th class="p-4 w-16">Image</th>
                                 <th class="p-4 min-w-[250px]">Title</th>
-                                <th class="p-4 w-44 lg:w-48">Categories</th>
-                                <th class="p-4 hidden xl:table-cell w-44">Tags</th>
                                 <th class="p-4 w-28 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -209,22 +159,6 @@
                                                 {{ post.status.charAt(0).toUpperCase() + post.status.slice(1) }}
                                             </span>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="p-4">
-                                    <div class="flex flex-wrap gap-1">
-                                        <span v-for="category in (post.categoryNames || [])" :key="category"
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
-                                            {{ category }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="p-4 hidden xl:table-cell">
-                                    <div class="flex flex-wrap gap-1">
-                                        <span v-for="tag in (post.tags || [])" :key="tag"
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-700 text-neutral-300">
-                                            {{ tag }}
-                                        </span>
                                     </div>
                                 </td>
                                 <td class="p-4 text-right">
@@ -301,14 +235,9 @@ import { useAdminClient } from '@cmmv/blog/admin/client'
 
 const router = useRouter()
 const adminClient = useAdminClient()
-
-// Add loading state
 const loading = ref(false)
-
-// Replace mock data with empty array
 const posts = ref([])
 
-// Pagination
 const itemsPerPage = 5
 const currentPage = ref(1)
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
@@ -320,16 +249,16 @@ const loadBlogUrl = async () => {
     try {
         const settings = await adminClient.getRootSettings();
         const urlSetting = settings.find(s => s.key === 'blog.url');
-        if (urlSetting) {
+
+        if (urlSetting)
             blogUrl.value = urlSetting.value.replace(/\/$/, '');
-        }
     } catch (err) {
         console.error('Failed to load blog URL:', err);
         blogUrl.value = '';
     }
 };
 
-async function loadPosts() {
+async function loadPages() {
     try {
         loading.value = true
 
@@ -343,7 +272,7 @@ async function loadPosts() {
         if (filters.value.category)
             params.category = filters.value.category
 
-        const response = await adminClient.getPosts(params)
+        const response = await adminClient.getPages(params)
 
         if (response && response.posts) {
             posts.value = response.posts.map(post => {
@@ -355,14 +284,7 @@ async function loadPosts() {
                 return {
                     ...post,
                     author: authorData?.name || 'Unknown',
-                    authorImage: authorData?.image || null,
-                    categories: Array.isArray(post.categories) ? post.categories : [post.categories],
-                    categoryNames: Array.isArray(post.categories)
-                        ? response.categories
-                            .filter(category => post.categories.includes(category.id))
-                            .map(category => category.name)
-                        : post.categories?.name ? [post.categories.name] : [],
-                    tags: post.tags || []
+                    authorImage: authorData?.image || null
                 }
             });
 
@@ -389,17 +311,16 @@ const filters = ref({
 
 watch([searchQuery, filters], () => {
     currentPage.value = 1
-    loadPosts()
+    loadPages()
 })
 
 watch(currentPage, () => {
-    loadPosts()
+    loadPages()
 })
 
-// Load posts on mount
 onMounted(() => {
     loadBlogUrl();
-    loadPosts()
+    loadPages()
 })
 
 const paginatedPosts = computed(() => {
@@ -407,22 +328,20 @@ const paginatedPosts = computed(() => {
 })
 
 const totalPages = computed(() => {
-    if (totalPosts.value > 0) {
+    if (totalPosts.value > 0)
         return Math.ceil(totalPosts.value / itemsPerPage)
-    }
+
     return Math.max(1, Math.ceil(posts.value.length / itemsPerPage))
 })
 
 function prevPage() {
-    if (currentPage.value > 1) {
+    if (currentPage.value > 1)
         currentPage.value--
-    }
 }
 
 function nextPage() {
-    if (currentPage.value < totalPages.value) {
+    if (currentPage.value < totalPages.value)
         currentPage.value++
-    }
 }
 
 function goToPage(page) {
@@ -430,7 +349,6 @@ function goToPage(page) {
 }
 
 const selectedPosts = ref([])
-const bulkAction = ref('')
 const isAllSelected = computed(() =>
     posts.value.length > 0 && selectedPosts.value.length === posts.value.length
 )
@@ -443,69 +361,36 @@ function toggleSelectAll(e) {
     }
 }
 
-async function applyBulkAction() {
-    if (!bulkAction.value || selectedPosts.value.length === 0) return
-
-    try {
-        loading.value = true
-
-        const action = bulkAction.value
-        const ids = selectedPosts.value
-
-        await adminClient.bulkUpdatePosts({
-            ids,
-            action
-        })
-
-        selectedPosts.value = []
-        bulkAction.value = ''
-        await loadPosts()
-
-        loading.value = false
-    } catch (error) {
-        console.error('Failed to apply bulk action:', error)
-        loading.value = false
-    }
-}
-
-// Item actions
 function editPost(id) {
-    router.push(`/post/${id}`)
+    router.push(`/page/${id}`)
 }
 
 function viewPost(id) {
     const post = posts.value.find(p => p.id === id)
 
     if (post)
-        window.open(`${blogUrl.value}/preview/${post.id}`, '_blank')
+        window.open(`${blogUrl.value}/preview-page/${post.id}`, '_blank')
 }
 
-async function deletePost(id) {
-    if (confirm('Are you sure you want to delete this post?')) {
+async function deletePage(id) {
+    if (confirm('Are you sure you want to delete this page?')) {
         try {
             loading.value = true
-            await adminClient.deletePost(id)
-            await loadPosts()
+            await adminClient.deletePage(id)
+            await loadPages()
 
             loading.value = false
         } catch (error) {
-            console.error('Failed to delete post:', error)
+            console.error('Failed to delete page:', error)
             loading.value = false
         }
     }
 }
 
-// Utility functions
 function formatDate(timestamp) {
     if (!timestamp) return 'N/A'
     const date = new Date(timestamp)
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
-function formatTime(timestamp) {
-    if (!timestamp) return ''
-    const date = new Date(timestamp)
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }
 
 function getStatusClass(status) {

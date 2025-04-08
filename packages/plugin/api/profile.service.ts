@@ -29,9 +29,9 @@ export class BlogProfileService extends AbstractService {
         const profile = await Repository.findOne(ProfilesEntity, { user: user.id }, {
             select: [
                 "id", "name", "slug", "image", "coverImage", "bio",
-                "website", "location", "facebook", "twitter", "locale", "visibility",
-                "metaTitle", "metaDescription", "lastSeen", "commentNotifications",
-                "mentionNotifications", "recommendationNotifications"
+                "website", "location", "facebook", "twitter", "instagram", "linkedin", "github",
+                "locale", "visibility", "metaTitle", "metaDescription", "lastSeen",
+                "commentNotifications", "mentionNotifications", "recommendationNotifications"
             ]
         });
 
@@ -67,6 +67,9 @@ export class BlogProfileService extends AbstractService {
             profileData.location = profile.location;
             profileData.facebook = profile.facebook;
             profileData.twitter = profile.twitter;
+            profileData.instagram = profile.instagram;
+            profileData.linkedin = profile.linkedin;
+            profileData.github = profile.github;
             profileData.locale = profile.locale;
             profileData.visibility = profile.visibility;
             profileData.metaTitle = profile.metaTitle;
@@ -89,6 +92,9 @@ export class BlogProfileService extends AbstractService {
             newProfileData.location = profile.location;
             newProfileData.facebook = profile.facebook;
             newProfileData.twitter = profile.twitter;
+            newProfileData.instagram = profile.instagram;
+            newProfileData.linkedin = profile.linkedin;
+            newProfileData.github = profile.github;
             newProfileData.locale = profile.locale;
             newProfileData.visibility = profile.visibility;
             newProfileData.metaTitle = profile.metaTitle;

@@ -5,6 +5,8 @@ import SetupView from './views/SetupView.vue'
 import HomeView from './views/HomeView.vue'
 import PostView from './views/PostView.vue'
 import PostsView from './views/PostsView.vue'
+import PagesView from './views/PagesView.vue'
+import PageView from './views/PageView.vue'
 import SettingsView from './views/SettingsView.vue'
 import CategoriesView from './views/CategoriesView.vue'
 import LoginView from './views/LoginView.vue'
@@ -13,6 +15,7 @@ import ProfileView from './views/ProfileView.vue'
 import AuthorsView from './views/AuthorsView.vue'
 
 const router = createRouter({
+    //@ts-ignore
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
@@ -25,6 +28,9 @@ const router = createRouter({
             }, {
                 path: '/posts',
                 component: PostsView
+            }, {
+                path: '/pages',
+                component: PagesView
             }, {
                 path: '/settings',
                 component: SettingsView
@@ -48,14 +54,26 @@ const router = createRouter({
             component: SetupView
         },
         {
-            path: '/post',
-            name: 'post',
-            component: PostView
-        }, {
             path: '/post/:id',
-            name: 'post',
+            name: 'editPost',
             component: PostView
-        }, {
+        },
+        {
+            path: '/post',
+            name: 'newPost',
+            component: PostView,
+        },
+        {
+            path: '/page/:id',
+            name: 'editPage',
+            component: PageView
+        },
+        {
+            path: '/page',
+            name: 'newPage',
+            component: PageView
+        },
+        {
             path: '/login',
             name: 'login',
             component: LoginView

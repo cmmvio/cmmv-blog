@@ -29,6 +29,9 @@
         "@cmmv/cli": "latest",
         "@cmmv/http": "latest",
         "@cmmv/repository": "latest",
+        "@lexical/html": "^0.30.0",
+        "jsdom": "^26.0.0",
+        "lexical": "^0.30.0",
         "sharp": "^0.34.0"
     },
     "devDependencies": {

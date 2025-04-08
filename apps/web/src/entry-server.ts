@@ -4,23 +4,27 @@ import { createRouter } from './router';
 import { renderToString } from 'vue/server-renderer';
 
 export async function render(url: string) {
-    const app = createSSRApp(App)
-    const router = createRouter()
+    try {
+        const app = createSSRApp(App)
+        const router = createRouter()
 
-    router.push(url)
-    await router.isReady()
+        router.push(url)
+        await router.isReady()
 
-    globalThis.__SSR_DATA__ = {}
-    globalThis.__SSR_METADATA__ = {}
+        globalThis.__SSR_DATA__ = {}
+        globalThis.__SSR_METADATA__ = {}
 
-    app.use(router)
+        app.use(router)
 
-    await renderToString(app)
-    const resolvedData = await resolveSSRData(globalThis.__SSR_DATA__)
-    app.provide('preloaded', resolvedData)
+        await renderToString(app)
+        const resolvedData = await resolveSSRData(globalThis.__SSR_DATA__)
+        app.provide('preloaded', resolvedData)
 
-    const html = await renderToString(app)
-    return { html, data: resolvedData, metadata: globalThis.__SSR_METADATA__}
+        const html = await renderToString(app)
+        return { html, data: resolvedData, metadata: globalThis.__SSR_METADATA__ }
+    } catch (e) {
+        throw e
+    }
 }
 
 async function resolveSSRData(obj: Record<string, Promise<any>>) {

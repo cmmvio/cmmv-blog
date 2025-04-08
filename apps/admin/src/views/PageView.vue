@@ -6,7 +6,7 @@
             <!-- Top Toolbar -->
             <div class="bg-neutral-900 border-b border-neutral-900 p-2 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <a href="/posts" class="text-neutral-400 hover:text-white">
+                    <a href="/pages" class="text-neutral-400 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -48,8 +48,6 @@
                 </div>
             </div>
 
-            <!-- Add this right after the top toolbar and before the Editor Area div -->
-            <!-- Fixed Editor Toolbar - make it more compact -->
             <div class="bg-white border-b border-neutral-200 py-1 px-3 flex flex-wrap items-center space-x-0.5 sticky top-0 z-10 shadow-sm">
                 <div class="flex items-center mr-1.5 border-r border-neutral-200 pr-1.5">
                     <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
@@ -150,10 +148,10 @@
                     <!-- Paper-like editor container -->
                     <div class="bg-white text-neutral-900 rounded-lg shadow-xs overflow-hidden pb-40 mb-10">
                         <!-- Title input - now part of the paper -->
-                        <div class="px-8 pt-4 pb-4">
+                        <div class="px-8 pt-4 pb-2">
                             <textarea
                                 v-model="post.title"
-                                placeholder="Post title"
+                                placeholder="Page title"
                                 @input="autoResizeTitle"
                                 ref="titleTextarea"
                                 rows="1"
@@ -217,91 +215,6 @@
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="Brief description of your post"></textarea>
                             <p class="mt-1 text-xs text-neutral-500">Max 140 characters</p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-neutral-400 mb-1">Authors</label>
-                            <div class="flex items-center space-x-2">
-                                <div class="flex -space-x-2">
-                                    <div class="h-8 w-8 rounded-full bg-neutral-600 border-2 border-neutral-800"></div>
-                                </div>
-                                <button class="text-sm text-blue-500 hover:text-blue-400">Add another</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tags & Categories Accordion -->
-                <div class="border-b border-neutral-700">
-                    <button @click="expandedSections.tags = !expandedSections.tags"
-                        class="flex items-center justify-between w-full p-4 text-left text-neutral-200 font-medium">
-                        <span>Tags & Categories</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
-                            :class="expandedSections.tags ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div v-show="expandedSections.tags" class="p-4 pt-0 space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-neutral-400 mb-1">Categories</label>
-                            <div v-if="loadingCategories" class="text-sm text-neutral-400">Loading categories...</div>
-                            <div v-else>
-                                <input
-                                    v-model="categoryFilter"
-                                    type="text"
-                                    placeholder="Filter categories..."
-                                    class="w-full px-3 py-2 mb-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
-                                />
-                                <div class="space-y-2 max-h-48 overflow-y-auto p-2 bg-neutral-700 border border-neutral-600 rounded-md">
-                                    <div v-for="category in filteredCategories" :key="category.id" class="flex items-center">
-                                        <input :id="'category-' + category.id" type="checkbox" :value="category.id"
-                                            v-model="post.categories"
-                                            class="h-4 w-4 rounded border-neutral-600 text-blue-600 focus:ring-blue-500 bg-neutral-700" />
-                                        <label :for="'category-' + category.id" class="ml-2 text-sm text-neutral-300">
-                                            {{ category.name }}
-                                        </label>
-                                    </div>
-                                    <div v-if="filteredCategories.length === 0" class="text-sm text-neutral-400 p-1">
-                                        No categories found
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-neutral-400 mb-1">Tags</label>
-                            <div
-                                class="flex flex-wrap items-center gap-2 p-2 bg-neutral-700 border border-neutral-600 rounded-md">
-                                <div v-for="(tag, index) in post.tags" :key="index"
-                                    class="flex items-center bg-blue-500/20 text-blue-400 px-2 py-1 text-sm rounded-md">
-                                    {{ tag }}
-                                    <button @click="removeTag(index)" class="ml-1.5 text-blue-400 hover:text-white">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <input v-model="newTag" @keydown.enter.prevent="addTag" @change="handleTagSelect"
-                                    type="text" list="available-tags" placeholder="Add tag..."
-                                    class="flex-1 min-w-[100px] bg-transparent border-none outline-none text-sm" />
-                                <datalist id="available-tags" v-if="availableTags.length > 0">
-                                    <option v-for="tag in availableTags" :key="tag.id" :value="tag.name"></option>
-                                </datalist>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-neutral-400 mb-1">Featured</label>
-                            <div class="flex items-center">
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" v-model="post.featured"
-                                        class="rounded bg-neutral-700 border-neutral-600 text-blue-600" />
-                                    <span class="ml-2 text-sm">Display as featured post</span>
-                                </label>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -506,103 +419,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Blocks Sidebar (only this one) -->
-        <div class="fixed z-30 left-0 bottom-0 top-13 w-60 bg-neutral-800 border-r border-neutral-700 overflow-y-auto flex flex-col transition-transform duration-300"
-            :class="{ 'translate-x-0': blocksOpen, '-translate-x-full': !blocksOpen }">
-            <div class="p-4 border-b border-neutral-700 flex justify-between items-center">
-                <h3 class="font-medium">Blocks</h3>
-                <button @click="toggleBlocks" class="text-neutral-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <div class="p-2 flex-1 overflow-y-auto">
-                <div class="space-y-2">
-                    <div class="text-xs font-semibold text-neutral-400 px-2 py-1">Basic</div>
-                    <div @click="insertParagraph"
-                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h7" />
-                        </svg>
-                        <span>Paragraph</span>
-                    </div>
-                    <div @click="insertHeading"
-                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5 5h14M5 12h14M5 19h14" />
-                        </svg>
-                        <span>Heading</span>
-                    </div>
-                    <div @click="insertList" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                        </svg>
-                        <span>List</span>
-                    </div>
-
-                    <div class="text-xs font-semibold text-neutral-400 px-2 py-1 mt-4">Media</div>
-                    <div @click="insertImage" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span>Image</span>
-                    </div>
-                    <div @click="insertVideo" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        <span>Video</span>
-                    </div>
-
-                    <div class="text-xs font-semibold text-neutral-400 px-2 py-1 mt-4">Layout</div>
-                    <div @click="insertColumns"
-                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16m-7 6h7" />
-                        </svg>
-                        <span>Columns</span>
-                    </div>
-                    <div @click="insertQuote" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
-                        <span>Quote</span>
-                    </div>
-                    <div @click="insertDivider"
-                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
-                        </svg>
-                        <span>Divider</span>
-                    </div>
-                    <div @click="insertYouTubeVideo" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
-                        </svg>
-                        <span>YouTube Video</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Add this template at the bottom, outside the main div -->
@@ -717,16 +533,6 @@
                     <span>{{ block.name }}</span>
                 </button>
             </div>
-        </div>
-
-        <!-- Empty Line Add Button -->
-        <div v-if="showAddButton" ref="addButtonContainer"
-            class="absolute bg-blue-600 rounded-full z-50 w-6 h-6 flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors"
-            :style="{ top: addButtonPos.top + 'px', left: addButtonPos.left + 'px' }" @click="toggleBlocks">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
         </div>
     </template>
 
@@ -889,48 +695,10 @@ const { slugify } = useUtils();
 
 const sidebarOpen = ref(JSON.parse(localStorage.getItem('postEditor_sidebarOpen') || 'true'))
 const blocksOpen = ref(JSON.parse(localStorage.getItem('postEditor_blocksOpen') || 'false'))
-const activeTab = ref('basic')
 const newTag = ref('')
 const scheduleDate = ref('')
 const websiteUrl = ref('https://yourblog.com')
 const slugManuallyEdited = ref(false)
-
-const categories = ref([])
-const allTags = ref([])
-const loadingCategories = ref(false)
-const loadingTags = ref(false)
-
-async function loadCategories() {
-    try {
-        loadingCategories.value = true
-        const response = await adminClient.getCategories({
-            limit: 100,
-            sort: 'asc',
-            sortBy: 'name'
-        })
-        categories.value = response.data || []
-        loadingCategories.value = false
-    } catch (error) {
-        console.error('Failed to load categories:', error)
-        loadingCategories.value = false
-    }
-}
-
-async function loadTags() {
-    try {
-        loadingTags.value = true
-        const response = await adminClient.getTags({
-            limit: 100,
-            sort: 'asc',
-            sortBy: 'name'
-        })
-        allTags.value = response.data || []
-        loadingTags.value = false
-    } catch (error) {
-        console.error('Failed to load tags:', error)
-        loadingTags.value = false
-    }
-}
 
 const expandedSections = ref({
     basic: JSON.parse(localStorage.getItem('postEditor_expandedBasic') || 'true'),
@@ -941,24 +709,11 @@ const expandedSections = ref({
     advanced: JSON.parse(localStorage.getItem('postEditor_expandedAdvanced') || 'false')
 })
 
-const tabs = [
-    { id: 'basic', name: 'Basic' },
-    { id: 'tags', name: 'Tags' },
-    { id: 'image', name: 'Image' },
-    { id: 'seo', name: 'SEO' },
-    { id: 'social', name: 'Social' },
-    { id: 'advanced', name: 'Advanced' }
-]
-
 const post = ref({
     author: 'current-user-id',
-    authors: ['current-user-id'],
     title: '',
     excerpt: '',
     content: '',
-    lexicalContent: '',
-    mobileDocument: '',
-    categories: [],
     slug: '',
     metaTitle: '',
     metaDescription: '',
@@ -970,7 +725,6 @@ const post = ref({
     featureImage: '',
     featureImageAlt: '',
     featureImageCaption: '',
-    tags: [],
     type: 'post',
     status: 'draft',
     visibility: 'public',
@@ -1154,14 +908,14 @@ function autoResizeTitle() {
 
     textarea.style.height = 'auto'
 
-    textarea.style.height = textarea.scrollHeight + 'px'
+    textarea.style.height = Math.max(textarea.scrollHeight, 32) + 'px'
 }
 
 onMounted(async () => {
     const postId = route.params.id
 
     if (postId) {
-        const loaded = await loadPost(postId)
+        const loaded = await loadPage(postId)
 
         if (!loaded) {
             showNotification('error', 'Could not find the requested post')
@@ -1169,8 +923,6 @@ onMounted(async () => {
         }
     }
 
-    loadCategories()
-    loadTags()
     document.addEventListener('click', handleGlobalClick)
 
     nextTick(() => {
@@ -1229,26 +981,6 @@ const availableTags = computed(() => {
     return allTags.value.filter(tag => !post.value.tags.includes(tag.name));
 });
 
-function addTag() {
-    if (newTag.value.trim() && !post.value.tags.includes(newTag.value.trim())) {
-        post.value.tags.push(newTag.value.trim());
-        newTag.value = '';
-    }
-}
-
-function handleTagSelect(event) {
-    const selectedValue = event.target.value.trim();
-    if (selectedValue && !post.value.tags.includes(selectedValue)) {
-        post.value.tags.push(selectedValue);
-        newTag.value = '';
-    }
-}
-
-function removeTag(index) {
-    post.value.tags.splice(index, 1)
-}
-
-// Feature image crop state
 const featureCropModalOpen = ref(false)
 const featureZoomLevel = ref(1)
 const featureCropCanvas = ref(null)
@@ -1436,7 +1168,7 @@ const publishLoading = ref(false)
 
 function confirmPublish() {
     if (post.value.status === 'published') {
-        savePost()
+        savePage()
     } else {
         showPublishDialog.value = true
     }
@@ -1447,18 +1179,18 @@ function publishPost() {
     post.value.status = 'published'
     post.value.publishedAt = new Date().toISOString()
 
-    savePost()
+    savePage()
         .then(() => {
             showPublishDialog.value = false
             publishLoading.value = false
         })
         .catch(error => {
-            console.error('Failed to publish post:', error)
+            console.error('Failed to publish page:', error)
             publishLoading.value = false
         })
 }
 
-async function savePost() {
+async function savePage() {
     try {
         const postData = {
             ...post.value,
@@ -1473,29 +1205,29 @@ async function savePost() {
             meta: postMeta.value
         }
 
-        const response = await adminClient.savePost(payload)
+        const response = await adminClient.savePage(payload)
 
         if (response && response.id) {
-            showNotification('success', 'Post saved successfully')
+            showNotification('success', 'Page saved successfully')
 
             if (!post.value.id)
-                router.push(`/post/${response.id}`)
+                router.push(`/page/${response.id}`)
 
             return response
         }
         else if(response.result){
-            showNotification('success', 'Post saved successfully')
+            showNotification('success', 'Page saved successfully')
         }
     } catch (error) {
-        console.error('Failed to save post:', error)
-        showNotification('error', error.message || 'Failed to save post')
+        console.error('Failed to save page:', error)
+        showNotification('error', error.message || 'Failed to save page')
         throw error
     }
 }
 
 function saveDraft() {
     post.value.status = 'draft'
-    savePost()
+    savePage()
 }
 
 const notification = ref({
@@ -1518,38 +1250,14 @@ function showNotification(type, message) {
     }, notification.value.duration)
 }
 
-async function loadPost(postId) {
+async function loadPage(pageId) {
     try {
-        const response = await adminClient.getPost(postId)
+        const response = await adminClient.getPage(pageId)
 
         if (response) {
-            let formattedCategories = response.categories || []
-
-            if (Array.isArray(formattedCategories)) {
-                if (formattedCategories.length > 0 && typeof formattedCategories[0] === 'object')
-                    formattedCategories = formattedCategories.map(cat => cat.id || cat._id || cat)
-            } else if (typeof formattedCategories === 'string') {
-                formattedCategories = [formattedCategories]
-            } else {
-                formattedCategories = []
-            }
-
-            let formattedTags = response.tags || [];
-
-            if (Array.isArray(formattedTags)) {
-                if (formattedTags.length > 0)
-                    formattedTags = response.tags.map(tag => tag.name)
-            } else if (typeof formattedTags === 'string') {
-                formattedTags = [formattedTags]
-            } else {
-                formattedTags = []
-            }
-
             post.value = {
                 ...post.value,
-                ...response,
-                tags: formattedTags,
-                categories: formattedCategories
+                ...response
             }
 
             if (response.meta) {
@@ -1620,15 +1328,12 @@ function insertYouTubeVideo() {
 
     let videoId = ''
 
-    // Check if it's an embed code
     if (input.includes('iframe')) {
-        // Extract video ID from src attribute in the iframe tag
         const srcMatch = input.match(/src="https:\/\/www\.youtube\.com\/embed\/([^?]+)/)
-        if (srcMatch && srcMatch[1]) {
+
+        if (srcMatch && srcMatch[1])
             videoId = srcMatch[1]
-        }
     } else {
-        // Try to extract video ID from various YouTube URL formats
         const regexPatterns = [
             /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/,
             /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^?]+)/,
@@ -1637,6 +1342,7 @@ function insertYouTubeVideo() {
 
         for (const pattern of regexPatterns) {
             const match = input.match(pattern)
+
             if (match && match[1]) {
                 videoId = match[1]
                 break
@@ -1644,34 +1350,21 @@ function insertYouTubeVideo() {
         }
     }
 
-    if (videoId) {
-        editor.commands.setYoutubeVideo({
-            src: input
-        })
-    } else {
+    if (videoId)
+        editor.commands.setYoutubeVideo({ src: input })
+    else
         alert('Could not identify a valid YouTube video URL or embed code.')
-    }
 }
 
-// You can keep the old insertVideo function or replace it with the above one
 function insertVideo() {
     insertYouTubeVideo()
 }
 
-const categoryFilter = ref('')
-const filteredCategories = computed(() => {
-    if (!categoryFilter.value.trim()) return categories.value
-
-    return categories.value.filter(category =>
-        category.name.toLowerCase().includes(categoryFilter.value.toLowerCase())
-    )
-})
-
 function insertHtmlCode() {
     const code = prompt('Enter HTML code:')
-    if (code) {
+
+    if (code)
         editor.chain().focus().insertContent(code).run()
-    }
 }
 
 function insertTable() {
@@ -1696,7 +1389,6 @@ function insertTable() {
     height: 0;
 }
 
-/* Light theme styles for editor content */
 .prose :where(h1):not(:where([class~="not-prose"] *)) {
     font-size: 2.25em;
     margin-top: 1em;

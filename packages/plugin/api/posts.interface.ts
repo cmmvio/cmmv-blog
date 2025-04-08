@@ -23,7 +23,9 @@ export interface IDraftPost {
     type: string;
     author: string;
     authors: string[];
-    meta?: any
+    meta?: any;
+    lexicalContent?: any;
+    mobileDocument?: any;
 }
 
 export interface IPostMetadata {

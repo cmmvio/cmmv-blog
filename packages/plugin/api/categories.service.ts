@@ -6,8 +6,17 @@ import {
     Repository
 } from "@cmmv/repository";
 
+import {
+    PostsPublicService
+} from "./posts.service";
+
 @Service('blog_categories_public')
 export class CategoriesPublicService {
+
+    constructor(
+        private readonly postsService: PostsPublicService
+    ){}
+
     /**
      * Get all categories
      * @param queries
@@ -25,5 +34,45 @@ export class CategoriesPublicService {
         });
 
         return (categories) ? JSON.stringify(categories.data) : [];
+    }
+
+    /**
+     * Get a category by slug
+     * @param slug
+     * @returns
+     */
+    async getBySlug(slug: string) {
+        const CategoriesEntity = Repository.getEntity("CategoriesEntity");
+
+        const category = await Repository.findOne(CategoriesEntity, Repository.queryBuilder({
+            slug
+        }), { select: [ "id" ] });
+
+        if(!category)
+            throw new Error("Category not found");
+
+        return this.getById(category.id);
+    }
+
+    /**
+     * Get a category by id
+     * @param id
+     * @returns
+     */
+    async getById(id: string) {
+        const CategoriesEntity = Repository.getEntity("CategoriesEntity");
+
+        const category = await Repository.findOne(CategoriesEntity, Repository.queryBuilder({
+            id
+        }), {
+            select: [ "id", "name", "slug", "parentCategory", "active", "navigationLabel", "postCount", "description" ]
+        });
+
+        const posts = await this.postsService.getPostsByCategory(id);
+
+        return {
+            category: category,
+            posts: posts
+        };
     }
 }

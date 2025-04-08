@@ -8,8 +8,16 @@ import {
     Repository, In
 } from "@cmmv/repository";
 
+import {
+    MediasService
+} from "./medias.service";
+
 @Service('blog_authors')
 export class AuthorsService {
+    constructor(
+        private readonly mediasService: MediasService
+    ){}
+
     /**
      * Get all authors
      * @param queries - Queries
@@ -57,6 +65,84 @@ export class AuthorsService {
         }
 
         return authors;
+    }
+
+    /**
+     * Get an author by id
+     * @param id - Id
+     * @returns - Author
+     */
+    async getAuthorById(id: string) {
+        const ProfilesEntity = Repository.getEntity("ProfilesEntity");
+
+        const author = await Repository.findOne(ProfilesEntity, { id }, {
+            select: [
+                'id', 'name', 'slug', 'image', 'coverImage',
+                'bio', 'website', 'location', 'facebook', 'twitter', 'instagram',
+                'linkedin', 'github', 'locale', 'visibility', 'metaTitle', 'metaDescription'
+            ]
+        });
+
+        if(author.visibility !== 'public')
+            return null;
+
+        author.image = await this.mediasService.getImageUrl(
+            author.image,
+            "webp",
+            128,
+            author.name,
+            author.name
+        );
+
+        author.coverImage = await this.mediasService.getImageUrl(
+            author.coverImage,
+            "webp",
+            1024,
+            author.name,
+            author.name
+        );
+
+        return author;
+    }
+
+    /**
+     * Get an author by slug
+     * @param slug - Slug
+     * @returns - Author
+     */
+    async getAuthorBySlug(slug: string) {
+        const ProfilesEntity = Repository.getEntity("ProfilesEntity");
+
+        const author = await Repository.findOne(ProfilesEntity, { slug }, {
+            select: [
+                'id', 'name', 'slug', 'image', 'coverImage',
+                'bio', 'website', 'location', 'facebook', 'twitter', 'instagram',
+                'linkedin', 'github', 'locale', 'visibility', 'metaTitle', 'metaDescription'
+            ]
+        });
+
+
+
+        if(author.visibility !== 'public')
+            return null;
+
+        author.image = await this.mediasService.getImageUrl(
+            author.image,
+            "webp",
+            128,
+            author.name,
+            author.name
+        );
+
+        author.coverImage = await this.mediasService.getImageUrl(
+            author.coverImage,
+            "webp",
+            1024,
+            author.name,
+            author.name
+        );
+
+        return author;
     }
 
     /**
