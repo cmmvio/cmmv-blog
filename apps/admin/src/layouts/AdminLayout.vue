@@ -75,7 +75,7 @@
                             :class="isCollapsed ? 'opacity-0 absolute' : 'opacity-100'">Comments</span>
                     </router-link>
 
-                    <router-link to="/media"
+                    <router-link to="/medias"
                         class="flex items-center px-4 py-2 text-neutral-300 hover:bg-neutral-700 hover:text-white rounded-md group transition-all duration-200"
                         :class="{ 'justify-center': isCollapsed }" :title="isCollapsed ? 'Media' : ''">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 group-hover:text-white"
@@ -147,7 +147,7 @@
                         <p class="px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Advanced</p>
                     </div>
 
-                    <router-link to="/themes"
+                    <!--<router-link to="/themes"
                         class="flex items-center px-4 py-2 text-neutral-300 hover:bg-neutral-700 hover:text-white rounded-md group transition-all duration-200"
                         :class="{ 'justify-center': isCollapsed }" :title="isCollapsed ? 'Themes' : ''">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 group-hover:text-white"
@@ -169,7 +169,7 @@
                         </svg>
                         <span class="ml-3 transition-opacity duration-200"
                             :class="isCollapsed ? 'opacity-0 absolute' : 'opacity-100'">Plugins</span>
-                    </router-link>
+                    </router-link>-->
 
                     <router-link to="/settings"
                         class="flex items-center px-4 py-2 text-neutral-300 hover:bg-neutral-700 hover:text-white rounded-md group transition-all duration-200"

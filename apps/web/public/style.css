@@ -1,11 +1,23 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --border-color: #e5e7eb;
+    --muted-color: #6b7280;
+}
+
+.dark {
+    --bg-color: #171717;
+    --text-color: #e5e7eb;
+    --border-color: #374151;
+    --muted-color: #9ca3af;
+}
+
 .article-container {
     margin: 0 auto;
     padding-top: 20px;
     padding-bottom: 10px;
     padding-left: 40px;
     padding-right: 40px;
-    color: #333;
-    background: white;
 }
 
 .post-header {
@@ -99,7 +111,8 @@
 
 .post-content pre {
     width: 100%;
-    background: #f5f5f5;
+    background: #555;
+    color: var(--color-neutral-300);
     padding: 16px;
     border-radius: 4px;
     overflow-x: auto;
@@ -108,7 +121,6 @@
 }
 
 .post-content code {
-    background: #f5f5f5;
     padding: 2px 4px;
     border-radius: 2px;
 }
@@ -134,8 +146,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 32px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
+    padding-bottom: 20px;
 }
 
 .post-tags h3,
@@ -155,7 +166,6 @@
 .tag {
     display: inline-block;
     padding: 4px 12px;
-    background: #f0f0f0;
     border-radius: 999px;
     font-size: 0.85rem;
 }
@@ -275,6 +285,103 @@
     width: 16px;
     height: 16px;
     margin-right: 6px;
+}
+
+.light *::-webkit-scrollbar {
+    height: 10px;
+    width: 4px;
+}
+
+.light *::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background-color: #EFEFEF;
+}
+
+.light *::-webkit-scrollbar-track:hover {
+    background-color: #E3E3E3;
+}
+
+.light *::-webkit-scrollbar-track:active {
+    background-color: #E3E3E3;
+}
+
+.light *::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #999;
+}
+
+.light *::-webkit-scrollbar-thumb:hover {
+    background-color: #BFBFBF;
+}
+
+.light *::-webkit-scrollbar-thumb:active {
+    background-color: #BFBFBF;
+}
+
+.dark *::-webkit-scrollbar {
+    height: 10px;
+    width: 4px;
+}
+
+.dark *::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background-color: #2E3035;
+}
+
+.dark *::-webkit-scrollbar-track:hover {
+    background-color: #4C4C4C;
+}
+
+.dark *::-webkit-scrollbar-track:active {
+    background-color: #4C4C4C;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #5B5B5B;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+    background-color: #777777;
+}
+
+.dark *::-webkit-scrollbar-thumb:active {
+    background-color: #777777;
+}
+
+.dark #docsearch * {
+    background-color: transparent !important;
+}
+
+.dark *::-webkit-scrollbar {
+    height: 10px;
+    width: 4px;
+}
+
+.dark *::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background-color: #2E3035;
+}
+
+.dark *::-webkit-scrollbar-track:hover {
+    background-color: #4C4C4C;
+}
+
+.dark *::-webkit-scrollbar-track:active {
+    background-color: #4C4C4C;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #5B5B5B;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+    background-color: #777777;
+}
+
+.dark *::-webkit-scrollbar-thumb:active {
+    background-color: #777777;
 }
 
 @media (max-width: 768px) {

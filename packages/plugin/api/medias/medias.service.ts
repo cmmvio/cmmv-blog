@@ -6,6 +6,7 @@ import * as sharp from "sharp";
 
 import {
     AbstractService,
+    Config,
     Service
 } from "@cmmv/core";
 
@@ -40,10 +41,11 @@ export class MediasService extends AbstractService {
         if(!fs.existsSync(mediasPath))
             await fs.mkdirSync(mediasPath, { recursive: true });
 
+        const apiUrl = Config.get<string>("blog.url", process.env.API_URL);
         const paramString = `${image}_${format}_${maxWidth}`;
         const imageHash = await crypto.createHash('sha1').update(paramString).digest('hex');
         const imageFullpath = path.join(mediasPath, `${imageHash}.${format}`);
-        const imageUrl = `${process.env.API_URL}/images/${imageHash}.${format}`;
+        const imageUrl = `${apiUrl}/images/${imageHash}.${format}`;
 
         if(!fs.existsSync(imageFullpath)) {
             const isValidImage = /^data:image\/(jpeg|jpg|png|gif|webp|svg\+xml);base64,/.test(image);
@@ -124,12 +126,13 @@ export class MediasService extends AbstractService {
                         width: metadata.width,
                         height: metadata.height,
                         alt: alt,
-                        caption: caption
+                        caption: caption,
+                        size: metadata.size
                     });
                 }
 
                 await processor.toFile(imageFullpath);
-                await this.createThumbnail(image, format, imageHash);
+                //await this.createThumbnail(image, format, imageHash);
 
                 console.log(`Image saved as ${format}: ${imageFullpath} (${maxWidth}px max width)`);
             } catch (error) {
@@ -147,7 +150,7 @@ export class MediasService extends AbstractService {
      * @param format Output format (webp, jpeg, png, avif)
      * @returns URL to the generated thumbnail or null if processing failed
      */
-    async createThumbnail(image: string, format: string = "webp", hashOriginal: string): Promise<string | null> {
+    /*async createThumbnail(image: string, format: string = "webp", hashOriginal: string): Promise<string | null> {
         if(!image) return null;
         if(image.startsWith("http")) return image;
 
@@ -234,7 +237,7 @@ export class MediasService extends AbstractService {
         }
 
         return imageUrl;
-    }
+    }*/
 
     /**
      * Get image
@@ -264,5 +267,22 @@ export class MediasService extends AbstractService {
             return null;
 
         return fs.readFileSync(thumbnailFullpath);
+    }
+
+    /**
+     * Get medias
+     * @param queries - Queries
+     * @returns Medias
+     */
+    async getMedias(queries: any){
+        const MediasEntity = Repository.getEntity("MediasEntity");
+        const medias = await Repository.findAll(MediasEntity, queries);
+        const apiUrl = Config.get<string>("blog.url", process.env.API_URL);
+
+        for(const media of medias?.data){
+            media.url = `${apiUrl}/images/${media.sha1}.${media.format}`;;
+        }
+
+        return medias;
     }
 }

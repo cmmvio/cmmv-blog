@@ -1,13 +1,11 @@
 <!doctype html>
-<html lang="en" prefix="og: http://ogp.me/ns#" prefix="og: https://ogp.me/ns#">
+<html lang="en" prefix="og: http://ogp.me/ns#" prefix="og: https://ogp.me/ns#" class="dark">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
         <title>{title}</title>
         <meta name="description" content="{description}" />
         <meta name="keywords" content="{keywords}" />
-        <meta name="author" content="{author}" />
-        <meta name="image" content="{image}" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large"/>
         <link rel='dns-prefetch' href='//fonts.googleapis.com' />
         <link rel='dns-prefetch' href='//cdn.jsdelivr.net' />
@@ -18,7 +16,7 @@
         {metadata}
         {customCSS}
     </head>
-    <body>
+    <body class="bg-neutral-50 dark:bg-neutral-900 ">
         <div id="app"></div>
         <script type="module" src="/src/entry-client.ts" async></script>
         {analytics}

@@ -116,9 +116,9 @@
                             <div class="text-neutral-400 text-sm w-24">Categories:</div>
                             <div class="flex flex-wrap gap-1">
 
-                                <span v-for="category in (post.categoryNames || [])" :key="category"
+                                <span v-for="category in post.categories" :key="category"
                                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
-                                    {{ category }}
+                                    {{ category.name }}
                                 </span>
                             </div>
                         </div>
@@ -173,7 +173,7 @@
                                 <th class="p-4 w-16">Image</th>
                                 <th class="p-4 min-w-[250px]">Title</th>
                                 <th class="p-4 w-44 lg:w-48">Categories</th>
-                                <th class="p-4 hidden xl:table-cell w-44">Tags</th>
+                                <th class="p-4 hidden xl:table-cell w-44">Published</th>
                                 <th class="p-4 w-28 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -213,19 +213,14 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex flex-wrap gap-1">
-                                        <span v-for="category in (post.categoryNames || [])" :key="category"
+                                        <span v-for="category in (post.categories || [])" :key="category"
                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
-                                            {{ category }}
+                                            {{ category.name }}
                                         </span>
                                     </div>
                                 </td>
-                                <td class="p-4 hidden xl:table-cell">
-                                    <div class="flex flex-wrap gap-1">
-                                        <span v-for="tag in (post.tags || [])" :key="tag"
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-neutral-700 text-neutral-300">
-                                            {{ tag }}
-                                        </span>
-                                    </div>
+                                <td class="p-4 hidden xl:table-cell text-xs text-neutral-400">
+                                    {{ formatDate(post.publishedAt || post.createdAt) }}
                                 </td>
                                 <td class="p-4 text-right">
                                     <div class="flex items-center justify-end space-x-2">

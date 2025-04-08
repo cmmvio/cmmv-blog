@@ -4,7 +4,8 @@ import {
     Controller, Get, Post,
     Queries, Param, Body,
     Response, HttpException,
-    HttpStatus
+    HttpStatus, CacheControl,
+    Raw, ContentType
 } from "@cmmv/http";
 
 import {
@@ -28,30 +29,28 @@ export class AuthorsController {
     }
 
     @Get(':id')
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getAuthorById(@Param('id') id: string, @Response() res: any) {
         const author = await this.authorsService.getAuthorById(id);
 
         if(!author)
             throw new HttpException("Author not found", HttpStatus.NOT_FOUND);
 
-        res.code(200).set({
-            "Content-Type": "application/json",
-            "Cache-Control": "public, max-age=3600",
-            "Expires": new Date(Date.now() + 3600 * 1000).toUTCString()
-        }).json(author);
+        return author;
     }
 
     @Get('slug/:slug')
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getAuthorBySlug(@Param('slug') slug: string, @Response() res: any) {
         const author = await this.authorsService.getAuthorBySlug(slug);
 
         if(!author)
             throw new HttpException("Author not found", HttpStatus.NOT_FOUND);
 
-        res.code(200).set({
-            "Content-Type": "application/json",
-            "Cache-Control": "public, max-age=3600",
-            "Expires": new Date(Date.now() + 3600 * 1000).toUTCString()
-        }).json(author);
+        return author;
     }
 }

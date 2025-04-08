@@ -1,6 +1,12 @@
 import {
+    Config
+} from "@cmmv/core";
+
+import {
     Controller, Get, Param,
-    Post, Body, Put, Response
+    Post, Body, Put, Response,
+    ContentType, CacheControl,
+    Raw
 } from "@cmmv/http";
 
 import {
@@ -47,5 +53,13 @@ export class BlogSettingsController {
     @Auth({ rootOnly: true })
     public async updasertSetting(@Body() setting: ISettings[]) {
         return this.blogSettingsService.upsertSetting(setting);
+    }
+
+    @Get('robots.txt', { exclude: true })
+    @CacheControl({ maxAge: 60 * 60 * 24 })
+    @ContentType('text/plain')
+    @Raw()
+    public async getRobotsTxt() {
+        return Config.get<string>("blog.robotsTxt");
     }
 }

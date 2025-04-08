@@ -292,17 +292,6 @@
                                 </datalist>
                             </div>
                         </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-neutral-400 mb-1">Featured</label>
-                            <div class="flex items-center">
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" v-model="post.featured"
-                                        class="rounded bg-neutral-700 border-neutral-600 text-blue-600" />
-                                    <span class="ml-2 text-sm">Display as featured post</span>
-                                </label>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

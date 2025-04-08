@@ -2,9 +2,9 @@ import { Application } from "@cmmv/core";
 import { Auth } from "@cmmv/auth";
 
 import {
-   Controller, Get, Post, Put, Delete,
+   Controller, Get, Post,
    Queries, Param, Body, Req, RouterSchema,
-   User, Response
+   User, Response, CacheControl, ContentType, Raw
 } from "@cmmv/http";
 
 import {
@@ -22,7 +22,7 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
-    async get(@Queries() queries: any, @Req() req: any) {
+    async getPosts(@Queries() queries: any, @Req() req: any) {
         return this.postsPublicService.getAllPosts(queries, req);
     }
 
@@ -44,9 +44,11 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getBySlug(@Param("slug") slug: string, @Response() res: any) {
-        const post = await this.postsPublicService.getPostBySlug(slug);
-        res.code(200).contentType("text/json").send(post);
+        return await this.postsPublicService.getPostBySlug(slug);
     }
 
     @Get("pages/slug/:slug", {
@@ -56,9 +58,11 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getPageBySlug(@Param("slug") slug: string, @Response() res: any) {
-        const page = await this.postsPublicService.getPageBySlug(slug);
-        res.code(200).contentType("text/json").send(page);
+        return await this.postsPublicService.getPageBySlug(slug);
     }
 
     @Get("posts/:id", {
@@ -68,9 +72,11 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getById(@Param("id") id: string, @Response() res: any) {
-        const post = await this.postsPublicService.getPostById(id);
-        res.code(200).contentType("text/json").send(post);
+        return await this.postsPublicService.getPostById(id);
     }
 
     @Get("pages/:id", {
@@ -80,9 +86,11 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getPageById(@Param("id") id: string, @Response() res: any) {
-        const page = await this.postsPublicService.getPageById(id);
-        res.code(200).contentType("text/json").send(page);
+        return await this.postsPublicService.getPageById(id);
     }
 
     @Get("posts/tags", {
@@ -92,9 +100,11 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
     async getTags(@Queries() queries: any, @Response() res: any) {
-        const tags = await this.postsPublicService.getTags(queries);
-        res.code(200).contentType("text/json").send(tags)
+        return await this.postsPublicService.getTags(queries);
     }
 
     @Post("posts", { exclude: true })

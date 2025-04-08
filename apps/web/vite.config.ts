@@ -1,15 +1,26 @@
 import path from 'node:path';
-import { defineConfig, loadEnv } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig, loadEnv } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import type { IncomingMessage, ServerResponse } from 'http';
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, process.cwd(), 'VITE')
+    const env = loadEnv(mode, process.cwd(), 'VITE');
+    const apiUrl = env.VITE_API_URL || 'http://localhost:3000';
+    const adminUrl = env.VITE_API_URL || 'http://localhost:3002';
+
+    const forwardRefreshToken = (proxy: any) => {
+        proxy.on('proxyReq', (proxyReq: any, req: IncomingMessage) => {
+            const refreshToken = req.headers['refresh-token'];
+            if (refreshToken) {
+                proxyReq.setHeader('refresh-token', refreshToken);
+            }
+        });
+    };
 
     return {
         plugins: [vue()],
         ssr: {
-            noExternal: []
+            noExternal: [],
         },
         resolve: {
             preserveSymlinks: true,
@@ -17,41 +28,39 @@ export default defineConfig(({ mode }) => {
                 '@cmmv/blog': path.resolve(__dirname, '../../packages/plugin/'),
                 '@cmmv/blog/*': path.resolve(__dirname, '../../packages/plugin/*'),
                 '@cmmv/client': path.resolve(__dirname, '../../packages/plugin/client'),
-                '@cmmv/client/*': path.resolve(__dirname, '../../packages/plugin/client/*')
-            }
+                '@cmmv/client/*': path.resolve(__dirname, '../../packages/plugin/client/*'),
+            },
         },
         server: {
             port: 3001,
             host: true,
             proxy: {
                 '/api': {
-                    target: env.VITE_API_URL || 'http://localhost:3000',
+                    target: apiUrl,
                     changeOrigin: true,
                     secure: false,
-                    configure: (proxy) => {
-                        proxy.on('proxyReq', (proxyReq, req) => {
-                            const refreshToken = req.headers['refresh-token']
-
-                            if (refreshToken)
-                                proxyReq.setHeader('refresh-token', refreshToken)
-                        })
-                    },
+                    configure: forwardRefreshToken,
                 },
                 '/admin': {
-                    target: env.VITE_API_URL || 'http://localhost:3002',
+                    target: adminUrl,
                     changeOrigin: true,
                     secure: false,
                     rewrite: (path) => path.replace(/^\/admin/, ''),
-                    configure: (proxy) => {
-                        proxy.on('proxyReq', (proxyReq, req) => {
-                            const refreshToken = req.headers['refresh-token']
-
-                            if (refreshToken)
-                                proxyReq.setHeader('refresh-token', refreshToken)
-                        })
-                    },
+                    configure: forwardRefreshToken,
+                },
+                '/sitemap': { target: apiUrl },
+                '/sitemap.xml': { target: apiUrl },
+                '/post-sitemap.xml': { target: apiUrl },
+                '/page-sitemap.xml': { target: apiUrl },
+                '/category-sitemap.xml': { target: apiUrl },
+                '/tag-sitemap.xml': { target: apiUrl },
+                '/robots.txt': { target: apiUrl },
+                '/images': {
+                    target: apiUrl,
+                    changeOrigin: true,
+                    secure: false
                 },
             },
         },
-    }
-})
+    };
+});

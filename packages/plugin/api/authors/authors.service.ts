@@ -10,7 +10,7 @@ import {
 
 import {
     MediasService
-} from "./medias.service";
+} from "../medias/medias.service";
 
 @Service('blog_authors')
 export class AuthorsService {
@@ -77,7 +77,7 @@ export class AuthorsService {
 
         const author = await Repository.findOne(ProfilesEntity, { id }, {
             select: [
-                'id', 'name', 'slug', 'image', 'coverImage',
+                'id', 'user', 'name', 'slug', 'image', 'coverImage',
                 'bio', 'website', 'location', 'facebook', 'twitter', 'instagram',
                 'linkedin', 'github', 'locale', 'visibility', 'metaTitle', 'metaDescription'
             ]
@@ -115,13 +115,11 @@ export class AuthorsService {
 
         const author = await Repository.findOne(ProfilesEntity, { slug }, {
             select: [
-                'id', 'name', 'slug', 'image', 'coverImage',
+                'id', 'user', 'name', 'slug', 'image', 'coverImage',
                 'bio', 'website', 'location', 'facebook', 'twitter', 'instagram',
                 'linkedin', 'github', 'locale', 'visibility', 'metaTitle', 'metaDescription'
             ]
         });
-
-
 
         if(author.visibility !== 'public')
             return null;

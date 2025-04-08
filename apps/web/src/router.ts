@@ -4,12 +4,13 @@ import {
 } from 'vue-router';
 
 import TemplateDefault from './theme-default/templateDefault.vue';
-import TemplatePost from './theme-default/templatePost.vue';
 
 import PageHome from './theme-default/pageHome.vue';
 import PagePost from './theme-default/pagePost.vue';
 import PageCategory from './theme-default/pageCategory.vue';
 import PagePage from './theme-default/pagePage.vue';
+import PageAuthor from './theme-default/pageAuthor.vue';
+
 export function createRouter() {
     return _createRouter({
         history: import.meta.env.SSR ? createMemoryHistory() : createWebHistory(),
@@ -24,7 +25,7 @@ export function createRouter() {
             },
             {
                 path: '/preview/:id',
-                component: TemplatePost,
+                component: TemplateDefault,
                 children: [{
                     path: '',
                     component: PagePost
@@ -32,7 +33,7 @@ export function createRouter() {
             },
             {
                 path: '/preview-page/:id',
-                component: TemplatePost,
+                component: TemplateDefault,
                 children: [{
                     path: '',
                     component: PagePage
@@ -40,7 +41,7 @@ export function createRouter() {
             },
             {
                 path: '/post/:slug',
-                component: TemplatePost,
+                component: TemplateDefault,
                 children: [{
                     path: '',
                     component: PagePost
@@ -49,6 +50,10 @@ export function createRouter() {
             {
                 path: '/category/:slug',
                 component: PageCategory
+            },
+            {
+                path: '/author/:slug',
+                component: PageAuthor
             }
         ]
     });

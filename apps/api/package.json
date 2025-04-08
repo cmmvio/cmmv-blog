@@ -23,15 +23,17 @@
         "build": "cmmv build",
         "start": "cmmv start"
     },
+    "peerDependencies": {
+        "cli-cursor": "^5.0.0",
+        "restore-cursor": "^5.1.0",
+        "signal-exit": "^4.1.0"
+    },
     "dependencies": {
         "@cmmv/auth": "latest",
         "@cmmv/blog": "workspace:plugin",
         "@cmmv/cli": "latest",
         "@cmmv/http": "latest",
         "@cmmv/repository": "latest",
-        "@lexical/html": "^0.30.0",
-        "jsdom": "^26.0.0",
-        "lexical": "^0.30.0",
         "sharp": "^0.34.0"
     },
     "devDependencies": {

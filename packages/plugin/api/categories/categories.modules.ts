@@ -1,6 +1,6 @@
 import { Module } from '@cmmv/core';
 
-import { CategoriesContract } from '../contracts';
+import { CategoriesContract } from '../../contracts';
 import { CategoriesPublicController } from './categories.controller';
 import { CategoriesPublicService } from "./categories.service";
 

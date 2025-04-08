@@ -2,7 +2,7 @@ import { Module } from '@cmmv/core';
 
 import {
     MemberContract
-} from '../contracts';
+} from '../../contracts';
 
 import {
     MembersPublicService

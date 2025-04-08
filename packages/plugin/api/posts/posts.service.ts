@@ -13,9 +13,9 @@ import {
 
 import {
     slugify
-} from "./extra.utils";
+} from "../extra.utils";
 
-import { MediasService } from "./medias.service";
+import { MediasService } from "../medias/medias.service";
 
 @Service('blog_posts_public')
 export class PostsPublicService {
@@ -40,7 +40,8 @@ export class PostsPublicService {
         }, [], {
             select: [
                 "id", "title", "slug", "content", "status", "autoPublishAt",
-                "authors", "author", "categories", "featureImage"
+                "authors", "author", "categories", "featureImage", "publishedAt",
+                "updatedAt", "createdAt"
             ]
         });
 
@@ -55,6 +56,23 @@ export class PostsPublicService {
                 userIdsIn = [...userIdsIn, ...post.authors];
                 userIdsIn.push(post.author);
                 categoryIdsIn = [...categoryIdsIn, ...post.categories];
+
+                const categoriesData = await Repository.findAll(CategoriesEntity, {
+                    id: In(post.categories),
+                    limit: 100
+                }, [], {
+                    select: [ "id", "name", "slug", "description" ]
+                });
+
+                post.categories = (categoriesData) ? categoriesData.data : [];
+
+                post.featureImage = await this.mediasService.getImageUrl(
+                    post.featureImage,
+                    "webp",
+                    1200,
+                    post.featureImageAlt,
+                    post.featureImageCaption
+                );
             }
 
             //@ts-ignore
@@ -73,6 +91,27 @@ export class PostsPublicService {
                     'commentNotifications', 'mentionNotifications', 'recommendationNotifications'
                 ]
             });
+
+            if(authorsData){
+                for(const author of authorsData.data){
+                    author.image = await this.mediasService.getImageUrl(
+                        author.image,
+                        "webp",
+                        128,
+                        author.name,
+                        author.name
+                    );
+
+                    author.coverImage = await this.mediasService.getImageUrl(
+                        author.coverImage,
+                        "webp",
+                        1024,
+                        author.name,
+                        author.name
+                    );
+                }
+            }
+
 
             authors = (authorsData) ? authorsData.data : [];
 
@@ -111,7 +150,8 @@ export class PostsPublicService {
         }, [], {
             select: [
                 "id", "title", "slug", "content", "status", "autoPublishAt",
-                "authors", "author", "categories", "featureImage"
+                "authors", "author", "categories", "featureImage", "publishedAt",
+                "updatedAt", "createdAt"
             ]
         });
 

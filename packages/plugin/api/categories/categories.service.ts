@@ -8,7 +8,7 @@ import {
 
 import {
     PostsPublicService
-} from "./posts.service";
+} from "../posts/posts.service";
 
 @Service('blog_categories_public')
 export class CategoriesPublicService {

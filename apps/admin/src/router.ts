@@ -13,7 +13,7 @@ import LoginView from './views/LoginView.vue'
 import TagsView from './views/TagsView.vue'
 import ProfileView from './views/ProfileView.vue'
 import AuthorsView from './views/AuthorsView.vue'
-
+import MediasView from './views/MediasView.vue'
 const router = createRouter({
     //@ts-ignore
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +46,9 @@ const router = createRouter({
             }, {
                 path: '/authors',
                 component: AuthorsView
+            }, {
+                path: '/medias',
+                component: MediasView
             }],
         },
         {

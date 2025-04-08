@@ -5,7 +5,7 @@ import {
     PostsHistoryContract,
     PostsMetaContract,
     PostsTagsContract
-} from '../contracts';
+} from '../../contracts';
 
 import { PostsController } from "./posts.controller";
 import { PostsPublicService } from "./posts.service";

@@ -503,7 +503,6 @@ const loadCategories = async () => {
         const response = await adminClient.getCategories(apiFilters)
 
         if (response && response.data) {
-            console.log('Category data sample:', response.data[0])
             categories.value = response.data || []
 
             const paginationData = response.pagination || {}

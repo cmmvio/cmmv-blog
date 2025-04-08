@@ -5,6 +5,11 @@
     "scripts": {
         "build": "tsup"
     },
+    "peerDependencies": {
+        "cli-cursor": "^5.0.0",
+        "signal-exit": "^4.1.0",
+        "restore-cursor": "^5.1.0"
+    },
     "devDependencies": {
         "tsup": "^8.4.0",
         "typescript": "^5.8.2"
@@ -13,9 +18,6 @@
         "@cmmv/auth": "latest",
         "@cmmv/core": "latest",
         "@cmmv/http": "latest",
-        "@lexical/html": "^0.30.0",
-        "jsdom": "^26.0.0",
-        "lexical": "^0.30.0",
         "sharp": "^0.34.0"
     }
 }

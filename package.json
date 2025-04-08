@@ -31,6 +31,11 @@
     "publishConfig": {
         "access": "public"
     },
+    "peerDependencies": {
+        "cli-cursor": "^5.0.0",
+        "signal-exit": "^4.1.0",
+        "restore-cursor": "^5.1.0"
+    },
     "scripts": {
         "dev": "turbo run dev",
         "build": "turbo run build --filter=@cmmv/blog",
@@ -39,8 +44,8 @@
         "info": "turbo run info"
     },
     "devDependencies": {
-        "eslint": "^9.23.0",
+        "eslint": "^9.24.0",
         "prettier": "^3.5.3",
-        "turbo": "^2.4.4"
+        "turbo": "^2.5.0"
     }
 }

@@ -1,13 +1,13 @@
 <template>
     <div class="lg:ml-64">
         <div v-if="!page" class="container mx-auto max-w-4xl px-4 py-12">
-            <div class="bg-neutral-800 p-6 rounded-lg text-center">
+            <div class="bg-neutral-800 dark:bg-neutral-900 p-6 rounded-lg text-center">
                 <h1 class="text-2xl font-bold text-white mb-4">Page not found</h1>
                 <p class="text-neutral-400">The page you're looking for doesn't exist or is unavailable.</p>
             </div>
         </div>
 
-        <div v-else class="article-container lg:max-w-4xl md:max-w-3xl">
+        <div v-else class="article-container lg:max-w-4xl md:max-w-3xl dark:bg-neutral-900">
             <div v-if="page.featureImage" class="post-featured-image relative">
                 <div class="absolute top-4 left-4 z-10 flex flex-wrap gap-2">
                     <a
@@ -21,12 +21,12 @@
                 </div>
 
                 <img :src="page.featureImage" :alt="page.featureImageAlt || page.title" class="featured-img" />
-                <p v-if="page.featureImageCaption" class="image-caption">{{ page.featureImageCaption }}</p>
+                <p v-if="page.featureImageCaption" class="image-caption dark:text-neutral-300">{{ page.featureImageCaption }}</p>
             </div>
 
             <!-- Post Header -->
-            <header class="post-header">
-                <h1 class="post-title">{{ page.title }}</h1>
+            <header class="post-header dark:bg-neutral-900">
+                <h1 class="post-title dark:text-white">{{ page.title }}</h1>
 
                 <div class="post-meta">
                     <div class="post-status" v-if="page.status !== 'published'">
@@ -36,14 +36,14 @@
             </header>
 
             <!-- Post Content -->
-            <div class="post-content" v-html="page.content"></div>
+            <div class="post-content dark:text-neutral-300" v-html="page.content"></div>
 
             <!-- Add this right after the post content, replace the existing share box -->
-            <div class="py-8 border-t border-gray-200">
+            <div class="py-8 border-t border-neutral-200 dark:border-neutral-800">
                 <div class="flex items-center justify-between">
                     <!-- Share text and icons -->
                     <div class="flex items-center gap-2">
-                        <span class="text-gray-600 text-sm font-medium">Share:</span>
+                        <span class="text-neutral-600 dark:text-neutral-400 text-sm font-medium">Share:</span>
 
                         <div class="flex gap-2">
                             <!-- Facebook -->

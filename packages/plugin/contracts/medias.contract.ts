@@ -59,4 +59,10 @@ export class MediasContract extends AbstractContract {
         nullable: true
     })
     height?: number;
+
+    @ContractField({
+        protoType: 'int32',
+        nullable: true
+    })
+    size?: number;
 }

@@ -31,47 +31,40 @@ export const useAdminClient = () => {
     //Categories
     const getCategories = async (filters: Record<string, string>) => {
         const urlQueries = new URLSearchParams(filters).toString();
-        const response = await api.authRequest(`categories?${urlQueries}`, 'GET');
-        return response;
+        return await api.authRequest(`categories?${urlQueries}`, 'GET');
     };
 
     const insertCategory = async (data: { name: string }) => {
-        const response = await api.authRequest('categories', 'POST', data);
-        return response;
+        return await api.authRequest('categories', 'POST', data);
     };
 
     const updateCategory = async (id: string, data: { name: string }) => {
-        const response = await api.authRequest(`categories/${id}`, 'PUT', data);
-        return response;
+        return await api.authRequest(`categories/${id}`, 'PUT', data);
     };
 
     const deleteCategory = async (id: string) => {
-        const response = await api.authRequest(`categories/${id}`, 'DELETE');
-        return response;
+        return await api.authRequest(`categories/${id}`, 'DELETE');
     };
 
     //Tags
     const getTags = async (filters: Record<string, string>) => {
         const urlQueries = new URLSearchParams(filters).toString();
-        const response = await api.authRequest(`tags?${urlQueries}`, 'GET');
-        return response;
+        return await api.authRequest(`tags?${urlQueries}`, 'GET');
     };
 
     const insertTag = async (data: { name: string }) => {
-        const response = await api.authRequest('tags', 'POST', data);
-        return response;
+        return await api.authRequest('tags', 'POST', data);
     };
 
     const updateTag = async (id: string, data: { name: string }) => {
-        const response = await api.authRequest(`tags/${id}`, 'PUT', data);
-        return response;
+        return await api.authRequest(`tags/${id}`, 'PUT', data);
     };
 
     const deleteTag = async (id: string) => {
-        const response = await api.authRequest(`tags/${id}`, 'DELETE');
-        return response;
+        return await api.authRequest(`tags/${id}`, 'DELETE');
     };
 
+    //Session
     const checkSession = async () => {
         return api.checkSession();
     };
@@ -135,6 +128,16 @@ export const useAdminClient = () => {
         return await api.authRequest(`authors/${id}`, 'DELETE');
     };
 
+    //Medias
+    const getMedias = async (queries: any) => {
+        const urlQueries = new URLSearchParams(queries).toString();
+        return await api.authRequest(`medias?${urlQueries}`, 'GET');
+    };
+
+    const processImage = async (data: { image: string, format: string, maxWidth: number, alt: string, caption: string }) => {
+        return await api.authRequest('images', 'POST', data);
+    };
+
     //Members
     const createMember = async (data: any) => {
         return await api.authRequest('members', 'POST', data);
@@ -170,6 +173,8 @@ export const useAdminClient = () => {
         getPages,
         getPage,
         updatePage,
-        deletePage
+        deletePage,
+        getMedias,
+        processImage
     }
 };

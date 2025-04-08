@@ -1,6 +1,7 @@
 import {
     Controller, Get, RouterSchema,
-    Queries, Req, Response, Param
+    Queries, Req, Param,
+    CacheControl, ContentType, Raw
 } from "@cmmv/http";
 
 import {
@@ -13,9 +14,7 @@ import {
 
 @Controller("blog")
 export class CategoriesPublicController {
-    constructor(
-        private readonly categoriesPublicService: CategoriesPublicService
-    ){ }
+    constructor(private readonly categoriesPublicService: CategoriesPublicService){}
 
     @Get("categories", {
         contract: Application.getContract("CategoriesContract"),
@@ -24,9 +23,11 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
-    async get(@Queries() queries: any, @Response() res: any, @Req() req: any) {
-        const categories = await this.categoriesPublicService.getAll(queries, req);
-        res.code(200).contentType("text/json").send(categories)
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
+    async get(@Queries() queries: any, @Req() req: any) {
+        return await this.categoriesPublicService.getAll(queries, req);
     }
 
     @Get("categories/slug/:slug", {
@@ -36,9 +37,11 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
-    async getBySlug(@Param("slug") slug: string, @Response() res: any) {
-        const category = await this.categoriesPublicService.getBySlug(slug);
-        res.code(200).json(category);
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
+    async getBySlug(@Param("slug") slug: string) {
+        return await this.categoriesPublicService.getBySlug(slug);
     }
 
     @Get("categories/:id", {
@@ -48,10 +51,10 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
-    async getById(@Param("id") id: string, @Response() res: any) {
-        const category = await this.categoriesPublicService.getById(id);
-        res.code(200).json(category);
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
+    async getById(@Param("id") id: string) {
+        return await this.categoriesPublicService.getById(id);
     }
-
-
 }

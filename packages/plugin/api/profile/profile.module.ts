@@ -1,6 +1,6 @@
 import { Module } from '@cmmv/core';
 
-import { AuthorProfileContract } from "../contracts/author-profile.contract";
+import { AuthorProfileContract } from "../../contracts";
 import { BlogProfileController } from './profile.controller';
 import { BlogProfileService } from "./profile.service";
 

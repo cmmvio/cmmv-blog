@@ -1,14 +1,15 @@
 import { Module } from '@cmmv/core';
 
 import { BlogConfig } from "./blog.config";
-import { AuthorsModule } from './authors.module';
-import { PostsModule } from './posts.module';
-import { CategoriesModule } from './categories.modules';
-import { CommentsModule } from './comments.module';
-import { MembersModule } from './members.module';
-import { BlogSettingsModule } from './settings.module';
-import { ProfileModule } from './profile.module';
-import { MediasModule } from './medias.module';
+import { AuthorsModule } from './authors/authors.module';
+import { PostsModule } from './posts/posts.module';
+import { CategoriesModule } from './categories/categories.modules';
+import { CommentsModule } from './comments/comments.module';
+import { MembersModule } from './members/members.module';
+import { BlogSettingsModule } from './settings/settings.module';
+import { ProfileModule } from './profile/profile.module';
+import { MediasModule } from './medias/medias.module';
+import { SitemapModule } from './sitemap/sitemap.module';
 
 export const BlogModule = new Module('blog', {
     configs: [BlogConfig],
@@ -20,6 +21,7 @@ export const BlogModule = new Module('blog', {
         MembersModule,
         BlogSettingsModule,
         ProfileModule,
-        MediasModule
+        MediasModule,
+        SitemapModule
     ]
 });

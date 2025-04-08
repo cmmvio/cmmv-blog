@@ -2,7 +2,7 @@ import { Module } from '@cmmv/core';
 
 import {
     MediasContract
-} from '../contracts';
+} from '../../contracts';
 
 import {
     MediasService
