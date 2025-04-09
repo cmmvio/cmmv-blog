@@ -20,6 +20,7 @@
     },
     "scripts": {
         "dev": "cmmv dev --watch",
+        "build": "echo build",
         "start": "cmmv dev"
     },
     "peerDependencies": {

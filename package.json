@@ -55,7 +55,7 @@
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "release": "pnpm build:release && pnpm publish --tag latest -r --no-git-checks",
         "info": "turbo run info",
-        "start": "pnpm build && turbo run start --filter=@cmmv/blog",
+        "start": "pnpm build && turbo run start --filter=./apps/*",
         "start:api": "cd apps/api && pnpm start",
         "start:admin": "cd apps/admin && pnpm start",
         "start:web": "cd apps/web && pnpm start",
