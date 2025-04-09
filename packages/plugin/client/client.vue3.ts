@@ -25,7 +25,8 @@ export const getEnv = (key: string): string | undefined => {
  * @returns {Object} The API object
  */
 export const useApi = () => {
-    const baseUrl = getEnv('VITE_API_URL') || "https://blog.cmmv.io/api";
+    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:5000";
+    const baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || "https://blog.cmmv.io/api";
     const preloaded = inject<Record<string, any>>(PRELOADED_KEY, {});
 
     const get = async <T>(path: string, key?: string) => {
@@ -49,7 +50,7 @@ export const useApi = () => {
 
         else if (!getEnv('SSR') && data.value === null) {
             try {
-                const response = await fetch(`${baseUrl}/${path}`);
+                const response = await fetch(`${baseUrlFrontend}/${path}`);
                 const result = await response.json();
                 data.value = result.result || result;
             } catch (error) {
