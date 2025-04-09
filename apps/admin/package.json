@@ -5,9 +5,9 @@
     "description": "Blog admin package for CMMV",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --clearScreen false",
         "build": "vite build",
-        "start": "vite preview",
+        "start": "vite preview --port 5002",
         "lint": "eslint \"src/**/*.ts\""
     },
     "devDependencies": {

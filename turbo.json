@@ -7,10 +7,16 @@
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
+            "inputs": ["$TURBO_DEFAULT$", ".env*"],
             "outputs": ["dist/**"]
         },
         "dev": {
-            "cache": false
+            "cache": false,
+            "persistent": true
+        },
+        "start": {
+            "dependsOn": ["^start"],
+            "persistent": true
         }
     }
 }

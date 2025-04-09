@@ -20,8 +20,7 @@
     },
     "scripts": {
         "dev": "cmmv dev --watch",
-        "build": "cmmv build",
-        "start": "cmmv start"
+        "start": "cmmv dev"
     },
     "peerDependencies": {
         "cli-cursor": "^5.0.0",
@@ -34,7 +33,8 @@
         "@cmmv/cli": "latest",
         "@cmmv/http": "latest",
         "@cmmv/repository": "latest",
-        "sharp": "^0.34.1"
+        "sharp": "^0.34.1",
+        "tsx": "^4.19.3"
     },
     "devDependencies": {
         "@cmmv/sandbox": "latest"

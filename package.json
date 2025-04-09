@@ -46,14 +46,16 @@
     },
     "scripts": {
         "dev": "turbo run dev",
-        "build": "turbo run build --filter=@cmmv/blog",
+        "build:release": "turbo run build --filter=@cmmv/blog",
+        "build": "pnpm build:api && pnpm build:admin && pnpm build:web",
         "build:api": "cd apps/api && pnpm build",
         "build:admin": "cd apps/admin && pnpm build",
         "build:web": "cd apps/web && pnpm build",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "release": "pnpm build && pnpm publish --tag latest -r --no-git-checks",
+        "release": "pnpm build:release && pnpm publish --tag latest -r --no-git-checks",
         "info": "turbo run info",
+        "start": "pnpm build && turbo run start --filter=@cmmv/blog",
         "start:api": "cd apps/api && pnpm start",
         "start:admin": "cd apps/admin && pnpm start",
         "start:web": "cd apps/web && pnpm start"

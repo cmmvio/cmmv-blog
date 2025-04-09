@@ -30,8 +30,6 @@
         "lib": ["esnext", "dom"],
         "types": ["node"],
         "paths": {
-            "@cmmv/blog": ["../../packages/plugin"],
-            "@cmmv/blog/*": ["../../packages/plugin/*"],
             "@models": ["src/models"],
             "@models/*": ["src/models/*", ".generated/models/*"],
             "@modules": ["src/modules"],
@@ -54,6 +52,6 @@
             "@g/*": [".generated/*"]
         }
     },
-    "include": ["packages/**/*", "src/**/*.ts", ".generated/**/*.ts", "../../packages/plugin/api/posts.controller.ts"],
+    "include": ["src/*.ts"],
     "exclude": ["node_modules", "dist", "src/protos", "**/*.spec.ts"]
 }
