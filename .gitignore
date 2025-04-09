@@ -397,3 +397,4 @@ dist
 .serverless/**/*.zip
 .generated
 .turbo
+pnpm-lock.yaml
