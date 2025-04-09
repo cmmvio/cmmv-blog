@@ -6,8 +6,10 @@
     "type": "module",
     "scripts": {
         "dev": "tsx server.ts",
-        "build": "vite build",
-        "preview": "vite preview",
+        "build:client": "vite build --config vite.config.ts",
+        "build:server": "vite build --config vite.config.server.ts",
+        "build": "pnpm run build:client && pnpm run build:server",
+        "start": "NODE_ENV=production node dist/server.js",
         "lint": "eslint \"src/**/*.ts\""
     },
     "devDependencies": {
@@ -23,6 +25,8 @@
     },
     "dependencies": {
         "@cmmv/blog": "workspace:*",
+        "finalhandler": "^2.1.0",
+        "serve-static": "^2.2.0",
         "vue": "^3.5.13",
         "vue-router": "^4.5.0"
     }

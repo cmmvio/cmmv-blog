@@ -34,7 +34,7 @@
         "@cmmv/cli": "latest",
         "@cmmv/http": "latest",
         "@cmmv/repository": "latest",
-        "sharp": "^0.34.0"
+        "sharp": "^0.34.1"
     },
     "devDependencies": {
         "@cmmv/sandbox": "latest"

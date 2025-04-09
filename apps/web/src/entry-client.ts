@@ -9,5 +9,5 @@ app.provide('preloaded', (window as any).__CMMV_DATA__ || {})
 app.use(router)
 
 router.isReady().then(() => {
-    app.mount('#app', true)
+    app.mount('#app')
 })

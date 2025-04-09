@@ -22,6 +22,12 @@ export default defineConfig(({ mode }) => {
         ssr: {
             noExternal: [],
         },
+        build: {
+            outDir: 'dist',
+            rollupOptions: {
+                input: path.resolve(__dirname, 'index.html'),
+            }
+        },
         resolve: {
             preserveSymlinks: true,
             alias: {
@@ -32,8 +38,6 @@ export default defineConfig(({ mode }) => {
             },
         },
         server: {
-            port: 3001,
-            host: true,
             proxy: {
                 '/api': {
                     target: apiUrl,
