@@ -1,4 +1,5 @@
 import { createServer } from 'vite';
+import { transformHtmlTemplate } from '@unhead/vue/server'
 import * as http from 'node:http';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -52,20 +53,22 @@ async function start() {
                     render = devRender;
                 }
 
+                const { html: appHtml, head, data, metadata } = await render(url);
                 template = await vite.transformIndexHtml(url, template);
+                template = await transformHtmlTemplate(head, template.replace(`<div id="app"></div>`, `
+                    <div id="app">${appHtml}</div>
+                    <script>window.__CMMV_DATA__ = ${JSON.stringify(data)};</script>
+                `));
+
                 template = template.replace(/<script type="module" src="\/@vite\/client"><\/script>\s*/g, '');
-                const { html: appHtml, data, metadata } = await render(url);
 
                 for(const key in metadata)
                     template = template.replace(`{${key}}`, metadata[key]);
 
-                const finalHtml = template
-                    .replace(`<div id="app"></div>`, `<div id="app">${appHtml}</div>`);
-
-                cache.set(url, { html: finalHtml, expires: now + CACHE_TTL_MS });
+                cache.set(url, { html: template, expires: now + CACHE_TTL_MS });
 
                 res.setHeader('Content-Type', 'text/html');
-                res.end(finalHtml);
+                res.end(template);
             } catch (e) {
                 vite.ssrFixStacktrace(e as Error);
                 res.statusCode = 500;

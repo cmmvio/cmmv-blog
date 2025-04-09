@@ -1,6 +1,6 @@
 <template>
     <div class="bg-neutral-50 dark:bg-neutral-900 z-10 relative">
-        <div class="mx-auto z-10">
+        <div class="mx-auto z-10 px-4">
             <div class="flex">
                 <main class="flex-1">
                     <div class="lg:ml-64 bg-white dark:bg-neutral-900 rounded-lg">
@@ -104,8 +104,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref } from 'vue';
 import { vue3 } from '@cmmv/blog/client';
+
+import {
+    formatDate, stripHtml
+} from '../composables/useUtils';
 
 const blogAPI = vue3.useBlog();
 
@@ -142,26 +146,8 @@ const changePage = (page: number) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-};
-
-const stripHtml = (html: string) => {
-    if (!html) return '';
-    return html.replace(/<[^>]*>/g, '');
-};
-
 const getAuthor = (post: any) => {
     if (!post.authors || !post.authors.length) return null;
     return post.authors.find((author: any) => author.id === post.author);
 };
-
-await vue3.injectSEO("index", {});
 </script>

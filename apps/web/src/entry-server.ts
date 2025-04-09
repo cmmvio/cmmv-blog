@@ -1,11 +1,14 @@
 import { createSSRApp } from 'vue';
 import App from './App.vue';
 import { createRouter } from './router';
+import { createHead } from '@unhead/vue/server'
 import { renderToString } from 'vue/server-renderer';
+import ClientOnly from './components/ClientOnly.vue'
 
 export async function render(url: string) {
     try {
         const app = createSSRApp(App)
+        const head = createHead()
         const router = createRouter()
 
         router.push(url)
@@ -14,16 +17,26 @@ export async function render(url: string) {
         globalThis.__SSR_DATA__ = {}
         globalThis.__SSR_METADATA__ = {}
 
+        app.component('ClientOnly', ClientOnly)
         app.use(router)
+        app.use(head)
 
-        await renderToString(app)
         const resolvedData = await resolveSSRData(globalThis.__SSR_DATA__)
         app.provide('preloaded', resolvedData)
 
         const html = await renderToString(app)
-        return { html, data: resolvedData, metadata: globalThis.__SSR_METADATA__ }
-    } catch (e) {
-        throw e
+
+        return {
+            html, head,
+            data: resolvedData,
+            metadata: globalThis.__SSR_METADATA__
+        }
+    } catch (e: any) {
+        console.error('Render error:', e);
+
+        return {
+            html: e.message
+        }
     }
 }
 

@@ -1,6 +1,4 @@
 <template>
-    <Navbar />
-
     <div class="lg:ml-64">
         <div v-if="!author" class="container mx-auto max-w-4xl px-4 py-12">
             <div class="bg-neutral-800 p-6 rounded-lg text-center">
@@ -10,7 +8,6 @@
         </div>
 
         <div v-else>
-            <!-- Cover Image in Facebook style -->
             <div class="w-full bg-neutral-100 dark:bg-neutral-800 relative">
                 <div v-if="author.coverImage" class="h-72 md:h-96 overflow-hidden">
                     <img :src="author.coverImage" alt="" class="w-full h-full object-cover">
@@ -48,7 +45,6 @@
                         </div>
                     </div>
 
-                    <!-- Complete social row at bottom of profile card -->
                     <div class="px-8 py-3 border-t border-neutral-100 dark:border-neutral-800 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                         <a v-if="author.facebook" :href="`https://facebook.com/${author.facebook}`" target="_blank" rel="noopener noreferrer"
                            class="flex items-center justify-center py-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
@@ -90,7 +86,6 @@
                     </div>
                 </div>
 
-                <!-- Posts in Facebook-like cards -->
                 <h2 class="text-xl font-bold text-neutral-900 dark:text-white mb-6 pb-2 border-b border-neutral-200 dark:border-neutral-800 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
@@ -99,12 +94,10 @@
                 </h2>
 
                 <div class="space-y-6 mb-10">
-                    <!-- Fix the v-if condition based on authorPosts structure -->
                     <template v-if="authorPosts && (authorPosts.length > 0 || (authorPosts.posts && authorPosts.posts.length > 0))">
-                        <!-- Loop through the correct posts array structure -->
                         <div v-for="post in (authorPosts.posts || authorPosts)" :key="post.id"
                              class="bg-white dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800 transition-shadow">
-                            <!-- Post header - Facebook style -->
+
                             <div class="flex items-center p-4 border-b border-neutral-100 dark:border-neutral-700">
                                 <div class="w-10 h-10 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-700 mr-3">
                                     <img v-if="author.image" :src="author.image" :alt="author.name" class="w-full h-full object-cover" />
@@ -118,17 +111,22 @@
                                 </div>
                             </div>
 
-                            <!-- Featured image -->
                             <div v-if="post.featureImage" class="border-b border-neutral-100 dark:border-neutral-700">
-                                <a :href="`/post/${post.slug}`">
+                                <a
+                                    :href="`/post/${post.slug}`"
+                                    aria-label="Read more about this post"
+                                >
                                     <img :src="post.featureImage" :alt="post.title" class="w-full h-64 object-cover hover:opacity-95 transition-opacity">
                                 </a>
                             </div>
 
-                            <!-- Post content -->
                             <div class="p-4">
                                 <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-3">
-                                    <a :href="`/post/${post.slug}`" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                    <a
+                                        :href="`/post/${post.slug}`"
+                                        class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                        aria-label="Read more about this post"
+                                    >
                                         {{ post.title }}
                                     </a>
                                 </h3>
@@ -136,15 +134,19 @@
                                 <p v-if="post.excerpt" class="text-neutral-700 dark:text-neutral-300 mb-4">
                                     {{ post.excerpt }}
                                 </p>
+
                                 <p v-else-if="post.content" class="text-neutral-700 dark:text-neutral-300 mb-4">
                                     {{ stripHtml(post.content).substring(0, 150) }}{{ stripHtml(post.content).length > 150 ? '...' : '' }}
                                 </p>
                             </div>
 
-                            <!-- Post footer with action buttons - Facebook style -->
                             <div class="flex items-center justify-between px-4 py-3 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
                                 <div class="flex items-center space-x-1">
-                                    <a :href="`/post/${post.slug}#comments`" class="px-3 py-1.5 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors flex items-center">
+                                    <a
+                                        :href="`/post/${post.slug}#comments`"
+                                        class="px-3 py-1.5 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors flex items-center"
+                                        aria-label="View comments"
+                                    >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                         </svg>
@@ -152,7 +154,11 @@
                                     </a>
                                 </div>
 
-                                <a :href="`/post/${post.slug}`" class="px-3 py-1.5 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors flex items-center">
+                                <a
+                                    :href="`/post/${post.slug}`"
+                                    class="px-3 py-1.5 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors flex items-center"
+                                    aria-label="Read more about this post"
+                                >
                                     Read more
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -162,7 +168,6 @@
                         </div>
                     </template>
 
-                    <!-- No posts message -->
                     <div v-else class="bg-white dark:bg-neutral-800 rounded-lg shadow-md p-6 text-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-neutral-400 dark:text-neutral-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -176,33 +181,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { vue3 } from '@cmmv/blog/client';
-import Navbar from "./navbar.vue";
+import { useHead } from '@unhead/vue'
+
+import {
+    formatDate, stripHtml
+} from '../composables/useUtils';
 
 const blogAPI = vue3.useBlog();
 const route = useRoute();
+const settings = ref<any>(null);
 const author = ref<any>(null);
 const authorPosts = ref<any>(null);
-const isDarkMode = ref(false);
 
-// Check for dark mode preference on mount
-onMounted(() => {
-    // Check localStorage first
-    const darkModeStored = localStorage.getItem('darkMode');
-
-    // Set dark mode based on storage or system preference
-    if (darkModeStored === 'enabled') {
-        isDarkMode.value = true;
-        document.documentElement.classList.add('dark');
-    } else if (darkModeStored === 'disabled') {
-        isDarkMode.value = false;
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        isDarkMode.value = true;
-        document.documentElement.classList.add('dark');
-    }
-});
+settings.value = await blogAPI.getAllSettings()
 
 author.value = route.params.id
     ? await blogAPI.getAuthorById(route.params.id as string)
@@ -210,9 +204,9 @@ author.value = route.params.id
 
 if (author.value) {
     const postsResponse = await blogAPI.getPostByAuthor(author.value.user);
-    if (postsResponse) {
+
+    if (postsResponse)
         authorPosts.value = postsResponse;
-    }
 }
 
 const authorInitials = computed(() => {
@@ -226,25 +220,17 @@ const authorInitials = computed(() => {
         .toUpperCase();
 });
 
-function formatDate(timestamp: string) {
-    if (!timestamp) return 'Unknown date';
+const headData = computed(() => ({
+    title: author.value.name,
+    meta: [
+        { name: 'description', content: author.value.bio || settings.value['blog.description'] },
+        { name: 'keywords', content: author.value.keywords || settings.value['blog.keywords'] },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: author.value.name },
+        { property: 'og:description', content: author.value.bio || settings.value['blog.description'] },
+        { property: 'og:url', content: `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value.slug}` },
+    ]
+}))
 
-    try {
-        const date = new Date(timestamp);
-        return new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }).format(date);
-    } catch (error) {
-        return 'Invalid date';
-    }
-}
-
-function stripHtml(html: string) {
-    if (!html) return '';
-    return html.replace(/<\/?[^>]+(>|$)/g, " ").replace(/\s+/g, " ").trim();
-}
-
-await vue3.injectSEO("author", { author: author.value });
+useHead(headData)
 </script>

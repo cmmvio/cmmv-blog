@@ -1,8 +1,6 @@
 <template>
-    <Navbar />
-
     <div class="bg-neutral-50 dark:bg-neutral-900 z-10 relative">
-        <div class="container mx-auto z-10">
+        <div class="mx-auto z-10">
             <div class="flex">
                 <main class="flex-1">
                     <div class="lg:ml-64 bg-white dark:bg-neutral-900 rounded-lg">
@@ -24,7 +22,7 @@
                             <div class="space-y-10">
                                 <article v-for="post in posts" :key="post.id" class="border-b border-neutral-200 dark:border-neutral-800 pb-8 last:border-0">
                                     <!-- Feature Image -->
-                                    <a :href="`/post/${post.slug}`" class="block mb-4">
+                                    <a :href="`/post/${post.slug}`" class="block mb-4" aria-label="Read more about this post">
                                         <div v-if="post.featureImage" class="relative aspect-video overflow-hidden rounded-lg">
                                             <img :src="post.featureImage" :alt="post.featureImageAlt || post.title" class="w-full h-full object-cover" />
                                         </div>
@@ -32,7 +30,7 @@
 
                                     <!-- Post Title -->
                                     <h2 class="text-2xl font-bold text-neutral-900 dark:text-white mb-3">
-                                        <a :href="`/post/${post.slug}`" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                        <a :href="`/post/${post.slug}`" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-label="Read more about this post">
                                             {{ post.title }}
                                         </a>
                                     </h2>
@@ -89,42 +87,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+//@ts-nocheck
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useHead } from '@unhead/vue'
 import { vue3 } from '@cmmv/blog/client';
-import Navbar from "./navbar.vue";
+
+import {
+    formatDate, stripHtml
+} from '../composables/useUtils';
 
 const blogAPI = vue3.useBlog();
 const route = useRoute();
+
+const isSSR = import.meta.env.SSR
+
 const data = ref<any>(route.params.id ?
         await blogAPI.getCategoryById(route.params.id as string) :
         await blogAPI.getCategoryBySlug(route.params.slug as string));
 
 const category = ref<any>(data.value.category);
-const posts = ref<any[]>(data.value.posts?.data || []);
+const posts = ref<any>(data.value.posts?.data || []);
 const pagination = ref<any>(data.value.posts?.pagination);
-const isDarkMode = ref(false);
 
-// Format date
-const formatDate = (timestamp: string) => {
-    if (!timestamp) return 'Unknown date';
+/*const headData = computed(() => ({
+    title: category.value.name + ' - ' + settings.value['blog.description']
+}))
 
-    try {
-        const date = new Date(timestamp);
-        return new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }).format(date);
-    } catch (error) {
-        return 'Invalid date';
-    }
-};
-
-const stripHtml = (html: string) => {
-    if (!html) return '';
-    return html.replace(/<\/?[^>]+(>|$)/g, " ").replace(/\s+/g, " ").trim();
-};
-
-await vue3.injectSEO("category", data.value);
+useHead(headData)*/
 </script>

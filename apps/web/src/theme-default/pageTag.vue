@@ -1,8 +1,6 @@
 <template>
-    <Navbar />
-
     <div class="bg-neutral-50 dark:bg-neutral-900 z-10 relative">
-        <div class="container mx-auto z-10">
+        <div class="mx-auto z-10">
             <div class="flex">
                 <main class="flex-1">
                     <div class="lg:ml-64 bg-white dark:bg-neutral-900 rounded-lg">
@@ -87,33 +85,15 @@
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { vue3 } from '@cmmv/blog/client';
+
+import {
+    formatDate, stripHtml
+} from '../composables/useUtils';
+
 import Navbar from "./navbar.vue";
 
 const blogAPI = vue3.useBlog();
 const route = useRoute();
 const data = ref<any>(await blogAPI.getPostsByTagSlug(route.params.slug as string));
 const posts = ref<any[]>(data.value.posts || []);
-
-// Format date
-const formatDate = (timestamp: string) => {
-    if (!timestamp) return 'Unknown date';
-
-    try {
-        const date = new Date(timestamp);
-        return new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }).format(date);
-    } catch (error) {
-        return 'Invalid date';
-    }
-};
-
-const stripHtml = (html: string) => {
-    if (!html) return '';
-    return html.replace(/<\/?[^>]+(>|$)/g, " ").replace(/\s+/g, " ").trim();
-};
-
-//await vue3.injectSEO("category", data.value);
 </script>

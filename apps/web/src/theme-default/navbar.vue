@@ -1,6 +1,6 @@
 <template>
     <button
-        @click="toggleSidebar"
+        @click="toggle"
         class="fixed top-4 left-4 z-50 p-2 bg-white dark:bg-neutral-800 rounded-md shadow-md focus:outline-none lg:hidden cursor-pointer"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neutral-700 dark:text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,9 +76,10 @@
                         <a
                             :href="`/category/${category.slug}`"
                             class="text-neutral-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-between"
+                            aria-label="Category"
                         >
                             {{ category.name }}
-                            <span class="text-sm text-neutral-400 dark:text-neutral-500">({{ category.postCount }})</span>
+                            <span class="text-sm">({{ category.postCount }})</span>
                         </a>
                     </li>
                 </ul>
@@ -88,15 +89,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ICategory, vue3 } from '@cmmv/blog/client';
+import { ref, onMounted } from 'vue'
+import { vue3 } from '@cmmv/blog/client';
 
 const blogAPI = vue3.useBlog();
-const settings = ref<any>(await blogAPI.getAllSettings());
-const categories = ref<ICategory[]>(await blogAPI.getAllCategories())
+const settings = ref<any>(null);
+const categories = ref<any>(null)
 const sidebarOpen = ref(false)
 
-const toggleSidebar = () => {
+const toggle = () => {
     sidebarOpen.value = !sidebarOpen.value
 }
+
+onMounted(async () => {
+    settings.value = await blogAPI.getAllSettings()
+    categories.value = await blogAPI.getAllCategories()
+})
 </script>

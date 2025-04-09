@@ -1,7 +1,9 @@
 import path from 'node:path';
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage } from 'http';
+import { unheadVueComposablesImports } from '@unhead/vue'
+import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), 'VITE');
@@ -18,7 +20,14 @@ export default defineConfig(({ mode }) => {
     };
 
     return {
-        plugins: [vue()],
+        plugins: [
+            vue(),
+            AutoImport({
+                imports: [
+                  unheadVueComposablesImports,
+                ],
+            })
+        ],
         ssr: {
             noExternal: [],
         },

@@ -19,47 +19,16 @@ export function createRouter() {
             {
                 path: '/',
                 component: TemplateDefault,
-                children: [{
-                    path: '',
-                    component: PageHome
-                }],
+                children: [
+                    { path: '', component: PageHome },
+                    { path: '/category/:slug', component: PageCategory },
+                    { path: '/preview/:id', component: PagePost },
+                    { path: '/preview-page/:id', component: PagePage },
+                    { path: '/post/:slug', component: PagePost },
+                    { path: '/tag/:slug', component: PageTag },
+                    { path: '/author/:slug', component: PageAuthor }
+                ]
             },
-            {
-                path: '/preview/:id',
-                component: TemplateDefault,
-                children: [{
-                    path: '',
-                    component: PagePost
-                }]
-            },
-            {
-                path: '/preview-page/:id',
-                component: TemplateDefault,
-                children: [{
-                    path: '',
-                    component: PagePage
-                }]
-            },
-            {
-                path: '/post/:slug',
-                component: TemplateDefault,
-                children: [{
-                    path: '',
-                    component: PagePost
-                }]
-            },
-            {
-                path: '/category/:slug',
-                component: PageCategory
-            },
-            {
-                path: '/tag/:slug',
-                component: PageTag
-            },
-            {
-                path: '/author/:slug',
-                component: PageAuthor
-            }
         ]
     });
 }
