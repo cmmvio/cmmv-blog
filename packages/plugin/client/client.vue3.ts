@@ -25,7 +25,7 @@ export const getEnv = (key: string): string | undefined => {
  * @returns {Object} The API object
  */
 export const useApi = () => {
-    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:3000";
+    const baseUrl = getEnv('VITE_API_URL') || "/api";
     const preloaded = inject<Record<string, any>>(PRELOADED_KEY, {});
 
     const get = async <T>(path: string, key?: string) => {
