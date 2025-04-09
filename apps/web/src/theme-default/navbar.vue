@@ -14,7 +14,7 @@
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
     >
         <div class="h-full flex flex-col">
-            <div class="p-6 border-b border-neutral-100 dark:border-neutral-800">
+            <div class="p-6 border-b border-neutral-100 dark:border-neutral-800" v-if="settings">
                 <a href="/" class="flex flex-col items-center">
                     <img v-if="settings['blog.logo']" :src="settings['blog.logo']" :alt="settings['blog.title']" class="rounded-full w-[140px] h-[79px]" />
                     <span v-else class="text-2xl font-bold text-neutral-800 dark:text-white">{{ settings['blog.title'] }}</span>
@@ -94,7 +94,6 @@ import { ICategory, vue3 } from '@cmmv/blog/client';
 const blogAPI = vue3.useBlog();
 const settings = ref<any>(await blogAPI.getAllSettings());
 const categories = ref<ICategory[]>(await blogAPI.getAllCategories())
-
 const sidebarOpen = ref(false)
 
 const toggleSidebar = () => {

@@ -1,9 +1,0 @@
-{
-    "extends": "../tsconfig.json",
-    "compilerOptions": {
-        "paths": {
-            "@generated": ["../../../apps/api/.generated"],
-            "@generated/*": ["../../../apps/api/.generated/*"]
-        }
-    }
-}

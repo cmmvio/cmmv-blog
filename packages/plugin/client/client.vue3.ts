@@ -5,8 +5,12 @@ const PRELOADED_KEY = Symbol('preloaded');
 type FetchMap = Record<string, Promise<any>>;
 let ssrData: FetchMap = {};
 
+/**
+ * @description Use the API to fetch data from the server
+ * @returns {Object} The API object
+ */
 export const useApi = () => {
-    const baseUrl = "http://localhost:3000";
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
     const preloaded = inject<Record<string, any>>(PRELOADED_KEY, {});
 
     const get = async <T>(path: string, key?: string) => {
@@ -69,6 +73,10 @@ export const useApi = () => {
     };
 };
 
+/**
+ * @description Use the Blog API to fetch data from the server
+ * @returns {Object} The Blog API object
+ */
 export const useBlog = () => {
     const categories = ref<any[]>([]);
     const tags = ref<any[]>([]);
@@ -88,7 +96,7 @@ export const useBlog = () => {
     };
 
     const getAllSettings = async () => {
-        const { data } = await api.get<any[]>("api/settings", "settings");
+        const { data } = await api.get<any[]>("settings", "settings");
         settings.value = data.value || [];
         return data.value || [];
     };
@@ -129,6 +137,11 @@ export const useBlog = () => {
         return data.value || [];
     };
 
+    const getPostsByTagSlug = async (tagSlug: string) => {
+        const { data } = await api.get<any[]>(`/blog/posts/tags/${tagSlug}`, "post");
+        return data.value || [];
+    };
+
     const getPageById = async (id: string) => {
         const { data } = await api.get<any[]>(`blog/pages/${id}`, "page");
         return data.value || [];
@@ -159,6 +172,32 @@ export const useBlog = () => {
         return data.value || [];
     };
 
+    const registerAnalyticsAccess = async (path: string, postId: string) => {
+        window.addEventListener('load', () => {
+            const url = new URL(window.location.href);
+            const data = new URLSearchParams({
+                path: url.pathname,
+                t: Date.now().toString(),
+                r: Math.random().toString()
+            });
+
+            navigator.sendBeacon('/api/analytics/access', data);
+        });
+    }
+
+    const registerAnalyticsUnload = async (path: string, postId: string) => {
+        window.addEventListener('beforeunload', () => {
+            const url = new URL(window.location.href);
+            const data = new URLSearchParams({
+                path: url.pathname,
+                t: Date.now().toString(),
+                r: Math.random().toString()
+            });
+
+            navigator.sendBeacon('/api/analytics/unload', data);
+        });
+    }
+
     return {
         getAllCategories,
         getAllTags,
@@ -167,18 +206,25 @@ export const useBlog = () => {
         getPostById,
         getPostBySlug,
         getPostByAuthor,
+        getPostsByTagSlug,
         getPageById,
         getPageBySlug,
         getCategoryById,
         getCategoryBySlug,
         getAuthorById,
         getAuthorBySlug,
+        registerAnalyticsAccess,
         categories,
         tags,
         settings
     };
 };
 
+/**
+ * @description Inject the SEO metadata into the page
+ * @param {string} type - The type of the page
+ * @param {any} data - The data of the page
+ */
 export const injectSEO = async (type: string, data: any = null) => {
     const blogAPI = useBlog();
     const settings = ref<any>(await blogAPI.getAllSettings());
@@ -353,6 +399,13 @@ export const injectSEO = async (type: string, data: any = null) => {
     }
 };
 
+/**
+ * @description Create the LD+JSON for the page
+ * @param {string} type - The type of the page
+ * @param {any} data - The data of the page
+ * @param {any} settings - The settings of the blog
+ * @returns {string} The LD+JSON
+ */
 export const createLdJSON = (type: string, data: any, settings: any) => {
     switch(type){
         case "post":

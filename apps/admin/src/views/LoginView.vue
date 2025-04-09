@@ -57,16 +57,6 @@
                                 <p v-if="errors.password" class="mt-1 text-sm text-red-600">{{ errors.password }}</p>
                             </div>
 
-                            <div class="mb-4 text-right">
-                                <a
-                                    href="/forgot-password"
-                                    class="text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                                    aria-label="Recover your password"
-                                >
-                                    Forgot Password?
-                                </a>
-                            </div>
-
                             <button
                                 type="submit"
                                 class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -247,7 +237,8 @@ const handleSubmit = async () => {
 
     try {
         loading.value = true
-        const result = await adminClient.login(data.value)
+        const result = await adminClient.session.login(data.value)
+        console.log(result)
         loading.value = false
 
         if (result.token)
@@ -259,9 +250,9 @@ const handleSubmit = async () => {
 }
 
 onMounted(async () => {
-    const setupFinish = await adminClient.getSettings();
+    const settings = await adminClient.settings.get();
 
-    if(!setupFinish.setupFinish)
+    if(!settings.setupFinish)
         router.push('/setup')
 })
 </script>

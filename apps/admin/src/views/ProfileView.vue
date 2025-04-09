@@ -601,20 +601,17 @@ const loadProfile = async () => {
         loading.value = true
         error.value = null
 
-        const response = await adminClient.getProfile()
+        const response = await adminClient.profile.get()
 
         if (response) {
-            // Set user email from response
             userEmail.value = response.email || ''
 
-            // If profile exists, update local state
             if (response.profile) {
                 profile.value = {
                     ...profile.value,
                     ...response.profile
                 }
             } else {
-                // Initialize profile with defaults if it doesn't exist
                 generateDefaultSlug()
             }
         }
@@ -652,7 +649,7 @@ const saveProfile = async () => {
             saving.value = true
             errors.value = {}
 
-            await adminClient.updateProfile(profile.value)
+            await adminClient.profile.update(profile.value)
 
             saving.value = false
             showNotification('success', 'Profile updated successfully')
@@ -660,39 +657,32 @@ const saveProfile = async () => {
             saving.value = false
             console.error('Failed to save profile:', err)
 
-            if (err.response?.data?.errors) {
+            if (err.response?.data?.errors)
                 errors.value = err.response.data.errors
-            } else {
+            else
                 showNotification('error', err.message || 'Failed to save profile')
-            }
         }
     }
 }
 
-// Updated image upload handler
 const openProfileImageUpload = () => {
-    // Trigger file input click
     profileImageInput.value.click()
 }
 
-// Handle file selection
 const handleProfileImageSelect = (event) => {
     const file = event.target.files[0]
     if (!file) return
 
-    // Read the selected file
     const reader = new FileReader()
     reader.onload = (e) => {
-        // Create an image object to get dimensions
         const img = new Image()
-        img.crossOrigin = "Anonymous"  // Try to avoid CORS issues
+        img.crossOrigin = "Anonymous"
 
         img.onload = () => {
             console.log('Image loaded', { width: img.width, height: img.height })
             selectedImage.value = img
-            cropModalOpen.value = true  // Open modal first
+            cropModalOpen.value = true
 
-            // Initialize canvas after modal is open
             setTimeout(() => {
                 initCropCanvas()
             }, 100)
@@ -705,13 +695,11 @@ const handleProfileImageSelect = (event) => {
 
         img.src = e.target.result
     }
-    reader.readAsDataURL(file)
 
-    // Reset file input
+    reader.readAsDataURL(file)
     event.target.value = ''
 }
 
-// Draw image on canvas with current zoom level
 const drawImageOnCanvas = () => {
     if (!cropCanvas.value || !selectedImage.value || !cropContext.value) return;
 

@@ -3,178 +3,103 @@ import { useApi } from './api';
 export const useAdminClient = () => {
     const api = useApi();
 
-    const getSettings = async () => {
-        return await api.getSettings();
+    const settings = {
+        get: () => api.getSettings(),
+        getRoot: () => api.getRootSettings(),
+        update: (data: any) => api.updateSettings(data),
+        saveSetup: (data: any) => api.saveSetup(data),
     };
 
-    const getRootSettings = async () => {
-        return await api.getRootSettings();
+    const profile = {
+        get: () => api.authRequest('profile', 'GET'),
+        update: (data: any) => api.authRequest('profile', 'PUT', data),
     };
 
-    const updateSettings = async (data: any) => {
-        return await api.updateSettings(data);
+    const categories = {
+        get: (filters: Record<string, string>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`categories?${query}`, 'GET');
+        },
+        insert: (data: { name: string }) => api.authRequest('categories', 'POST', data),
+        update: (id: string, data: { name: string }) => api.authRequest(`categories/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`categories/${id}`, 'DELETE'),
     };
 
-    const saveSetup = async (data: any) => {
-        return await api.saveSetup(data);
+    const tags = {
+        get: (filters: Record<string, string>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`tags?${query}`, 'GET');
+        },
+        insert: (data: { name: string }) => api.authRequest('tags', 'POST', data),
+        update: (id: string, data: { name: string }) => api.authRequest(`tags/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`tags/${id}`, 'DELETE'),
     };
 
-    //Profile
-    const getProfile = async () => {
-        return await await api.authRequest('profile', 'GET');
+    const session = {
+        check: () => api.checkSession(),
+        login: (data: { username: string; password: string }) => api.login(data),
+        logout: () => api.logout(),
     };
 
-    const updateProfile = async (data: any) => {
-        return await api.authRequest('profile', 'PUT', data);
+    const posts = {
+        get: (filters: Record<string, any>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`blog/posts?${query}`, 'GET');
+        },
+        getById: (id: string) => api.authRequest(`blog/posts/${id}`, 'GET'),
+        save: (data: any) => api.authRequest('blog/posts', 'POST', data),
+        update: (id: string, data: any) => api.authRequest(`blog/posts/${id}`, 'PUT', data),
     };
 
-    //Categories
-    const getCategories = async (filters: Record<string, string>) => {
-        const urlQueries = new URLSearchParams(filters).toString();
-        return await api.authRequest(`categories?${urlQueries}`, 'GET');
+    const pages = {
+        get: (filters: Record<string, any>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`blog/pages?${query}`, 'GET');
+        },
+        getById: (id: string) => api.authRequest(`blog/pages/${id}`, 'GET'),
+        save: (data: any) => api.authRequest('blog/pages', 'POST', data),
+        update: (id: string, data: any) => api.authRequest(`blog/pages/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`blog/pages/${id}`, 'DELETE'),
     };
 
-    const insertCategory = async (data: { name: string }) => {
-        return await api.authRequest('categories', 'POST', data);
+    const authors = {
+        get: (filters: Record<string, any>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`authors?${query}`, 'GET');
+        },
+        create: (data: any) => api.authRequest('authors', 'POST', data),
+        update: (id: string, data: any) => api.authRequest(`authors/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`authors/${id}`, 'DELETE'),
     };
 
-    const updateCategory = async (id: string, data: { name: string }) => {
-        return await api.authRequest(`categories/${id}`, 'PUT', data);
+    const medias = {
+        get: (queries: Record<string, any>) => {
+            const query = new URLSearchParams(queries).toString();
+            return api.authRequest(`medias?${query}`, 'GET');
+        },
+        processImage: (data: {
+            image: string;
+            format: string;
+            maxWidth: number;
+            alt: string;
+            caption: string;
+        }) => api.authRequest('images', 'POST', data),
     };
 
-    const deleteCategory = async (id: string) => {
-        return await api.authRequest(`categories/${id}`, 'DELETE');
-    };
-
-    //Tags
-    const getTags = async (filters: Record<string, string>) => {
-        const urlQueries = new URLSearchParams(filters).toString();
-        return await api.authRequest(`tags?${urlQueries}`, 'GET');
-    };
-
-    const insertTag = async (data: { name: string }) => {
-        return await api.authRequest('tags', 'POST', data);
-    };
-
-    const updateTag = async (id: string, data: { name: string }) => {
-        return await api.authRequest(`tags/${id}`, 'PUT', data);
-    };
-
-    const deleteTag = async (id: string) => {
-        return await api.authRequest(`tags/${id}`, 'DELETE');
-    };
-
-    //Session
-    const checkSession = async () => {
-        return api.checkSession();
-    };
-
-    const login = async (data: { username: string; password: string }) => {
-        return await api.login(data);
-    };
-
-    const logout = async () => {
-        return await api.logout();
-    };
-
-    //Posts
-    const savePost = async (data: any) => {
-        return await api.authRequest('blog/posts', 'POST', data);
-    };
-
-    const getPosts = async (queries: any) => {
-        return await api.authRequest('blog/posts', 'GET', queries);
-    };
-
-    const getPost = async (id: string) => {
-        return await api.authRequest(`blog/posts/${id}`, 'GET');
-    };
-
-    const updatePost = async (id: string, data: any) => {
-        return await api.authRequest(`blog/posts/${id}`, 'PUT', data);
-    };
-
-    //Pages
-    const savePage = async (data: any) => {
-        return await api.authRequest('blog/pages', 'POST', data);
-    };
-
-    const getPages = async (queries: any) => {
-        return await api.authRequest('blog/pages', 'GET', queries);
-    };
-
-    const getPage = async (id: string) => {
-        return await api.authRequest(`blog/pages/${id}`, 'GET');
-    };
-
-    const updatePage = async (id: string, data: any) => {
-        return await api.authRequest(`blog/pages/${id}`, 'PUT', data);
-    };
-
-    const deletePage = async (id: string) => {
-        return await api.authRequest(`blog/pages/${id}`, 'DELETE');
-    };
-
-    //Authors
-    const getAuthors = async () => {
-        return await api.authRequest('authors', 'GET');
-    };
-
-    const createAuthor = async (data: any) => {
-        return await api.authRequest('authors', 'POST', data);
-    };
-
-    const deleteAuthor = async (id: string) => {
-        return await api.authRequest(`authors/${id}`, 'DELETE');
-    };
-
-    //Medias
-    const getMedias = async (queries: any) => {
-        const urlQueries = new URLSearchParams(queries).toString();
-        return await api.authRequest(`medias?${urlQueries}`, 'GET');
-    };
-
-    const processImage = async (data: { image: string, format: string, maxWidth: number, alt: string, caption: string }) => {
-        return await api.authRequest('images', 'POST', data);
-    };
-
-    //Members
-    const createMember = async (data: any) => {
-        return await api.authRequest('members', 'POST', data);
+    const members = {
+        create: (data: any) => api.authRequest('members', 'POST', data),
     };
 
     return {
-        login,
-        logout,
-        checkSession,
-        getRootSettings,
-        updateSettings,
-        getProfile,
-        updateProfile,
-        getCategories,
-        getSettings,
-        insertCategory,
-        updateCategory,
-        deleteCategory,
-        getTags,
-        insertTag,
-        updateTag,
-        deleteTag,
-        saveSetup,
-        savePost,
-        getPost,
-        getPosts,
-        updatePost,
-        getAuthors,
-        createAuthor,
-        deleteAuthor,
-        createMember,
-        savePage,
-        getPages,
-        getPage,
-        updatePage,
-        deletePage,
-        getMedias,
-        processImage
-    }
+        settings,
+        profile,
+        categories,
+        tags,
+        session,
+        posts,
+        pages,
+        authors,
+        medias,
+        members,
+    };
 };

@@ -25,11 +25,12 @@
                 </div>
 
                 <div class="flex items-center space-x-3">
-                    <button @click="saveDraft"
+                    <button v-if="postStatus !== 'published'" @click="saveDraft"
                         class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors cursor-pointer">
                         Save Draft
                     </button>
                     <button
+                        @click="viewPost(post.id)"
                         class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors cursor-pointer">
                         Preview
                     </button>
@@ -888,11 +889,25 @@ const categories = ref([])
 const allTags = ref([])
 const loadingCategories = ref(false)
 const loadingTags = ref(false)
+const blogUrl = ref('');
+
+const loadBlogUrl = async () => {
+    try {
+        const settings = await adminClient.settings.getRoot();
+        const urlSetting = settings.find(s => s.key === 'blog.url');
+
+        if (urlSetting)
+            blogUrl.value = urlSetting.value.replace(/\/$/, '');
+    } catch (err) {
+        console.error('Failed to load blog URL:', err);
+        blogUrl.value = '';
+    }
+};
 
 async function loadCategories() {
     try {
         loadingCategories.value = true
-        const response = await adminClient.getCategories({
+        const response = await adminClient.categories.get({
             limit: 100,
             sort: 'asc',
             sortBy: 'name'
@@ -908,7 +923,7 @@ async function loadCategories() {
 async function loadTags() {
     try {
         loadingTags.value = true
-        const response = await adminClient.getTags({
+        const response = await adminClient.tags.get({
             limit: 100,
             sort: 'asc',
             sortBy: 'name'
@@ -1160,6 +1175,7 @@ onMounted(async () => {
 
     loadCategories()
     loadTags()
+    loadBlogUrl();
     document.addEventListener('click', handleGlobalClick)
 
     nextTick(() => {
@@ -1462,7 +1478,7 @@ async function savePost() {
             meta: postMeta.value
         }
 
-        const response = await adminClient.savePost(payload)
+        const response = await adminClient.posts.save(payload)
 
         if (response && response.id) {
             showNotification('success', 'Post saved successfully')
@@ -1509,7 +1525,7 @@ function showNotification(type, message) {
 
 async function loadPost(postId) {
     try {
-        const response = await adminClient.getPost(postId)
+        const response = await adminClient.posts.getById(postId)
 
         if (response) {
             let formattedCategories = response.categories || []
@@ -1667,6 +1683,10 @@ function insertTable() {
     editor.chain().focus()
         .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
         .run()
+}
+
+function viewPost(id) {
+    window.open(`${blogUrl.value}/preview/${id}`, '_blank')
 }
 </script>
 

@@ -174,6 +174,9 @@ export class BlogSettingsService {
             select: [ "group", "key", "value", "type", "flags" ]
         });
 
+        if(!setting.data.flags.includes("PUBLIC"))
+            throw new Error("Setting not found");
+
         return setting ? setting.data : null;
     }
 

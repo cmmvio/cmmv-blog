@@ -1205,7 +1205,7 @@ async function savePage() {
             meta: postMeta.value
         }
 
-        const response = await adminClient.savePage(payload)
+        const response = await adminClient.pages.save(payload)
 
         if (response && response.id) {
             showNotification('success', 'Page saved successfully')
@@ -1252,7 +1252,7 @@ function showNotification(type, message) {
 
 async function loadPage(pageId) {
     try {
-        const response = await adminClient.getPage(pageId)
+        const response = await adminClient.pages.getById(pageId)
 
         if (response) {
             post.value = {

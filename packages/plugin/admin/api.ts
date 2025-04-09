@@ -20,6 +20,8 @@ export function useApi() {
             if (token.value && token.value !== 'null') {
                 if (!headers) headers = {}
 
+                path += `#t=${new Date().getTime()}`
+
                 const response = await fetch(
                     `/api/${path}`,
                     method == 'GET'
@@ -99,7 +101,7 @@ export function useApi() {
         })
 
         const data: any = await response.json();
-        return data.result ? data.result : null;
+        return data ? data : null;
     }
 
     const getRootSettings = async () => {

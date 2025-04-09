@@ -96,8 +96,10 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Site Logo</label>
                         <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600">
-                                <img v-if="settings.logo" :src="settings.logo" alt="Site logo" class="max-w-full max-h-full p-1" />
+                            <div
+                                class="w-16 h-16 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600">
+                                <img v-if="settings.logo" :src="settings.logo" alt="Site logo"
+                                    class="max-w-full max-h-full p-1" />
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-neutral-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,20 +107,13 @@
                                 </svg>
                             </div>
                             <div class="flex space-x-2">
-                                <input
-                                    type="file"
-                                    ref="logoInput"
-                                    accept="image/*"
-                                    class="hidden"
-                                    @change="handleLogoUpload"
-                                />
-                                <button
-                                    @click="$refs.logoInput.click()"
+                                <input type="file" ref="logoInput" accept="image/*" class="hidden"
+                                    @change="handleLogoUpload" />
+                                <button @click="$refs.logoInput.click()"
                                     class="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-sm rounded-md transition-colors">
                                     Select Logo
                                 </button>
-                                <button v-if="settings.logo"
-                                    @click="removeLogo"
+                                <button v-if="settings.logo" @click="removeLogo"
                                     class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
                                     Remove
                                 </button>
@@ -130,8 +125,10 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Favicon</label>
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600">
-                                <img v-if="settings.favicon" :src="settings.favicon" alt="Favicon" class="max-w-full max-h-full p-1" />
+                            <div
+                                class="w-10 h-10 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600">
+                                <img v-if="settings.favicon" :src="settings.favicon" alt="Favicon"
+                                    class="max-w-full max-h-full p-1" />
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neutral-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -139,20 +136,13 @@
                                 </svg>
                             </div>
                             <div class="flex space-x-2">
-                                <input
-                                    type="file"
-                                    ref="faviconInput"
-                                    accept=".ico,.png,image/x-icon,image/png"
-                                    class="hidden"
-                                    @change="handleFaviconUpload"
-                                />
-                                <button
-                                    @click="$refs.faviconInput.click()"
+                                <input type="file" ref="faviconInput" accept=".ico,.png,image/x-icon,image/png"
+                                    class="hidden" @change="handleFaviconUpload" />
+                                <button @click="$refs.faviconInput.click()"
                                     class="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-sm rounded-md transition-colors">
                                     Select Favicon
                                 </button>
-                                <button v-if="settings.favicon"
-                                    @click="removeFavicon"
+                                <button v-if="settings.favicon" @click="removeFavicon"
                                     class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
                                     Remove
                                 </button>
@@ -231,14 +221,12 @@
                         <label class="block text-sm font-medium text-neutral-300">For each post in a feed, show</label>
                         <div class="space-y-3">
                             <div class="flex items-center">
-                                <input id="show-full-text" type="radio" value="full_text"
-                                    v-model="settings.feedContent"
+                                <input id="show-full-text" type="radio" value="full_text" v-model="settings.feedContent"
                                     class="h-4 w-4 mr-2 text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="show-full-text" class="text-sm text-neutral-300">Full text</label>
                             </div>
                             <div class="flex items-center">
-                                <input id="show-excerpt" type="radio" value="excerpt"
-                                    v-model="settings.feedContent"
+                                <input id="show-excerpt" type="radio" value="excerpt" v-model="settings.feedContent"
                                     class="h-4 w-4 mr-2 text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="show-excerpt" class="text-sm text-neutral-300">Excerpt</label>
                             </div>
@@ -265,15 +253,13 @@
                                     comments on new posts</label>
                             </div>
                             <div class="flex items-center">
-                                <input id="comment-approval" type="checkbox"
-                                    v-model="settings.moderatecomments"
+                                <input id="comment-approval" type="checkbox" v-model="settings.moderatecomments"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="comment-approval" class="text-sm text-neutral-300">Comment must be manually
                                     approved</label>
                             </div>
                             <div class="flex items-center">
-                                <input id="require-name-email" type="checkbox"
-                                    v-model="settings.requireNameEmail"
+                                <input id="require-name-email" type="checkbox" v-model="settings.requireNameEmail"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="require-name-email" class="text-sm text-neutral-300">Comment author must
                                     fill out name and email</label>
@@ -291,8 +277,7 @@
                                     comments</label>
                             </div>
                             <div class="flex items-center">
-                                <input id="comment-pagination" type="checkbox"
-                                    v-model="settings.commentPagination"
+                                <input id="comment-pagination" type="checkbox" v-model="settings.commentPagination"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="comment-pagination" class="text-sm text-neutral-300">Break comments into
                                     pages</label>
@@ -312,15 +297,13 @@
                             <label class="block text-sm font-medium text-neutral-300">Email notifications</label>
                             <div class="space-y-2">
                                 <div class="flex items-center">
-                                    <input id="email-me-comments" type="checkbox"
-                                        v-model="settings.emailOnComment"
+                                    <input id="email-me-comments" type="checkbox" v-model="settings.emailOnComment"
                                         class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                     <label for="email-me-comments" class="text-sm text-neutral-300">Email me whenever
                                         anyone posts a comment</label>
                                 </div>
                                 <div class="flex items-center">
-                                    <input id="email-me-moderation" type="checkbox"
-                                        v-model="settings.emailOnModeration"
+                                    <input id="email-me-moderation" type="checkbox" v-model="settings.emailOnModeration"
                                         class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                     <label for="email-me-moderation" class="text-sm text-neutral-300">Email me whenever
                                         a comment is held for moderation</label>
@@ -420,7 +403,8 @@
                         <textarea v-model="settings.metaDescription" rows="3"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Brief description of your site for search engines"></textarea>
-                        <p class="text-xs text-neutral-500">Used when no specific description is provided for a page or post. Aim for 150-160 characters.</p>
+                        <p class="text-xs text-neutral-500">Used when no specific description is provided for a page or
+                            post. Aim for 150-160 characters.</p>
                     </div>
 
                     <div class="space-y-2">
@@ -428,14 +412,17 @@
                         <input v-model="settings.metaKeywords" type="text"
                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="keyword1, keyword2, keyword3" />
-                        <p class="text-xs text-neutral-500">Comma-separated keywords used when no specific keywords are provided.</p>
+                        <p class="text-xs text-neutral-500">Comma-separated keywords used when no specific keywords are
+                            provided.</p>
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-neutral-300">Default Featured Image</label>
                         <div class="flex items-center space-x-4">
-                            <div class="w-32 h-20 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600 overflow-hidden">
-                                <img v-if="settings.defaultFeaturedImage" :src="settings.defaultFeaturedImage" alt="Default featured image" class="object-cover w-full h-full" />
+                            <div
+                                class="w-32 h-20 bg-neutral-700 rounded-md flex items-center justify-center border border-neutral-600 overflow-hidden">
+                                <img v-if="settings.defaultFeaturedImage" :src="settings.defaultFeaturedImage"
+                                    alt="Default featured image" class="object-cover w-full h-full" />
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-neutral-500"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -443,26 +430,20 @@
                                 </svg>
                             </div>
                             <div class="flex space-x-2">
-                                <input
-                                    type="file"
-                                    ref="featuredImageInput"
-                                    accept="image/*"
-                                    class="hidden"
-                                    @change="handleDefaultFeaturedImageUpload"
-                                />
-                                <button
-                                    @click="$refs.featuredImageInput.click()"
+                                <input type="file" ref="featuredImageInput" accept="image/*" class="hidden"
+                                    @change="handleDefaultFeaturedImageUpload" />
+                                <button @click="$refs.featuredImageInput.click()"
                                     class="px-3 py-1.5 bg-neutral-700 hover:bg-neutral-600 text-white text-sm rounded-md transition-colors">
                                     Select Image
                                 </button>
-                                <button v-if="settings.defaultFeaturedImage"
-                                    @click="removeDefaultFeaturedImage"
+                                <button v-if="settings.defaultFeaturedImage" @click="removeDefaultFeaturedImage"
                                     class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
                                     Remove
                                 </button>
                             </div>
                         </div>
-                        <p class="text-xs text-neutral-500">Used when a post or page doesn't have a featured image. Recommended size: 1200x630px for social sharing.</p>
+                        <p class="text-xs text-neutral-500">Used when a post or page doesn't have a featured image.
+                            Recommended size: 1200x630px for social sharing.</p>
                     </div>
                 </div>
             </div>
@@ -516,24 +497,28 @@
     </div>
 
     <!-- Toast notifications -->
-    <div v-if="notification.show"
-        class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
-        :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
-    >
+    <div v-if="notification.show" class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
+        :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'">
         <span v-if="notification.type === 'success'" class="mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
             </svg>
         </span>
         <span v-else class="mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd" />
             </svg>
         </span>
         <span>{{ notification.message }}</span>
         <button @click="notification.show = false" class="ml-4 text-white hover:text-neutral-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
             </svg>
         </button>
     </div>
@@ -617,7 +602,7 @@ const tabFieldMap = {
     appearance: ['logo', 'favicon', 'primaryColor', 'secondaryColor', 'fontFamily'],
     reading: ['homepageDisplay', 'homepage', 'postsPage', 'postsperpage', 'rssFeedItems', 'feedContent'],
     discussion: ['enablecomments', 'moderatecomments', 'requireNameEmail', 'nestedComments',
-                'commentPagination', 'commentsPerPage', 'emailOnComment', 'emailOnModeration'],
+        'commentPagination', 'commentsPerPage', 'emailOnComment', 'emailOnModeration'],
     social: ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'github'],
     seo: ['metaDescription', 'metaKeywords', 'defaultFeaturedImage'],
     advanced: ['analyticsCode', 'customCss', 'customJs', 'robotsTxt']
@@ -696,7 +681,7 @@ const mapFormToApiSettings = () => {
 const loadSettings = async () => {
     try {
         isLoading.value = true
-        const apiSettings = await adminClient.getRootSettings()
+        const apiSettings = await adminClient.settings.getRoot()
         mapApiSettingsToForm(apiSettings)
     } catch (error) {
         console.error('Failed to load settings:', error)
@@ -728,7 +713,7 @@ const showNotification = (type, message) => {
 const saveCurrentSection = async () => {
     try {
         const apiSettings = mapFormToApiSettings()
-        await adminClient.updateSettings(apiSettings)
+        await adminClient.settings.update(apiSettings)
         showNotification('success', 'Settings saved successfully!')
     } catch (error) {
         console.error('Failed to save settings:', error)
@@ -740,157 +725,156 @@ const logoInput = ref(null)
 const faviconInput = ref(null)
 const imageLoading = ref(false)
 
-// Function to resize image to desired dimensions
 const resizeImage = (file, maxWidth, maxHeight) => {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = (event) => {
-      const img = new Image()
-      img.src = event.target.result
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        canvas.width = maxWidth
-        canvas.height = maxHeight
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, maxWidth, maxHeight)
+    return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = (event) => {
+            const img = new Image()
+            img.src = event.target.result
+            img.onload = () => {
+                const canvas = document.createElement('canvas')
+                canvas.width = maxWidth
+                canvas.height = maxHeight
+                const ctx = canvas.getContext('2d')
+                ctx.drawImage(img, 0, 0, maxWidth, maxHeight)
 
-        // Convert to base64
-        const dataUrl = canvas.toDataURL(file.type)
-        resolve(dataUrl)
-      }
-    }
-  })
+                const dataUrl = canvas.toDataURL(file.type)
+                resolve(dataUrl)
+            }
+        }
+    })
 }
 
 const uploadImage = async (base64Image) => {
-  try {
-    const response = await adminClient.processImage({
-      image: base64Image
-    })
-    return response.url
-  } catch (error) {
-    console.error('Failed to upload image:', error)
-    showNotification('error', 'Failed to upload image: ' + (error.message || 'Unknown error'))
-    return null
-  }
+    try {
+        const response = await adminClient.medias.processImage({
+            image: base64Image
+        })
+
+        return response.url
+    } catch (error) {
+        console.error('Failed to upload image:', error)
+        showNotification('error', 'Failed to upload image: ' + (error.message || 'Unknown error'))
+        return null
+    }
 }
 
 const handleLogoUpload = async (event) => {
-  if (!event.target.files || !event.target.files[0]) return
+    if (!event.target.files || !event.target.files[0]) return
 
-  try {
-    imageLoading.value = true
-    const file = event.target.files[0]
+    try {
+        imageLoading.value = true
+        const file = event.target.files[0]
 
-    // Resize to 140x79
-    const resizedImage = await resizeImage(file, 140, 79)
+        // Resize to 140x79
+        const resizedImage = await resizeImage(file, 140, 79)
 
-    // Upload to server
-    const imageUrl = await uploadImage(resizedImage)
+        // Upload to server
+        const imageUrl = await uploadImage(resizedImage)
 
-    if (imageUrl) {
-      settings.value.logo = imageUrl
-      showNotification('success', 'Logo uploaded successfully!')
+        if (imageUrl) {
+            settings.value.logo = imageUrl
+            showNotification('success', 'Logo uploaded successfully!')
+        }
+    } catch (error) {
+        console.error('Error processing logo:', error)
+        showNotification('error', 'Failed to process logo: ' + (error.message || 'Unknown error'))
+    } finally {
+        imageLoading.value = false
+        // Clear the input
+        event.target.value = ''
     }
-  } catch (error) {
-    console.error('Error processing logo:', error)
-    showNotification('error', 'Failed to process logo: ' + (error.message || 'Unknown error'))
-  } finally {
-    imageLoading.value = false
-    // Clear the input
-    event.target.value = ''
-  }
 }
 
 const handleFaviconUpload = async (event) => {
-  if (!event.target.files || !event.target.files[0]) return
+    if (!event.target.files || !event.target.files[0]) return
 
-  try {
-    imageLoading.value = true
-    const file = event.target.files[0]
+    try {
+        imageLoading.value = true
+        const file = event.target.files[0]
 
-    // Check if it's a valid file type
-    if (!file.type.match(/image\/(png|x-icon)/) && !file.name.endsWith('.ico')) {
-      showNotification('error', 'Invalid file type. Please select a PNG or ICO file.')
-      return
+        // Check if it's a valid file type
+        if (!file.type.match(/image\/(png|x-icon)/) && !file.name.endsWith('.ico')) {
+            showNotification('error', 'Invalid file type. Please select a PNG or ICO file.')
+            return
+        }
+
+        // Resize to 16x16
+        const resizedImage = await resizeImage(file, 16, 16)
+
+        // Upload to server
+        const imageUrl = await uploadImage(resizedImage)
+
+        if (imageUrl) {
+            settings.value.favicon = imageUrl
+            showNotification('success', 'Favicon uploaded successfully!')
+        }
+    } catch (error) {
+        console.error('Error processing favicon:', error)
+        showNotification('error', 'Failed to process favicon: ' + (error.message || 'Unknown error'))
+    } finally {
+        imageLoading.value = false
+        // Clear the input
+        event.target.value = ''
     }
-
-    // Resize to 16x16
-    const resizedImage = await resizeImage(file, 16, 16)
-
-    // Upload to server
-    const imageUrl = await uploadImage(resizedImage)
-
-    if (imageUrl) {
-      settings.value.favicon = imageUrl
-      showNotification('success', 'Favicon uploaded successfully!')
-    }
-  } catch (error) {
-    console.error('Error processing favicon:', error)
-    showNotification('error', 'Failed to process favicon: ' + (error.message || 'Unknown error'))
-  } finally {
-    imageLoading.value = false
-    // Clear the input
-    event.target.value = ''
-  }
 }
 
 const removeLogo = () => {
-  settings.value.logo = ''
-  showNotification('success', 'Logo removed')
+    settings.value.logo = ''
+    showNotification('success', 'Logo removed')
 }
 
 const removeFavicon = () => {
-  settings.value.favicon = ''
-  showNotification('success', 'Favicon removed')
+    settings.value.favicon = ''
+    showNotification('success', 'Favicon removed')
 }
 
 const featuredImageInput = ref(null)
 
 const handleDefaultFeaturedImageUpload = async (event) => {
-  if (!event.target.files || !event.target.files[0]) return
+    if (!event.target.files || !event.target.files[0]) return
 
-  try {
-    imageLoading.value = true
-    const file = event.target.files[0]
+    try {
+        imageLoading.value = true
+        const file = event.target.files[0]
 
-    // We'll maintain aspect ratio but limit width to 1200px for optimal sharing
-    const img = new Image()
-    img.src = URL.createObjectURL(file)
+        // We'll maintain aspect ratio but limit width to 1200px for optimal sharing
+        const img = new Image()
+        img.src = URL.createObjectURL(file)
 
-    await new Promise(resolve => {
-      img.onload = resolve
-    })
+        await new Promise(resolve => {
+            img.onload = resolve
+        })
 
-    // Calculate proportional height (maintaining aspect ratio)
-    const aspectRatio = img.height / img.width
-    const targetWidth = 1200
-    const targetHeight = Math.round(targetWidth * aspectRatio)
+        // Calculate proportional height (maintaining aspect ratio)
+        const aspectRatio = img.height / img.width
+        const targetWidth = 1200
+        const targetHeight = Math.round(targetWidth * aspectRatio)
 
-    // Resize the image
-    const resizedImage = await resizeImage(file, targetWidth, targetHeight)
+        // Resize the image
+        const resizedImage = await resizeImage(file, targetWidth, targetHeight)
 
-    // Upload to server
-    const imageUrl = await uploadImage(resizedImage)
+        // Upload to server
+        const imageUrl = await uploadImage(resizedImage)
 
-    if (imageUrl) {
-      settings.value.defaultFeaturedImage = imageUrl
-      showNotification('success', 'Default featured image uploaded successfully!')
+        if (imageUrl) {
+            settings.value.defaultFeaturedImage = imageUrl
+            showNotification('success', 'Default featured image uploaded successfully!')
+        }
+    } catch (error) {
+        console.error('Error processing default featured image:', error)
+        showNotification('error', 'Failed to process image: ' + (error.message || 'Unknown error'))
+    } finally {
+        imageLoading.value = false
+        // Clear the input
+        event.target.value = ''
     }
-  } catch (error) {
-    console.error('Error processing default featured image:', error)
-    showNotification('error', 'Failed to process image: ' + (error.message || 'Unknown error'))
-  } finally {
-    imageLoading.value = false
-    // Clear the input
-    event.target.value = ''
-  }
 }
 
 const removeDefaultFeaturedImage = () => {
-  settings.value.defaultFeaturedImage = ''
-  showNotification('success', 'Default featured image removed')
+    settings.value.defaultFeaturedImage = ''
+    showNotification('success', 'Default featured image removed')
 }
 
 onMounted(() => {

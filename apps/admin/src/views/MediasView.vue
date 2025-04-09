@@ -244,11 +244,9 @@ const mediaForm = ref({
 })
 const mediaToEdit = ref(null)
 const formErrors = ref({})
-const formLoading = ref(false)
 
 const showDeleteDialog = ref(false)
 const mediaToDelete = ref(null)
-const deleteLoading = ref(false)
 
 const notification = ref({
     show: false,
@@ -274,7 +272,6 @@ const filters = ref({
     page: 1
 })
 
-// Format file size (bytes to KB, MB, etc)
 const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -283,7 +280,6 @@ const formatFileSize = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Format date to a more readable format
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
@@ -326,7 +322,7 @@ const loadMedias = async () => {
             apiFilters.searchField = filters.value.searchField
         }
 
-        const response = await adminClient.getMedias(apiFilters)
+        const response = await adminClient.medias.get(apiFilters)
 
         if (response && response.data) {
             medias.value = response.data || []
@@ -391,7 +387,6 @@ const nextPage = () => {
 }
 
 const openAddDialog = () => {
-    // Will be implemented for media upload
     console.log('Open add dialog')
 }
 

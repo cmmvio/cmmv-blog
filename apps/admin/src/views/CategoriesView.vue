@@ -391,12 +391,10 @@ import { useAdminClient } from '@cmmv/blog/admin/client'
 
 const adminClient = useAdminClient()
 
-// State
 const categories = ref([])
 const loading = ref(true)
 const error = ref(null)
 
-// Category form
 const showDialog = ref(false)
 const isEditing = ref(false)
 const categoryForm = ref({
@@ -410,12 +408,10 @@ const categoryToEdit = ref(null)
 const formErrors = ref({})
 const formLoading = ref(false)
 
-// Delete confirmation
 const showDeleteDialog = ref(false)
 const categoryToDelete = ref(null)
 const deleteLoading = ref(false)
 
-// Notification
 const notification = ref({
     show: false,
     type: 'success',
@@ -423,7 +419,6 @@ const notification = ref({
     duration: 3000
 })
 
-// Pagination
 const pagination = ref({
     current: 1,
     lastPage: 1,
@@ -433,7 +428,6 @@ const pagination = ref({
     to: 10
 })
 
-// Filtering & Sorting
 const filters = ref({
     search: '',
     searchField: 'name',
@@ -442,31 +436,27 @@ const filters = ref({
     page: 1
 })
 
-// First, add the blogUrl ref after other state declarations
 const blogUrl = ref('');
 
-// Add the loadBlogUrl function
 const loadBlogUrl = async () => {
     try {
-        const settings = await adminClient.getRootSettings();
+        const settings = await adminClient.settings.getRoot();
         const urlSetting = settings.find(s => s.key === 'blog.url');
-        if (urlSetting) {
-            blogUrl.value = urlSetting.value.replace(/\/$/, ''); // Remove trailing slash if present
-        }
+
+        if (urlSetting)
+            blogUrl.value = urlSetting.value.replace(/\/$/, '');
     } catch (err) {
         console.error('Failed to load blog URL:', err);
         blogUrl.value = '';
     }
 };
 
-// Computed
 const paginationPages = computed(() => {
     const totalPages = pagination.value.lastPage
-    if (totalPages <= 5) {
-        return Array.from({ length: totalPages }, (_, i) => i + 1)
-    }
 
-    // Always include first page, last page, current page, and one page before/after current
+    if (totalPages <= 5)
+        return Array.from({ length: totalPages }, (_, i) => i + 1)
+
     const current = pagination.value.current
     const pages = [1]
 
@@ -481,13 +471,11 @@ const paginationPages = computed(() => {
     return pages
 })
 
-// Load categories
 const loadCategories = async () => {
     try {
         loading.value = true
         error.value = null
 
-        // Create filter object from current filters using the correct interface
         const apiFilters = {
             limit: pagination.value.perPage,
             offset: (filters.value.page - 1) * pagination.value.perPage,
@@ -500,7 +488,7 @@ const loadCategories = async () => {
             apiFilters.searchField = filters.value.searchField
         }
 
-        const response = await adminClient.getCategories(apiFilters)
+        const response = await adminClient.categories.get(apiFilters)
 
         if (response && response.data) {
             categories.value = response.data || []
@@ -629,12 +617,10 @@ const saveCategory = async () => {
         }
 
         if (isEditing.value) {
-            // Update existing category
-            await adminClient.updateCategory(categoryToEdit.value.id, categoryData)
+            await adminClient.categories.update(categoryToEdit.value.id, categoryData)
             showNotification('success', 'Category updated successfully')
         } else {
-            // Create new category
-            await adminClient.insertCategory(categoryData)
+            await adminClient.categories.insert(categoryData)
             showNotification('success', 'Category created successfully')
         }
 
@@ -643,17 +629,14 @@ const saveCategory = async () => {
         refreshData()
     } catch (err) {
         formLoading.value = false
-        console.error('Failed to save category:', err)
 
-        if (err.response?.data?.errors) {
+        if (err.response?.data?.errors)
             formErrors.value = err.response.data.errors
-        } else {
+        else
             showNotification('error', err.message || 'Failed to save category')
-        }
     }
 }
 
-// Delete methods
 const confirmDelete = (category) => {
     categoryToDelete.value = category
     showDeleteDialog.value = true
@@ -669,7 +652,7 @@ const deleteCategory = async () => {
 
     try {
         deleteLoading.value = true
-        await adminClient.deleteCategory(categoryToDelete.value.id)
+        await adminClient.categories.delete(categoryToDelete.value.id)
         deleteLoading.value = false
         closeDeleteDialog()
         showNotification('success', 'Category deleted successfully')
@@ -681,7 +664,6 @@ const deleteCategory = async () => {
     }
 }
 
-// Notification
 const showNotification = (type, message) => {
     notification.value = {
         show: true,
@@ -695,12 +677,12 @@ const showNotification = (type, message) => {
     }, notification.value.duration)
 }
 
-// Format date
+
 const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A'
+
     try {
         const date = new Date(timestamp)
-        // Check if date is valid
         if (isNaN(date.getTime())) return 'N/A'
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
     } catch (err) {
@@ -709,36 +691,29 @@ const formatDate = (timestamp) => {
     }
 }
 
-// Add a toggle sort method
+
 const toggleSort = (column) => {
     if (filters.value.sortBy === column) {
-        // Toggle sort order if clicking the same column
         filters.value.sortOrder = filters.value.sortOrder === 'asc' ? 'desc' : 'asc'
     } else {
-        // Set new sort column with default asc order
         filters.value.sortBy = column
         filters.value.sortOrder = 'asc'
     }
 }
 
-// Initial load
 onMounted(() => {
     loadCategories()
     loadBlogUrl()
 })
 
-// Update the updateSlugAndLabel method to always generate a new slug when name changes
+
 const updateSlugAndLabel = () => {
-    // Always update slug when name changes
     categoryForm.value.slug = generateSlug(categoryForm.value.name)
 
-    // Only update navigation label if empty
-    if (!categoryForm.value.navigationLabel) {
+    if (!categoryForm.value.navigationLabel)
         categoryForm.value.navigationLabel = categoryForm.value.name
-    }
 }
 
-// Add this helper function to generate slugs
 const generateSlug = (text) => {
     return text
         .toString()

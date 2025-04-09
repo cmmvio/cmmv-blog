@@ -19,6 +19,29 @@
     <body class="bg-neutral-50 dark:bg-neutral-900 ">
         <div id="app"></div>
         <script type="module" src="/src/entry-client.ts" async></script>
+        <script>
+            window.addEventListener('load', () => {
+                const url = new URL(window.location.href);
+                const data = new URLSearchParams({
+                    path: url.pathname,
+                    t: Date.now().toString(),
+                    r: Math.random().toString()
+                });
+
+                navigator.sendBeacon('/api/analytics/access', data);
+            });
+
+            window.addEventListener('beforeunload', () => {
+                const url = new URL(window.location.href);
+                const data = new URLSearchParams({
+                    path: url.pathname,
+                    t: Date.now().toString(),
+                    r: Math.random().toString()
+                });
+
+                navigator.sendBeacon('/api/analytics/unload', data);
+            });
+        </script>
         {analytics}
         {customJS}
     </body>

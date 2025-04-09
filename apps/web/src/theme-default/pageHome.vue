@@ -9,7 +9,7 @@
                                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                             </div>
 
-                            <div v-else-if="posts.length === 0" class="text-center py-16">
+                            <div v-else-if="posts && posts.length === 0" class="text-center py-16">
                                 <h2 class="text-2xl font-bold mb-2 dark:text-white">No posts found</h2>
                                 <p class="text-gray-600 dark:text-gray-400">Check back later for new content!</p>
                             </div>
@@ -72,7 +72,7 @@
                                     </div>
                                 </div>
 
-                                <div v-if="pagination.total > pagination.limit" class="mt-10 flex justify-center">
+                                <div v-if="pagination && pagination.total > pagination.limit" class="mt-10 flex justify-center">
                                     <div class="flex space-x-1">
                                         <button
                                             @click="changePage(currentPage - 1)"
@@ -126,11 +126,13 @@ const response: any = await blogAPI.getPosts((currentPage.value - 1) * paginatio
 posts.value = response.posts;
 loading.value = false;
 
-pagination.value = {
-    total: response.meta?.pagination?.total || 0,
-    limit: response.meta?.pagination?.limit || 9,
-    offset: response.meta?.pagination?.offset || 0
-};
+if(response){
+    pagination.value = {
+        total: response.meta?.pagination?.total || 0,
+        limit: response.meta?.pagination?.limit || 9,
+        offset: response.meta?.pagination?.offset || 0
+    };
+}
 
 const changePage = (page: number) => {
     if (page < 1 || page > Math.ceil(pagination.value.total / pagination.value.limit))

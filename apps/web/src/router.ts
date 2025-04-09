@@ -10,6 +10,7 @@ import PagePost from './theme-default/pagePost.vue';
 import PageCategory from './theme-default/pageCategory.vue';
 import PagePage from './theme-default/pagePage.vue';
 import PageAuthor from './theme-default/pageAuthor.vue';
+import PageTag from './theme-default/pageTag.vue';
 
 export function createRouter() {
     return _createRouter({
@@ -50,6 +51,10 @@ export function createRouter() {
             {
                 path: '/category/:slug',
                 component: PageCategory
+            },
+            {
+                path: '/tag/:slug',
+                component: PageTag
             },
             {
                 path: '/author/:slug',

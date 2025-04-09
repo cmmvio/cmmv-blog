@@ -255,4 +255,18 @@ export class PostsContract extends AbstractContract {
         nullable: true
     })
     canonicalUrl?: string;
+
+    @ContractField({
+        protoType: 'int64',
+        nullable: false,
+        defaultValue: 0
+    })
+    views: number;
+
+    @ContractField({
+        protoType: 'int64',
+        nullable: false,
+        defaultValue: 0
+    })
+    comments: number;
 }

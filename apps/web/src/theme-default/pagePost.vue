@@ -262,7 +262,6 @@ const formatDate = (timestamp: string) => {
             day: 'numeric'
         }).format(date);
     } catch (error) {
-        console.error('Error formatting date:', error);
         return 'Invalid date';
     }
 };
@@ -300,6 +299,10 @@ const pageUrl = computed(() => {
 await vue3.injectSEO("post", {
     ...post.value,
     author: author.value
+});
+
+onMounted(() => {
+    blogAPI.getAnalyticsAccess(pageUrl.value, post.value.id);
 });
 </script>
 

@@ -2,9 +2,9 @@ import path from 'node:path';
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// https://vite.dev/config/
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), 'VITE')
+    console.log(env)
 
     return {
         plugins: [vue()],
@@ -21,8 +21,6 @@ export default defineConfig(({ mode }) => {
             }
         },
         server: {
-            port: 3005,
-            host: true,
             proxy: {
                 '/api': {
                     target: env.VITE_API_URL || 'http://localhost:3000',

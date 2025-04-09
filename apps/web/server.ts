@@ -53,6 +53,7 @@ async function start() {
                 }
 
                 template = await vite.transformIndexHtml(url, template);
+                template = template.replace(/<script type="module" src="\/@vite\/client"><\/script>\s*/g, '');
                 const { html: appHtml, data, metadata } = await render(url);
 
                 for(const key in metadata)

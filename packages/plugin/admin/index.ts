@@ -1,15 +1,7 @@
 export default {
-    navbar: {
-        Posts: {
-            rounter: "/posts",
-            contract: "./contracts/posts.contract.ts",
-            view: "./views/posts.view.ts"
-        }
-    },
-
-    views: {
-
-    }
+    navbar: { },
+    views: { }
 }
 
 export * from "./client";
+export * from "./api";

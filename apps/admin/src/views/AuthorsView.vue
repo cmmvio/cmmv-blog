@@ -509,7 +509,7 @@
         </div>
 
         <!-- Delete Confirmation Dialog -->
-        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
             <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
                 <div class="p-6 border-b border-neutral-700">
                     <h3 class="text-lg font-medium text-white">Confirm Deletion</h3>
@@ -651,11 +651,10 @@ const activeTab = ref('information')
 // Computed
 const paginationPages = computed(() => {
     const totalPages = pagination.value.lastPage
-    if (totalPages <= 5) {
-        return Array.from({ length: totalPages }, (_, i) => i + 1)
-    }
 
-    // Always include first page, last page, current page, and one page before/after current
+    if (totalPages <= 5)
+        return Array.from({ length: totalPages }, (_, i) => i + 1)
+
     const current = pagination.value.current
     const pages = [1]
 
@@ -689,7 +688,7 @@ const loadAuthors = async () => {
             apiFilters.searchField = filters.value.searchField
         }
 
-        const response = await adminClient.getAuthors(apiFilters)
+        const response = await adminClient.authors.get(apiFilters)
 
         if (response && response.data) {
             authors.value = response.data || []
@@ -732,26 +731,23 @@ const loadAuthors = async () => {
     }
 }
 
-// Load blog URL for author profiles
 const loadBlogUrl = async () => {
     try {
-        const settings = await adminClient.getRootSettings();
+        const settings = await adminClient.settings.getRoot();
         const urlSetting = settings.find(s => s.key === 'blog.url');
-        if (urlSetting) {
+
+        if (urlSetting)
             blogUrl.value = urlSetting.value.replace(/\/$/, '');
-        }
     } catch (err) {
         console.error('Failed to load blog URL:', err);
         blogUrl.value = '';
     }
 };
 
-// Refresh data
 const refreshData = () => {
     loadAuthors()
 }
 
-// Pagination methods
 const goToPage = (page) => {
     if (page === '...') return
     filters.value.page = page
@@ -899,12 +895,10 @@ const saveAuthor = async () => {
         }
 
         if (isEditing.value) {
-            // Update existing author
-            await adminClient.updateAuthor(authorToEdit.value.id, authorData)
+            await adminClient.authors.update(authorToEdit.value.id, authorData)
             showNotification('success', 'Author updated successfully')
         } else {
-            // Create new author
-            await adminClient.createAuthor(authorData)
+            await adminClient.authors.create(authorData)
             showNotification('success', 'Author created successfully')
         }
 
@@ -939,7 +933,7 @@ const deleteAuthor = async () => {
 
     try {
         deleteLoading.value = true
-        await adminClient.deleteAuthor(authorToDelete.value.id)
+        await adminClient.authors.delete(authorToDelete.value.id)
         deleteLoading.value = false
         closeDeleteDialog()
         showNotification('success', 'Author deleted successfully')

@@ -1,6 +1,5 @@
 import { Module } from '@cmmv/core';
 
-import { BlogConfig } from "./blog.config";
 import { AuthorsModule } from './authors/authors.module';
 import { PostsModule } from './posts/posts.module';
 import { CategoriesModule } from './categories/categories.modules';
@@ -10,9 +9,9 @@ import { BlogSettingsModule } from './settings/settings.module';
 import { ProfileModule } from './profile/profile.module';
 import { MediasModule } from './medias/medias.module';
 import { SitemapModule } from './sitemap/sitemap.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 export const BlogModule = new Module('blog', {
-    configs: [BlogConfig],
     submodules: [
         AuthorsModule,
         PostsModule,
@@ -22,6 +21,7 @@ export const BlogModule = new Module('blog', {
         BlogSettingsModule,
         ProfileModule,
         MediasModule,
-        SitemapModule
+        SitemapModule,
+        AnalyticsModule
     ]
 });

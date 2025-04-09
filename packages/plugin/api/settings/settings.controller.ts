@@ -32,10 +32,12 @@ export class BlogSettingsController {
         return this.blogSettingsService.getSetup(setupData);
     }
 
-    @Get('api/settings', { exclude: true })
-    public async getSettings(@Response() res: any) {
-        const settings = await this.blogSettingsService.getSettings();
-        res.code(200).json(settings);
+    @Get('settings', { exclude: true })
+    @CacheControl({ maxAge: 60 * 60 * 10 })
+    @ContentType('application/json')
+    @Raw()
+    public async getSettings() {
+        return await this.blogSettingsService.getSettings();
     }
 
     @Get('settings-root', { exclude: true })
@@ -45,6 +47,9 @@ export class BlogSettingsController {
     }
 
     @Get('settings/:key', { exclude: true })
+    @CacheControl({ maxAge: 60 * 60 * 10 })
+    @ContentType('application/json')
+    @Raw()
     public async getSetting(@Param('key') key: string) {
         return this.blogSettingsService.getSetting(key);
     }

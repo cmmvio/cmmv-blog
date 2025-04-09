@@ -1,6 +1,5 @@
 <template>
     <div class="space-y-6">
-        <!-- Header with actions -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-white">Pages</h1>
             <div class="flex space-x-3">
@@ -15,39 +14,40 @@
             </div>
         </div>
 
-        <!-- Filters and Search -->
         <div class="bg-neutral-800 rounded-lg p-4 mb-6">
-            <div class="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
-                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div class="flex items-center">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="relative flex-1 flex items-center">
+                    <div class="flex items-center mr-4">
                         <label for="filter-status" class="mr-2 text-sm text-neutral-400">Status:</label>
                         <select id="filter-status" v-model="filters.status"
-                            class="bg-neutral-700 border border-neutral-600 text-white rounded-md px-3 py-1.5 text-sm">
+                            class="bg-neutral-700 h-10 border border-neutral-600 text-white rounded-md px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
                             <option value="">All</option>
                             <option value="published">Published</option>
                             <option value="draft">Draft</option>
                             <option value="scheduled">Scheduled</option>
                         </select>
                     </div>
-                </div>
-                <div class="w-full lg:w-64">
-                    <div class="relative">
-                        <input type="text" v-model="searchQuery" placeholder="Search posts..."
-                            class="w-full bg-neutral-700 border border-neutral-600 text-white rounded-md pl-10 pr-4 py-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            placeholder="Search pages..."
+                            class="bg-neutral-700 h-10 border border-neutral-600 text-white pl-10 pr-4 py-2 rounded-md w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Add this after the filters and before the table/card views -->
-        <div v-if="loading" class="flex justify-center items-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div v-if="loading" class="bg-neutral-800 rounded-lg p-12 flex justify-center items-center">
+            <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+            <span class="ml-3 text-neutral-400">Loading pages...</span>
         </div>
 
         <div v-else-if="posts.length === 0" class="bg-neutral-800 rounded-lg p-6 text-center text-neutral-400">
@@ -226,6 +226,29 @@
             </div>
         </template>
     </div>
+
+    <!-- Toast notification component -->
+    <div v-if="notification.show"
+        class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
+        :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
+    >
+        <span v-if="notification.type === 'success'" class="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        <span v-else class="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        <span>{{ notification.message }}</span>
+        <button @click="notification.show = false" class="ml-4 text-white hover:text-neutral-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
 </template>
 
 <script setup>
@@ -247,7 +270,7 @@ const blogUrl = ref('');
 
 const loadBlogUrl = async () => {
     try {
-        const settings = await adminClient.getRootSettings();
+        const settings = await adminClient.settings.getRoot();
         const urlSetting = settings.find(s => s.key === 'blog.url');
 
         if (urlSetting)
@@ -258,21 +281,51 @@ const loadBlogUrl = async () => {
     }
 };
 
+const notification = ref({
+    show: false,
+    type: 'success',
+    message: '',
+    duration: 3000
+})
+
+const showNotification = (type, message) => {
+    notification.value = {
+        show: true,
+        type,
+        message,
+        duration: 3000
+    }
+
+    setTimeout(() => {
+        notification.value.show = false
+    }, notification.value.duration)
+}
+
 async function loadPages() {
     try {
         loading.value = true
 
         const params = {
             limit: itemsPerPage,
-            page: currentPage.value,
-            status: filters.value.status || undefined,
-            search: searchQuery.value || undefined
+            offset: (currentPage.value - 1) * itemsPerPage,
+            sortBy: 'updatedAt',
+            sort: 'desc'
         }
 
-        if (filters.value.category)
-            params.category = filters.value.category
+        if (searchQuery.value) {
+            params.search = searchQuery.value
+            params.searchField = 'title'
+        }
 
-        const response = await adminClient.getPages(params)
+        if (filters.value.status) {
+            params.status = filters.value.status
+        }
+
+        if (filters.value.category) {
+            params.category = filters.value.category
+        }
+
+        const response = await adminClient.pages.get(params)
 
         if (response && response.posts) {
             posts.value = response.posts.map(post => {
@@ -288,7 +341,7 @@ async function loadPages() {
                 }
             });
 
-            totalPosts.value = posts.value.length;
+            totalPosts.value = response.count || posts.value.length;
         } else {
             posts.value = [];
             totalPosts.value = 0;
@@ -300,6 +353,7 @@ async function loadPages() {
         posts.value = [];
         totalPosts.value = 0;
         loading.value = false
+        showNotification('error', 'Failed to load pages: ' + error.message)
     }
 }
 
@@ -312,7 +366,7 @@ const filters = ref({
 watch([searchQuery, filters], () => {
     currentPage.value = 1
     loadPages()
-})
+}, { deep: true })
 
 watch(currentPage, () => {
     loadPages()
@@ -372,17 +426,18 @@ function viewPost(id) {
         window.open(`${blogUrl.value}/preview-page/${post.id}`, '_blank')
 }
 
-async function deletePage(id) {
+async function deletePost(id) {
     if (confirm('Are you sure you want to delete this page?')) {
         try {
             loading.value = true
-            await adminClient.deletePage(id)
+            await adminClient.pages.delete(id)
             await loadPages()
-
+            showNotification('success', 'Page deleted successfully')
             loading.value = false
         } catch (error) {
             console.error('Failed to delete page:', error)
             loading.value = false
+            showNotification('error', 'Failed to delete page: ' + error.message)
         }
     }
 }
@@ -420,4 +475,8 @@ const displayedPages = computed(() => {
 
     return [...new Set(pages)].sort((a, b) => a - b);
 });
+
+function refreshData() {
+    loadPages()
+}
 </script>

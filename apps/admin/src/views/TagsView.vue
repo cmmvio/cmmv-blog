@@ -335,12 +335,9 @@ import { useAdminClient } from '@cmmv/blog/admin/client'
 
 const adminClient = useAdminClient()
 
-// State
 const tags = ref([])
 const loading = ref(true)
 const error = ref(null)
-
-// Tag form
 const showDialog = ref(false)
 const isEditing = ref(false)
 const tagForm = ref({
@@ -351,12 +348,10 @@ const tagToEdit = ref(null)
 const formErrors = ref({})
 const formLoading = ref(false)
 
-// Delete confirmation
 const showDeleteDialog = ref(false)
 const tagToDelete = ref(null)
 const deleteLoading = ref(false)
 
-// Notification
 const notification = ref({
     show: false,
     type: 'success',
@@ -364,7 +359,6 @@ const notification = ref({
     duration: 3000
 })
 
-// Pagination
 const pagination = ref({
     current: 1,
     lastPage: 1,
@@ -374,7 +368,6 @@ const pagination = ref({
     to: 10
 })
 
-// Filtering & Sorting
 const filters = ref({
     search: '',
     searchField: 'name',
@@ -383,53 +376,42 @@ const filters = ref({
     page: 1
 })
 
-// Add this to your state declarations
 const blogUrl = ref('');
 
-// Computed
 const paginationPages = computed(() => {
     const totalPages = pagination.value.lastPage
-    if (totalPages <= 5) {
+
+    if (totalPages <= 5)
         return Array.from({ length: totalPages }, (_, i) => i + 1)
-    }
 
     const current = pagination.value.current
     const pages = []
 
-    // Always show first page
     pages.push(1)
 
-    if (current > 3) {
+    if (current > 3)
         pages.push('...')
-    }
 
-    // Pages around current
     const start = Math.max(2, current - 1)
     const end = Math.min(totalPages - 1, current + 1)
 
-    for (let i = start; i <= end; i++) {
+    for (let i = start; i <= end; i++)
         pages.push(i)
-    }
 
-    if (current < totalPages - 2) {
+    if (current < totalPages - 2)
         pages.push('...')
-    }
 
-    // Always show last page if more than 1 page
-    if (totalPages > 1) {
+    if (totalPages > 1)
         pages.push(totalPages)
-    }
 
     return pages
 })
 
-// Load tags
 const loadTags = async () => {
     try {
         loading.value = true
         error.value = null
 
-        // Create filter object from current filters using the correct interface
         const apiFilters = {
             limit: pagination.value.perPage,
             offset: (filters.value.page - 1) * pagination.value.perPage,
@@ -442,7 +424,7 @@ const loadTags = async () => {
             apiFilters.searchField = filters.value.searchField
         }
 
-        const response = await adminClient.getTags(apiFilters)
+        const response = await adminClient.tags.get(apiFilters)
 
         if (response && response.data) {
             console.log('Tag data sample:', response.data[0])
@@ -453,7 +435,6 @@ const loadTags = async () => {
             const currentOffset = paginationData.offset || 0
             const currentLimit = paginationData.limit || 10
 
-            // Calculate current page from offset and limit
             const currentPage = Math.floor(currentOffset / currentLimit) + 1
             const lastPage = Math.ceil(totalCount / currentLimit)
 
@@ -467,7 +448,7 @@ const loadTags = async () => {
             }
         } else {
             tags.value = []
-            // Reset pagination if data format is unexpected
+
             pagination.value = {
                 current: 1,
                 lastPage: 1,
@@ -566,12 +547,10 @@ const saveTag = async () => {
         }
 
         if (isEditing.value) {
-            // Update existing tag
-            await adminClient.updateTag(tagToEdit.value.id, tagData)
+            await adminClient.tags.update(tagToEdit.value.id, tagData)
             showNotification('success', 'Tag updated successfully')
         } else {
-            // Create new tag
-            await adminClient.insertTag(tagData)
+            await adminClient.tags.insert(tagData)
             showNotification('success', 'Tag created successfully')
         }
 
@@ -580,23 +559,18 @@ const saveTag = async () => {
         refreshData()
     } catch (err) {
         formLoading.value = false
-        console.error('Failed to save tag:', err)
 
-        if (err.response?.data?.errors) {
+        if (err.response?.data?.errors)
             formErrors.value = err.response.data.errors
-        } else {
+        else
             showNotification('error', err.message || 'Failed to save tag')
-        }
     }
 }
 
-// Update the updateSlug method to always generate a new slug when name changes
 const updateSlug = () => {
-    // Always update slug when name changes
     tagForm.value.slug = generateSlug(tagForm.value.name)
 }
 
-// Add helper function to generate slugs
 const generateSlug = (text) => {
     return text
         .toString()

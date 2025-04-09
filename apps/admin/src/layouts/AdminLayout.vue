@@ -23,7 +23,7 @@
 
             <div class="h-[calc(100%-144px)] py-4 overflow-y-auto">
                 <nav class="space-y-1 px-2">
-                    <router-link to="/dashboard"
+                    <router-link to="/"
                         class="flex items-center px-4 py-2 text-neutral-300 hover:bg-neutral-700 hover:text-white rounded-md group transition-all duration-200"
                         :class="{ 'justify-center': isCollapsed }" :title="isCollapsed ? 'Dashboard' : ''">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 group-hover:text-white"
@@ -236,19 +236,12 @@ import { useRoute } from 'vue-router'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 
 const api = useAdminClient()
-api.checkSession();
+api.session.check();
 
 const route = useRoute()
 const isCollapsed = ref(false)
 const isMobileMenuHidden = ref(true)
-const currentYear = ref(new Date().getFullYear())
 const user = ref(null)
-
-const currentPageTitle = computed(() => {
-    const routePath = route.path.split('/').pop()
-    if (!routePath) return 'Dashboard'
-    return routePath.charAt(0).toUpperCase() + routePath.slice(1)
-})
 
 const userDisplayName = computed(() => {
     if (!user.value) return 'Loading...'
@@ -278,7 +271,7 @@ const userAvatar = computed(() => {
 
 const refreshUserProfile = async () => {
     try {
-        user.value = await api.getProfile()
+        user.value = await api.profile.get()
         console.log('User profile refreshed:', user.value)
     } catch (error) {
         console.error('Failed to refresh user profile:', error)
@@ -301,7 +294,7 @@ onMounted(async () => {
         isCollapsed.value = savedPreference === 'true'
 
     try {
-        user.value = await api.getProfile()
+        user.value = await api.profile.get()
 
         watch(() => route.path, (newPath, oldPath) => {
             if (oldPath.includes('/profile'))
@@ -312,32 +305,3 @@ onMounted(async () => {
     }
 })
 </script>
-
-<style>
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #262626;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #404040;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #525252;
-}
-
-::-webkit-scrollbar-corner {
-  background: #262626;
-}
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #404040 #262626;
-}
-</style>

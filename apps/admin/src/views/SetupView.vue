@@ -530,9 +530,9 @@ const finishSetup = async () => {
             setupFinish: true
         }
 
-        await adminClient.saveSetup(setupConfig)
+        await adminClient.settings.saveSetup(setupConfig)
 
-        await adminClient.login({
+        await adminClient.session.login({
             username: setupData.value.adminEmail,
             password: setupData.value.adminPassword
         })
@@ -545,9 +545,9 @@ const finishSetup = async () => {
 }
 
 onMounted(async () => {
-    const setupFinish = await adminClient.getSettings();
+    const settings = await adminClient.settings.getSetup();
 
-    if(setupFinish.setupFinish){
+    if(settings.setupFinish){
         localStorage.setItem('setupFinish', true);
         router.push('/');
     }

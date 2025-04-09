@@ -107,6 +107,20 @@ export class PostsController {
         return await this.postsPublicService.getTags(queries);
     }
 
+    @Get("posts/tags/:slug", {
+        contract: Application.getContract("PostsTagsContract"),
+        schema: RouterSchema.GetByID,
+        summary: "Returns Posts Tags record by slug",
+        exposeFilters: true,
+        exclude: true
+    })
+    @CacheControl({ maxAge: 3600, public: true })
+    @ContentType('application/json')
+    @Raw()
+    async getPostsByTagSlug(@Param("slug") slug: string, @Response() res: any) {
+        return await this.postsPublicService.getPostsByTagSlug(slug);
+    }
+
     @Post("posts", { exclude: true })
     @Auth("post:insert")
     async savePost(@Body() body: any, @User() user: any) {

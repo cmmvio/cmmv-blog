@@ -237,7 +237,6 @@ function formatDate(timestamp: string) {
             day: 'numeric'
         }).format(date);
     } catch (error) {
-        console.error('Error formatting date:', error);
         return 'Invalid date';
     }
 }

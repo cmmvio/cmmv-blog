@@ -203,5 +203,49 @@ export class AuthorsService {
 
         return author;
     }
+
+    /**
+     * Update an author
+     * @param id - Id
+     * @param data - Author data
+     * @returns - Author
+     */
+    async updateAuthor(id: string, data: { [key: string]: any }) {
+        const ProfilesEntity = Repository.getEntity("ProfilesEntity");
+        const ignoredKeys = ['email', 'createdAt', 'updatedAt', 'getLocation', 'note', 'emailDisabled'];
+
+        const updateData: any = {};
+
+        for(let key in data){
+            if(!ignoredKeys.includes(key))
+                updateData[key] = data[key];
+        }
+
+        const result = await Repository.updateOne(
+            ProfilesEntity,
+            Repository.queryBuilder({ user: id }),
+            updateData
+        );
+
+        if(!result)
+            throw new Error("Author not updated");
+
+        return { message: "Author updated" };
+    }
+
+    /**
+     * Delete an author
+     * @param id - Id
+     * @returns - Author
+     */
+    async deleteAuthor(id: string) {
+        const ProfilesEntity = Repository.getEntity("ProfilesEntity");
+        const result = await Repository.delete(ProfilesEntity, { id });
+
+        if(!result)
+            throw new Error("Author not deleted");
+
+        return { message: "Author deleted" };
+    }
 }
 

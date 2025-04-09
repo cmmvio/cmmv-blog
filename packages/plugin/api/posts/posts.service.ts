@@ -13,15 +13,15 @@ import {
 
 import {
     slugify
-} from "../extra.utils";
+} from "../utils/extra.utils";
 
-import { MediasService } from "../medias/medias.service";
+import {
+    MediasService
+} from "../medias/medias.service";
 
 @Service('blog_posts_public')
 export class PostsPublicService {
-    constructor(
-        private readonly mediasService: MediasService
-    ){}
+    constructor(private readonly mediasService: MediasService){}
 
     /**
      * Get all posts
@@ -618,6 +618,77 @@ export class PostsPublicService {
         }
 
         return posts;
+    }
+
+    /**
+     * Get posts by tag slug
+     * @param {string} tagSlug - The slug of the tag
+     * @returns {Promise<any>}
+     */
+    async getPostsByTagSlug(tagSlug: string) {
+        const TagsEntity = Repository.getEntity("TagsEntity");
+        const tag = await Repository.findOne(TagsEntity, { slug: tagSlug }, {
+            select: [ "id", "name" ]
+        });
+
+        if(!tag)
+            throw new Error("Tag not found");
+
+        return this.getPostsByTag(tag.name);
+    }
+
+    /**
+     * Get posts by tag
+     * @param {string} tagName
+     * @returns {Promise<any>}
+     */
+    async getPostsByTag(tagName: string) {
+        const PostsEntity = Repository.getEntity("PostsEntity");
+        const TagsEntity = Repository.getEntity("TagsEntity");
+
+        const tag = await Repository.findOne(TagsEntity, { name: tagName }, {
+            select: [ "id", "name", "slug", "description", "postCount" ]
+        });
+
+        const posts = await Repository.findAll(PostsEntity, {
+            searchField: 'tags',
+            search: tagName,
+            limit: 10,
+            status: "published",
+            sortBy: "publishedAt",
+            sort: "DESC",
+            type: "post"
+        }, [], {
+            select: [
+                'id', 'title', 'slug', 'content', 'status', 'autoPublishAt', 'authors', 'author',
+                'canonicalUrl', 'categories', 'codeInjectionBody', 'codeInjectionHead', 'excerpt',
+                'featureImage', 'featureImageAlt', 'featureImageCaption', 'featured', 'image',
+                'metaDescription', 'metaKeywords', 'metaTitle',
+                'publishedAt', 'tags', 'type', 'visibility', 'createdAt', 'updatedAt'
+            ]
+        });
+
+        if(posts){
+            for(const post of posts.data){
+                post.featureImage = await this.mediasService.getImageUrl(
+                    post.featureImage,
+                    "webp",
+                    1200,
+                )
+
+                //Tags
+                const tagsData = await Repository.findAll(TagsEntity, {
+                    name: In(post.tags),
+                    limit: 100
+                }, [], {
+                    select: [ "id", "name", "slug", "description" ]
+                });
+
+                post.tags = (tagsData) ? tagsData.data : [];
+            }
+        }
+
+        return { posts: posts ? posts.data : [], tag };
     }
 
     /**
