@@ -10,9 +10,25 @@ import {
     MembersPublicService
 } from "./members.service";
 
-import {
-    IMemberCreatePayload
-} from "./members.interface";
+interface IMember {
+    email: string;
+    name: string;
+    note?: string;
+    getLocation?: string;
+    emailCount?: number;
+    emailOpenedCount?: number;
+    emailOpenRate?: number;
+    emailDisabled?: boolean;
+    lastSeenAt?: Date;
+    lastCommentedAt?: Date;
+}
+
+interface IMemberCreatePayload {
+    email: string;
+    name: string;
+    note?: string;
+    getLocation?: string;
+}
 
 @Controller('api')
 export class MembersPublicController {

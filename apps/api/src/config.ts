@@ -8,7 +8,7 @@ Config.assign({
 
     server: {
         host: process.env.HOST || '0.0.0.0',
-        port: process.env.PORT || 3000,
+        port: process.env.PORT || 5000,
     },
 
     repository: {

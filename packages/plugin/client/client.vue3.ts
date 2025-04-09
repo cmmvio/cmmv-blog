@@ -6,18 +6,33 @@ type FetchMap = Record<string, Promise<any>>;
 let ssrData: FetchMap = {};
 
 /**
+ * @description Get the environment variable
+ * @param {string} key - The key of the environment variable
+ * @returns {string | undefined} The environment variable
+ */
+export const getEnv = (key: string): string | undefined => {
+    if (typeof import.meta !== 'undefined' && import.meta.env)
+      return import.meta.env[key]
+
+    if (typeof process !== 'undefined' && process.env)
+      return process.env[key]
+
+    return undefined
+}
+
+/**
  * @description Use the API to fetch data from the server
  * @returns {Object} The API object
  */
 export const useApi = () => {
-    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:3000";
     const preloaded = inject<Record<string, any>>(PRELOADED_KEY, {});
 
     const get = async <T>(path: string, key?: string) => {
         const cacheKey = key || `get:${path}`;
         const data = ref<T | null>(preloaded[cacheKey] ?? null);
 
-        if (import.meta.env.SSR && !preloaded[cacheKey]) {
+        if (getEnv('SSR') && !preloaded[cacheKey]) {
             if (!globalThis.__SSR_DATA__)
                 globalThis.__SSR_DATA__ = {};
 
@@ -32,7 +47,7 @@ export const useApi = () => {
             }
         }
 
-        else if (!import.meta.env.SSR && data.value === null) {
+        else if (!getEnv('SSR') && data.value === null) {
             try {
                 const response = await fetch(`${baseUrl}/${path}`);
                 const result = await response.json();
@@ -261,11 +276,11 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                             "Person",
                             "Organization"
                         ],
-                        "@id": `${import.meta.env.VITE_WEBSITE_URL}/#person`,
+                        "@id": `${getEnv('VITE_WEBSITE_URL')}/#person`,
                         "name": data.author.name,
                         "logo": {
                             "@type": "ImageObject",
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/#logo`,
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/#logo`,
                             "url": settings['blog.image'] || settings['blog.defaultFeaturedImage'],
                             "caption": data.author.name,
                             "inLanguage": settings['blog.language'],
@@ -274,7 +289,7 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                         },
                         "image": {
                             "@type": "ImageObject",
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/#logo`,
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/#logo`,
                             "url": settings['blog.logo'],
                             "caption": data.author.name,
                             "inLanguage": settings['blog.language'],
@@ -284,11 +299,11 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                     },
                     {
                         "@type": "WebSite",
-                        "@id": `${import.meta.env.VITE_WEBSITE_URL}/#website`,
-                        "url": import.meta.env.VITE_WEBSITE_URL,
+                        "@id": `${getEnv('VITE_WEBSITE_URL')}/#website`,
+                        "url": getEnv('VITE_WEBSITE_URL'),
                         "name": settings['blog.title'],
                         "publisher": {
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/#person`
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/#person`
                         },
                         "inLanguage": settings['blog.language']
                     },
@@ -302,8 +317,8 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                     },
                     {
                         "@type": "WebPage",
-                        "@id": `${import.meta.env.VITE_WEBSITE_URL}/post/${data.slug}/#webpage`,
-                        "url": `${import.meta.env.VITE_WEBSITE_URL}/post/${data.slug}`,
+                        "@id": `${getEnv('VITE_WEBSITE_URL')}/post/${data.slug}/#webpage`,
+                        "url": `${getEnv('VITE_WEBSITE_URL')}/post/${data.slug}`,
                         "name": data.title,
                         "datePublished": data.status === 'published' ?
                             new Date(data.publishedAt).toISOString() :
@@ -312,7 +327,7 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                             new Date(data.publishedAt).toISOString() :
                             new Date(data.updatedAt).toISOString(),
                         "isPartOf": {
-                          "@id": `${import.meta.env.VITE_WEBSITE_URL}/#website`
+                          "@id": `${getEnv('VITE_WEBSITE_URL')}/#website`
                         },
                         "primaryImageOfPage": {
                           "@id": data.featureImage || settings['blog.image']
@@ -321,9 +336,9 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                     },
                     {
                         "@type": "Person",
-                        "@id": `${import.meta.env.VITE_WEBSITE_URL}/author/${data.author.slug}`,
+                        "@id": `${getEnv('VITE_WEBSITE_URL')}/author/${data.author.slug}`,
                         "name": data.author.name,
-                        "url": `${import.meta.env.VITE_WEBSITE_URL}/author/${data.author.slug}`,
+                        "url": `${getEnv('VITE_WEBSITE_URL')}/author/${data.author.slug}`,
                         "image": {
                           "@type": "ImageObject",
                           "@id": data.author.avatar,
@@ -346,22 +361,22 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                             new Date(data.updatedAt).toISOString(),
                         "author": {
                             "@type": "Person",
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/author/${data.author.slug}`
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/author/${data.author.slug}`
                         },
                         "publisher": {
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/#person`
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/#person`
                         },
                         "name": data.title + " -" +settings['blog.title'],
-                        "@id": `${import.meta.env.VITE_WEBSITE_URL}/post/${data.slug}/#richSnippet`,
+                        "@id": `${getEnv('VITE_WEBSITE_URL')}/post/${data.slug}/#richSnippet`,
                         "isPartOf": {
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/#website`
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/#website`
                         },
                         "image": {
                             "@id": data.featureImage || settings['blog.image']
                         },
                         "inLanguage": "pt-BR",
                         "mainEntityOfPage": {
-                            "@id": `${import.meta.env.VITE_WEBSITE_URL}/post/${data.slug}/#webpage`
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/post/${data.slug}/#webpage`
                         }
                     }
                 ]

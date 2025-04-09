@@ -4,6 +4,7 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "strictPropertyInitialization": false,
+        "module": "NodeNext",
         "paths": {
             "@generated": ["../../apps/api/.generated"],
             "@generated/*": ["../../apps/api/.generated/*"]

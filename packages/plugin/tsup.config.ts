@@ -11,5 +11,6 @@ export default defineConfig({
     format: ['esm', 'cjs'],
     splitting: false,
     clean: true,
-    dts: true
+    dts: true,
+    sourcemap: true
 });

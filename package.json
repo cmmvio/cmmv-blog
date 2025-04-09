@@ -15,10 +15,26 @@
     "author": "Andre Ferreira",
     "packageManager": "pnpm@10.6.5",
     "exports": {
-        "./admin": "./dist/admin/index.js",
-        "./api": "./dist/api/index.js",
-        "./client": "./dist/client/index.js",
-        "./contracts": "./dist/contracts/index.js"
+        "./admin": {
+            "import": "./dist/admin/index.mjs",
+            "require": "./dist/admin/index.js",
+            "types": "./dist/admin/index.d.ts"
+        },
+        "./api": {
+            "import": "./dist/api/index.mjs",
+            "require": "./dist/api/index.js",
+            "types": "./dist/api/index.d.ts"
+        },
+        "./client": {
+            "import": "./dist/client/index.mjs",
+            "require": "./dist/client/index.js",
+            "types": "./dist/client/index.d.ts"
+        },
+        "./contracts": {
+            "import": "./dist/contracts/index.mjs",
+            "require": "./dist/contracts/index.js",
+            "types": "./dist/contracts/index.d.ts"
+        }
     },
     "files": [
         "dist",
@@ -33,14 +49,15 @@
     },
     "peerDependencies": {
         "cli-cursor": "^5.0.0",
-        "signal-exit": "^4.1.0",
-        "restore-cursor": "^5.1.0"
+        "restore-cursor": "^5.1.0",
+        "signal-exit": "^4.1.0"
     },
     "scripts": {
         "dev": "turbo run dev",
         "build": "turbo run build --filter=@cmmv/blog",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "release": "pnpm build && pnpm publish --tag latest -r --no-git-checks",
         "info": "turbo run info"
     },
     "devDependencies": {

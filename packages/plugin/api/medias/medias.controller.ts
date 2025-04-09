@@ -13,9 +13,13 @@ import {
     MediasService
 } from "./medias.service";
 
-import {
-    ProcessImageInterface
-} from "./medias.interface";
+interface ProcessImageInterface {
+    image: string;
+    format: string;
+    maxWidth: number;
+    alt: string;
+    caption: string;
+}
 
 @Controller()
 export class MediasController {
