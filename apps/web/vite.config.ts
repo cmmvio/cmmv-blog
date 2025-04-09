@@ -47,6 +47,8 @@ export default defineConfig(({ mode }) => {
             },
         },
         server: {
+            allowedHosts: ['blog.cmmv.io'],
+
             proxy: {
                 '/api': {
                     target: apiUrl,
