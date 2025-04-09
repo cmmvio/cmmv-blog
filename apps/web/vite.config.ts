@@ -7,8 +7,8 @@ import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), 'VITE');
-    const apiUrl = env.VITE_API_URL || 'http://localhost:3000';
-    const adminUrl = env.VITE_API_URL || 'http://localhost:3002';
+    const apiUrl = env.VITE_API_URL || 'http://localhost:5000';
+    const adminUrl = env.VITE_API_URL || 'http://localhost:5002';
 
     const forwardRefreshToken = (proxy: any) => {
         proxy.on('proxyReq', (proxyReq: any, req: IncomingMessage) => {
