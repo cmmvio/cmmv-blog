@@ -8,7 +8,7 @@ export default defineConfig({
         "contracts/index.ts",
     ],
     outDir: '../../dist',
-    format: ['esm', 'cjs'],
+    format: ['esm'],
     splitting: false,
     clean: true,
     dts: true,

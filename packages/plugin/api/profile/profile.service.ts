@@ -7,10 +7,6 @@ import {
     Repository
 } from "@cmmv/repository";
 
-import {
-    IProfile
-} from "./profile.interface";
-
 @Service("blog_profile")
 export class BlogProfileService extends AbstractService {
     /**
@@ -47,7 +43,7 @@ export class BlogProfileService extends AbstractService {
      * @param profile
      * @returns
      */
-    public async updateProfile(user: any, profile: IProfile) {
+    public async updateProfile(user: any, profile: any) {
         const UserEntity = Repository.getEntity("UserEntity");
         const userData = await Repository.findOne(UserEntity, { id: user.id, blocked: false });
 

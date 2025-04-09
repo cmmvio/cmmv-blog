@@ -57,7 +57,7 @@ export class CategoriesContract extends AbstractContract {
     description?: string;
 
     @ContractField({
-        protoType: 'number',
+        protoType: 'int32',
         nullable: true,
         defaultValue: 0
     })

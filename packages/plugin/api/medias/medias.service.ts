@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { cwd } from "node:process";
-import * as sharp from "sharp";
+import sharp from "sharp";
 
 import {
     AbstractService,

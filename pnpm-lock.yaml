@@ -126,7 +126,7 @@ importers:
     dependencies:
       '@cmmv/auth':
         specifier: latest
-        version: 0.11.0(encoding@0.1.13)
+        version: 0.11.3(encoding@0.1.13)
       '@cmmv/blog':
         specifier: workspace:plugin
         version: link:../../packages/plugin
@@ -135,10 +135,10 @@ importers:
         version: 0.10.19(@swc/types@0.1.21)(@types/node@22.14.0)(eslint@9.24.0(jiti@2.4.2))(jiti@2.4.2)(jsdom@26.0.0)
       '@cmmv/http':
         specifier: latest
-        version: 0.11.0
+        version: 0.11.3
       '@cmmv/repository':
         specifier: latest
-        version: 0.11.0(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
+        version: 0.11.3(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
       cli-cursor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -154,7 +154,7 @@ importers:
     devDependencies:
       '@cmmv/sandbox':
         specifier: latest
-        version: 0.11.0(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
+        version: 0.11.3(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
 
   apps/web:
     dependencies:
@@ -227,13 +227,13 @@ importers:
     dependencies:
       '@cmmv/auth':
         specifier: latest
-        version: 0.11.0(encoding@0.1.13)
+        version: 0.11.3(encoding@0.1.13)
       '@cmmv/core':
         specifier: latest
-        version: 0.11.0
+        version: 0.11.3
       '@cmmv/http':
         specifier: latest
-        version: 0.11.0
+        version: 0.11.3
       cli-cursor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -282,8 +282,8 @@ packages:
     resolution: {integrity: sha512-H45s8fVLYjbhFH62dIJ3WtmJ6RSPt/3DRO0ZcT2SUiYiQyz3BLVb9ADEnLl91m74aQPS3AzzeajZHYOalWe3bg==}
     engines: {node: '>=6.9.0'}
 
-  '@cmmv/auth@0.11.0':
-    resolution: {integrity: sha512-E6iv8h3gXtOmB8LpNYHkBDS2uYagLhs2g30h5aq/q2UypzxvADlFc7/aEIRvxhpfUFjxEBngapV4gGGJh2OkAw==}
+  '@cmmv/auth@0.11.3':
+    resolution: {integrity: sha512-puf+7g52iegEasBq8xsKBq3dg4Xr9h3XFlXwXLzEmaUBNEMBnsaV3MHQyg0CdwQM9UqWazJUksZm0HOEmqumTQ==}
 
   '@cmmv/body-parser@0.9.5':
     resolution: {integrity: sha512-DSHSEzVEyrCNiwiFLjtHsyG2XB5AZ/+Ow6gOmGICkB1ru7XC8qCL+2S+QskdYOs7FJWuhTw0HxDwTM3kD5WbGg==}
@@ -299,8 +299,8 @@ packages:
   '@cmmv/cookie-parser@0.9.5':
     resolution: {integrity: sha512-aZBEAwUo8lrxUv6X6nPxsSaP7EnXeMUSTuQn/Pug3nICtj6cYbMLWPgYLZWw1vSxHB1ci4rTwU+YZ15Sd1avyA==}
 
-  '@cmmv/core@0.11.0':
-    resolution: {integrity: sha512-1diFVQ/KMDFtCKpt5bMFSNPvGRYfS7ZwxyCWPWdjeZsLRHxo7eb4lHbrhSoruzF1wIE+yIG68IuY0L/ncr2HjQ==}
+  '@cmmv/core@0.11.3':
+    resolution: {integrity: sha512-MNvdAUKtKLgH+aY0tYCPVpVOcgyTjh827p42jNqxR69YkqENuTMcu7gaSj5WJoWX91r9gnDPPmz4CQE+NBrn6A==}
 
   '@cmmv/cors@0.9.5':
     resolution: {integrity: sha512-c+Wui/4m9oZkwu0SaLFi/IhL6TW62Sg6rab4N4eQKVHh5ihwTbH7pG1PeAwmeRS70csuS6BrNEhFwTJaZtYc0A==}
@@ -311,14 +311,14 @@ packages:
   '@cmmv/helmet@0.9.5':
     resolution: {integrity: sha512-Hpw/TKxv5gJTnUalvDBRq7ePeyJnlOovLa7xJOi5JGcQSdu8rxStgyzyThpFtQWBkliw6+tKikUkuknD1VVF2g==}
 
-  '@cmmv/http@0.11.0':
-    resolution: {integrity: sha512-jy7VaY4RmrVXgp+Mke0Q6kmmR3XfD0NAxbltzAgsYAnJQcrzTA3wua20yJqJFlL4ZUuNFgWVOGKTjpdhJRZp5w==}
+  '@cmmv/http@0.11.3':
+    resolution: {integrity: sha512-JAvdPTxtFQMYVIUXU1b0kv+iy5jo/wKzM/ucfh+4/duPG66Pz/1weKHNfcRSyhHgViw3mn76JlG1eH1Htq2H/g==}
 
-  '@cmmv/repository@0.11.0':
-    resolution: {integrity: sha512-nhlg35qSENPPVb4MGpbM/s3jtEGo6tnB+kBTg2kfH+C9mtykGP+mksISFMt9mTjSc8CTCKy6xEbpqCW/D5amOg==}
+  '@cmmv/repository@0.11.3':
+    resolution: {integrity: sha512-islcjgu9C0t99/vQ79JkKTOMfZn3kq7iN7U3AZvxqxLFVO9rCcSfMWmT3YaQfjZPs5cPHnaooFbXKTsmdjSVwQ==}
 
-  '@cmmv/sandbox@0.11.0':
-    resolution: {integrity: sha512-AAwzh/XF3jf2O+uClbqNWvl4XpXqmDQ4BoNyxFX5zSswo20Nh8uphRRcP0Eic63c0mojHCWg7sQoekq7zEDsOw==}
+  '@cmmv/sandbox@0.11.3':
+    resolution: {integrity: sha512-R3m0sxQqyvummUZ8MZ7eDh3wWOnrnESSERpbsgUiVfA5HDvInNBHa94sLKtggOqmleyQLi+X2EwjWkd7IiBMxg==}
 
   '@cmmv/server-static@0.9.5':
     resolution: {integrity: sha512-7f5MM9PYmq4AGO5bMDzhUhuMyxV1IOpJJ0rhsXyvS03ZU6mGbwdO499EbmLmHg9gGr42bKbgrN0pcdh0Y45ksw==}
@@ -5216,7 +5216,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@cmmv/auth@0.11.0(encoding@0.1.13)':
+  '@cmmv/auth@0.11.3(encoding@0.1.13)':
     dependencies:
       '@loskir/styled-qr-code-node': 1.5.2(encoding@0.1.13)
       jsonwebtoken: 9.0.2
@@ -5241,7 +5241,7 @@ snapshots:
 
   '@cmmv/cli@0.10.19(@swc/types@0.1.21)(@types/node@22.14.0)(eslint@9.24.0(jiti@2.4.2))(jiti@2.4.2)(jsdom@26.0.0)':
     dependencies:
-      '@cmmv/core': 0.11.0
+      '@cmmv/core': 0.11.3
       '@commitlint/cli': 19.8.0(@types/node@22.14.0)(typescript@5.8.3)
       '@commitlint/config-angular': 19.8.0
       '@commitlint/config-conventional': 19.8.0
@@ -5321,7 +5321,7 @@ snapshots:
       on-headers: 1.0.2
       vary: 1.1.2
 
-  '@cmmv/core@0.11.0':
+  '@cmmv/core@0.11.3':
     dependencies:
       class-transformer: 0.5.1
       class-validator: 0.14.1
@@ -5351,7 +5351,7 @@ snapshots:
     dependencies:
       helmet: 8.1.0
 
-  '@cmmv/http@0.11.0':
+  '@cmmv/http@0.11.3':
     dependencies:
       '@cmmv/body-parser': 0.9.5
       '@cmmv/compression': 0.9.5
@@ -5368,9 +5368,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@cmmv/repository@0.11.0(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))':
+  '@cmmv/repository@0.11.3(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))':
     dependencies:
-      '@cmmv/auth': 0.11.0(encoding@0.1.13)
+      '@cmmv/auth': 0.11.3(encoding@0.1.13)
       mongodb: 6.15.0(socks@2.8.4)
       sqlite3: 5.1.7
       typeorm: 0.3.22(mongodb@6.15.0(socks@2.8.4))(reflect-metadata@0.2.2)(sqlite3@5.1.7)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
@@ -5402,12 +5402,12 @@ snapshots:
       - ts-node
       - typeorm-aurora-data-api-driver
 
-  '@cmmv/sandbox@0.11.0(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))':
+  '@cmmv/sandbox@0.11.3(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))':
     dependencies:
-      '@cmmv/auth': 0.11.0(encoding@0.1.13)
-      '@cmmv/core': 0.11.0
-      '@cmmv/http': 0.11.0
-      '@cmmv/repository': 0.11.0(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
+      '@cmmv/auth': 0.11.3(encoding@0.1.13)
+      '@cmmv/core': 0.11.3
+      '@cmmv/http': 0.11.3
+      '@cmmv/repository': 0.11.3(encoding@0.1.13)(reflect-metadata@0.2.2)(socks@2.8.4)(ts-node@10.9.2(@swc/core@1.11.18(@swc/helpers@0.5.15))(@types/node@22.14.0)(typescript@5.8.3))
       archiver: 7.0.1
       axios: 1.8.4
       chokidar: 4.0.3

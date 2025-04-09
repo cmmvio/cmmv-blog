@@ -1,4 +1,4 @@
-import { createServer } from 'vite';
+import { createServer, loadEnv } from 'vite';
 import { transformHtmlTemplate } from '@unhead/vue/server'
 import * as http from 'node:http';
 import * as fs from 'node:fs';
@@ -6,6 +6,7 @@ import * as path from 'node:path';
 import serveStatic from 'serve-static';
 import finalhandler from 'finalhandler';
 
+const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), 'VITE');
 const cache = new Map<string, { html: string, expires: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -77,7 +78,7 @@ async function start() {
         });
     });
 
-    const port = process.env.VITE_SSR_PORT || 4000;
+    const port = env.VITE_SSR_PORT || 5001;
 
     server.listen(port, () => {
         console.log(`🚀 SSR server running at http://localhost:${port}`);

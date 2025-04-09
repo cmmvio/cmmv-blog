@@ -15,25 +15,17 @@
     "author": "Andre Ferreira",
     "packageManager": "pnpm@10.6.5",
     "exports": {
-        "./admin": {
-            "import": "./dist/admin/index.mjs",
-            "require": "./dist/admin/index.js",
-            "types": "./dist/admin/index.d.ts"
-        },
-        "./api": {
-            "import": "./dist/api/index.mjs",
-            "require": "./dist/api/index.js",
-            "types": "./dist/api/index.d.ts"
-        },
-        "./client": {
-            "import": "./dist/client/index.mjs",
-            "require": "./dist/client/index.js",
-            "types": "./dist/client/index.d.ts"
-        },
-        "./contracts": {
-            "import": "./dist/contracts/index.mjs",
-            "require": "./dist/contracts/index.js",
-            "types": "./dist/contracts/index.d.ts"
+        "./admin": "./dist/admin/index.mjs",
+        "./api": "./dist/api/index.mjs",
+        "./client": "./dist/client/index.mjs",
+        "./contracts": "./dist/contracts/index.mjs"
+    },
+    "typesVersions": {
+        "*": {
+            "client": ["dist/client/index.d.ts"],
+            "admin": ["dist/admin/index.d.ts"],
+            "api": ["dist/api/index.d.ts"],
+            "contracts": ["dist/contracts/index.d.ts"]
         }
     },
     "files": [
@@ -55,10 +47,16 @@
     "scripts": {
         "dev": "turbo run dev",
         "build": "turbo run build --filter=@cmmv/blog",
+        "build:api": "cd apps/api && pnpm build",
+        "build:admin": "cd apps/admin && pnpm build",
+        "build:web": "cd apps/web && pnpm build",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "release": "pnpm build && pnpm publish --tag latest -r --no-git-checks",
-        "info": "turbo run info"
+        "info": "turbo run info",
+        "start:api": "cd apps/api && pnpm start",
+        "start:admin": "cd apps/admin && pnpm start",
+        "start:web": "cd apps/web && pnpm start"
     },
     "devDependencies": {
         "eslint": "^9.24.0",
