@@ -154,6 +154,19 @@ export const useBlog = () => {
             const { data } = await api.get<any[]>(`blog/posts?${urlQueries}`, "posts");
             return data.value || [];
         },
+        search: async (query: string) => {
+            const urlQueries = new URLSearchParams({
+                limit: "10",
+                status: "published",
+                sort: "ASC",
+                sortBy: "publishedAt",
+                search: query,
+                searchField: "title"
+            }).toString();
+
+            const { data } = await api.get<any[]>(`blog/posts?${urlQueries}`, "posts");
+            return data.value || [];
+        },
         getById: async (id: string) => {
             const { data } = await api.get<any[]>(`blog/posts/${id}`, "post");
             return data.value || [];

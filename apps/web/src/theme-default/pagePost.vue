@@ -7,7 +7,7 @@
             </div>
         </div>
 
-        <div v-else class="article-container lg:max-w-4xl md:max-w-3xl">
+        <div v-else class="article-container lg:max-w-4xl md:max-w-3xl px-4 sm:px-6 mx-auto overflow-hidden">
             <div v-if="post.featureImage" class="post-featured-image relative">
                 <div class="absolute top-4 left-4 z-10 flex flex-wrap gap-2">
                     <a v-for="category in post.categories" :key="category.id" :href="`/category/${category.slug}`"
@@ -16,18 +16,18 @@
                     </a>
                 </div>
 
-                <img :src="post.featureImage" :alt="post.featureImageAlt || post.title" class="featured-img" />
+                <img :src="post.featureImage" :alt="post.featureImageAlt || post.title" class="featured-img max-w-full h-auto" />
                 <p v-if="post.featureImageCaption" class="image-caption text-neutral-600 dark:text-neutral-400">{{
                     post.featureImageCaption }}</p>
             </div>
 
             <!-- Post Header -->
             <header class="post-header">
-                <h1 class="post-title text-neutral-900 dark:text-white">{{ post.title }}</h1>
+                <h1 class="post-title text-neutral-900 dark:text-white break-words">{{ post.title }}</h1>
 
                 <div class="post-meta">
                     <div class="flex items-center text-neutral-600 dark:text-neutral-400 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24"
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -42,12 +42,14 @@
             </header>
 
             <!-- Post Content -->
-            <div class="post-content dark:text-neutral-300" v-html="post.content"></div>
+            <div class="post-content dark:text-neutral-300 prose prose-sm sm:prose prose-neutral dark:prose-invert max-w-none overflow-hidden">
+                <div v-html="post.content"></div>
+            </div>
 
             <!-- Tags & Categories -->
             <div class="post-taxonomy">
                 <div v-if="post.tags && post.tags.length > 0" class="post-tags">
-                    <div class="tags-list">
+                    <div class="tags-list flex flex-wrap gap-2">
                         <a v-for="tag in post.tags" :key="tag" :href="`/tag/${tag.slug}`"
                             class="tag bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600">
                             {{ tag.name }}
@@ -58,12 +60,12 @@
 
             <!-- Add this right after the post content, replace the existing share box -->
             <div class="py-8 border-t border-neutral-200 dark:border-neutral-800">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                     <!-- Share text and icons -->
                     <div class="flex items-center gap-2">
                         <span class="text-neutral-600 dark:text-neutral-400 text-sm font-medium">Share:</span>
 
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 flex-wrap">
                             <!-- Facebook -->
                             <a class="bg-blue-600 hover:bg-blue-700 w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors"
                                 rel="nofollow noopener"
@@ -118,13 +120,13 @@
                     </div>
 
                     <!-- URL copy field -->
-                    <div class="relative flex-1 max-w-md ml-4">
+                    <div class="relative flex-1 max-w-full sm:max-w-md sm:ml-4">
                         <div class="flex">
                             <input type="text" :value="pageUrl" readonly
-                                class="w-full px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-l-md text-sm text-neutral-600 dark:text-neutral-300 focus:outline-none"
+                                class="w-full px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-l-md text-sm text-neutral-600 dark:text-neutral-300 focus:outline-none overflow-hidden text-ellipsis"
                                 onclick="this.select()" aria-label="Copy to clipboard post url" />
                             <button @click="copyPageUrl"
-                                class="bg-neutral-200 dark:bg-neutral-600 hover:bg-neutral-300 dark:hover:bg-neutral-500 border border-neutral-300 dark:border-neutral-600 border-l-0 rounded-r-md px-3 text-neutral-600 dark:text-neutral-300 transition-colors"
+                                class="bg-neutral-200 dark:bg-neutral-600 hover:bg-neutral-300 dark:hover:bg-neutral-500 border border-neutral-300 dark:border-neutral-600 border-l-0 rounded-r-md px-3 text-neutral-600 dark:text-neutral-300 transition-colors flex-shrink-0"
                                 title="Copy to clipboard">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -158,22 +160,22 @@
                     </div>
 
                     <!-- Author Info -->
-                    <div class="flex-1">
-                        <span class="text-md font-semibold text-neutral-800 dark:text-white mb-1">
+                    <div class="flex-1 min-w-0">
+                        <span class="text-md font-semibold text-neutral-800 dark:text-white mb-1 break-words">
                             <a :href="`/author/${author.slug}`" class="hover:underline">
                                 {{ author.name }}
                             </a>
                         </span>
                         <p v-if="author.location"
                             class="text-xs text-neutral-600 dark:text-neutral-400 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1.5" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1.5 flex-shrink-0" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            {{ author.location }}
+                            <span class="truncate">{{ author.location }}</span>
                         </p>
                     </div>
                 </div>
@@ -348,3 +350,48 @@ const copyPageUrl = () => {
     }
 }
 </script>
+
+<style scoped>
+/* Add these styles to ensure images, iframes, and other content respect container width */
+.post-content :deep(img) {
+    max-width: 100%;
+    height: auto;
+}
+
+.post-content :deep(iframe) {
+    max-width: 100%;
+}
+
+.post-content :deep(table) {
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+}
+
+.post-content :deep(pre) {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.post-content :deep(code) {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.featured-img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+.post-title {
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.tags-list {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+</style>

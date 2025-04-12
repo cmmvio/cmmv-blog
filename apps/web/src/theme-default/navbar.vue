@@ -68,7 +68,7 @@
 
             <div class="flex-1 overflow-y-auto p-6">
                 <button
-                    @click="sidebarOpen = true"
+                    @click="openSearchModal"
                     class="w-full flex items-center p-3 mb-6 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-lg transition-colors"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-neutral-500 dark:text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,21 +93,276 @@
             </div>
         </div>
     </aside>
+
+    <!-- Search Modal -->
+    <div v-if="searchModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="search-modal" role="dialog" aria-modal="true">
+        <div class="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true" @click="closeSearchModal" style="backdrop-filter: blur(4px);"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white dark:bg-neutral-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full">
+                            <!-- Search header with close button -->
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg leading-6 font-medium text-neutral-900 dark:text-white" id="modal-title">
+                                    Search
+                                </h3>
+                                <button @click="closeSearchModal" class="text-neutral-400 hover:text-neutral-500 focus:outline-none">
+                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Search input -->
+                            <div class="mb-4 relative">
+                                <div class="flex items-center absolute inset-y-0 left-0 pl-3 pointer-events-none">
+                                    <svg class="w-5 h-5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="search"
+                                    v-model="searchQuery"
+                                    @input="debouncedSearch"
+                                    class="bg-white dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg block w-full pl-10 p-2.5 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Search posts..."
+                                    autocomplete="off"
+                                    ref="searchInput"
+                                />
+                            </div>
+
+                            <!-- Search results -->
+                            <div class="mt-4 max-h-[70vh] overflow-y-auto">
+                                <div v-if="isSearching" class="flex justify-center items-center py-8">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                                </div>
+
+                                <div v-else-if="searchResults.length === 0 && searchQuery.length > 1" class="py-8 text-center text-neutral-600 dark:text-neutral-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-neutral-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p>No posts found for "{{ searchQuery }}"</p>
+                                </div>
+
+                                <!-- Search results with query -->
+                                <div v-else-if="searchQuery.length > 1" class="space-y-4">
+                                    <p v-if="searchResults.length > 0" class="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
+                                        Found {{ searchResults.length }} result{{ searchResults.length !== 1 ? 's' : '' }}
+                                    </p>
+                                    <a
+                                        v-for="post in searchResults"
+                                        :key="post.id"
+                                        :href="`/post/${post.slug}`"
+                                        class="block bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                                    >
+                                        <div class="flex flex-col sm:flex-row">
+                                            <div v-if="post.featureImage" class="w-full sm:w-32 h-40 sm:h-24 flex-shrink-0">
+                                                <img :src="post.featureImage" :alt="post.title" class="w-full h-full object-cover" loading="lazy" />
+                                            </div>
+                                            <div class="p-4 flex-grow">
+                                                <h4 class="font-bold text-neutral-900 dark:text-white mb-1">{{ post.title }}</h4>
+                                                <p v-if="post.excerpt" class="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                                                    {{ post.excerpt }}
+                                                </p>
+                                                <div class="mt-2 text-xs text-neutral-500 dark:text-neutral-500 flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    {{ formatDate(post.publishedAt || post.updatedAt) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <!-- Recent Posts Preview (shown when no search query) -->
+                                <div v-else class="space-y-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-medium text-neutral-800 dark:text-white">Recent Posts</h3>
+                                        <a href="/" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">View all</a>
+                                    </div>
+
+                                    <div v-if="isLoadingRecentPosts" class="flex justify-center items-center py-8">
+                                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                                    </div>
+
+                                    <a
+                                        v-else
+                                        v-for="post in recentPosts"
+                                        :key="post.id"
+                                        :href="`/post/${post.slug}`"
+                                        class="block bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                                    >
+                                        <div class="flex flex-col sm:flex-row">
+                                            <div v-if="post.featureImage" class="w-full sm:w-36 h-48 sm:h-28 relative flex-shrink-0">
+                                                <img :src="post.featureImage" :alt="post.title" class="w-full h-full object-cover" loading="lazy" />
+                                                <div v-if="post.categories && post.categories.length > 0"
+                                                     class="absolute top-0 left-0 bg-blue-600 text-white text-xs px-2 py-1 m-1 rounded">
+                                                    {{ post.categories[0].name }}
+                                                </div>
+                                            </div>
+                                            <div class="p-4 flex-grow">
+                                                <h4 class="font-bold text-neutral-900 dark:text-white mb-1">{{ post.title }}</h4>
+                                                <p v-if="post.excerpt" class="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
+                                                    {{ post.excerpt }}
+                                                </p>
+                                                <div class="mt-2 flex items-center justify-between">
+                                                    <div class="text-xs text-neutral-500 dark:text-neutral-500 flex items-center">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                        {{ formatDate(post.publishedAt || post.updatedAt) }}
+                                                    </div>
+                                                    <span class="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-700 rounded-full text-neutral-600 dark:text-neutral-300">
+                                                        Read more
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { vue3 } from '@cmmv/blog/client';
 
 const blogAPI = vue3.useBlog();
 const settings = ref<any>(null);
 const categories = ref<any>(null)
 const sidebarOpen = ref(false)
+const searchModalOpen = ref(false)
+const searchQuery = ref('')
+const searchResults = ref<any[]>([])
+const isSearching = ref(false)
+const searchTimeout = ref<any>(null)
+const searchInput = ref<HTMLInputElement | null>(null)
+const recentPosts = ref<any[]>([])
+const isLoadingRecentPosts = ref(false)
 
 const toggle = () => {
     sidebarOpen.value = !sidebarOpen.value
 }
 
+const openSearchModal = () => {
+    searchModalOpen.value = true
+    // Load recent posts when opening the modal
+    loadRecentPosts()
+    setTimeout(() => {
+        searchInput.value?.focus()
+    }, 100)
+}
+
+const closeSearchModal = () => {
+    searchModalOpen.value = false
+    searchQuery.value = ''
+    searchResults.value = []
+}
+
+const loadRecentPosts = async () => {
+    if (recentPosts.value.length > 0) return // Don't reload if we already have posts
+
+    isLoadingRecentPosts.value = true
+    try {
+        const response = await blogAPI.posts.getAll(0)
+        if (Array.isArray(response)) {
+            recentPosts.value = response.slice(0, 5)
+        } else if (response && typeof response === 'object') {
+            // Use type assertion to avoid type error
+            const typedResponse = response as { posts?: any[] }
+            recentPosts.value = typedResponse.posts ? typedResponse.posts.slice(0, 5) : []
+        } else {
+            recentPosts.value = []
+        }
+    } catch (error) {
+        console.error('Error loading recent posts:', error)
+        recentPosts.value = []
+    } finally {
+        isLoadingRecentPosts.value = false
+    }
+}
+
+const debouncedSearch = () => {
+    if (searchTimeout.value) {
+        clearTimeout(searchTimeout.value)
+    }
+    searchTimeout.value = setTimeout(() => {
+        performSearch()
+    }, 300)
+}
+
+const performSearch = async () => {
+    if (searchQuery.value.trim().length < 2) {
+        searchResults.value = []
+        return
+    }
+
+    isSearching.value = true
+    try {
+        const response = await blogAPI.posts.search(searchQuery.value)
+        // Handle both response formats
+        if (Array.isArray(response)) {
+            searchResults.value = response
+        } else if (response && typeof response === 'object') {
+            // Use type assertion to avoid type error
+            const typedResponse = response as { posts?: any[] }
+            searchResults.value = Array.isArray(typedResponse.posts) ? typedResponse.posts : []
+        } else {
+            searchResults.value = []
+        }
+    } catch (error) {
+        console.error('Search error:', error)
+        searchResults.value = []
+    } finally {
+        isSearching.value = false
+    }
+}
+
+// Handle keyboard shortcuts
+const handleKeydown = (e: KeyboardEvent) => {
+    // Open search on Ctrl+K or Cmd+K
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        openSearchModal()
+    }
+
+    // Close on Escape
+    if (e.key === 'Escape' && searchModalOpen.value) {
+        closeSearchModal()
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleKeydown)
+})
+
+// Format date helper function
+const formatDate = (dateString: string) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    }).format(date)
+}
+
+// Fetch initial data
 blogAPI.categories.getAll().then((res) => {
     categories.value = res
 })
@@ -116,3 +371,13 @@ blogAPI.settings.getAll().then((res) => {
     settings.value = res
 })
 </script>
+
+<style scoped>
+/* Add these styles for the line clamp */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
