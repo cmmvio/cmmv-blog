@@ -1,15 +1,11 @@
 //@ts-nocheck
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
 
 /**
  * @description Get the environment variable
  * @param {string} key - The key of the environment variable
  * @returns {string | undefined} The environment variable
  */
-export const getEnv = (key: string): string | undefined => {
+export const getEnv = (key) => {
     if (typeof process !== 'undefined' && process.env) {
         return process.env[key];
     }
@@ -17,114 +13,133 @@ export const getEnv = (key: string): string | undefined => {
 };
 
 /**
- * @description API Service for making HTTP requests
+ * @description API client for making HTTP requests
  */
-@Injectable({
-    providedIn: 'root'
-})
-export class ApiService {
-    private baseUrl = getEnv('VITE_API_URL') || 'http://localhost:5000';
-    private baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || 'http://localhost:5000';
-    private isSSR = typeof window === 'undefined';
-
-    constructor(private http: HttpClient) {}
-
-    get<T>(path: string, key?: string): Observable<T> {
-        return this.http.get<any>(`${this.baseUrlFrontend}/${path}`).pipe(
-            map(response => response?.result || response),
-            catchError(error => {
-                console.error(`Error fetching ${path}:`, error);
-                return of(null);
-            })
-        );
+export class ApiClient {
+    constructor() {
+        this.baseUrl = getEnv('VITE_API_URL') || 'http://localhost:5000';
+        this.baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || 'http://localhost:5000';
+        this.isSSR = typeof window === 'undefined';
     }
 
-    post<T>(path: string, payload: any, key?: string): Observable<T> {
-        return this.http.post<any>(`${this.baseUrl}/api/${path}`, payload).pipe(
-            map(response => response?.result || response),
-            catchError(error => {
-                console.error(`Error posting to ${path}:`, error);
-                return of(null);
-            })
-        );
+    /**
+     * Make a GET request
+     * @param {string} path - The path to request
+     * @param {string} key - Optional cache key
+     * @returns {Promise<any>} - The response data
+     */
+    async get(path, key) {
+        try {
+            const response = await fetch(`${this.baseUrlFrontend}/${path}`);
+            const data = await response.json();
+            return data?.result || data;
+        } catch (error) {
+            console.error(`Error fetching ${path}:`, error);
+            return null;
+        }
     }
 
-    put<T>(path: string, payload: any, key?: string): Observable<T> {
-        return this.http.put<any>(`${this.baseUrl}/api/${path}`, payload).pipe(
-            map(response => response?.result || response),
-            catchError(error => {
-                console.error(`Error updating ${path}:`, error);
-                return of(null);
-            })
-        );
+    /**
+     * Make a POST request
+     * @param {string} path - The path to request
+     * @param {any} payload - The data to send
+     * @param {string} key - Optional cache key
+     * @returns {Promise<any>} - The response data
+     */
+    async post(path, payload, key) {
+        try {
+            const response = await fetch(`${this.baseUrl}/api/${path}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            return data?.result || data;
+        } catch (error) {
+            console.error(`Error posting to ${path}:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Make a PUT request
+     * @param {string} path - The path to request
+     * @param {any} payload - The data to send
+     * @param {string} key - Optional cache key
+     * @returns {Promise<any>} - The response data
+     */
+    async put(path, payload, key) {
+        try {
+            const response = await fetch(`${this.baseUrl}/api/${path}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            return data?.result || data;
+        } catch (error) {
+            console.error(`Error updating ${path}:`, error);
+            return null;
+        }
     }
 }
 
 /**
- * @description Blog Service for interacting with the blog API
+ * @description Blog client for interacting with the blog API
  */
-@Injectable({
-    providedIn: 'root'
-})
-export class BlogService {
-    private categoriesSubject = new BehaviorSubject<any[]>([]);
-    private tagsSubject = new BehaviorSubject<any[]>([]);
-    private settingsSubject = new BehaviorSubject<any[]>([]);
-
-    // Public observables
-    categoriesData$ = this.categoriesSubject.asObservable();
-    tagsData$ = this.tagsSubject.asObservable();
-    settingsData$ = this.settingsSubject.asObservable();
-
-    constructor(private api: ApiService) {}
+export class BlogClient {
+    constructor() {
+        this.api = new ApiClient();
+        this.categoriesData = [];
+        this.tagsData = [];
+        this.settingsData = [];
+    }
 
     // Categories
-    getAllCategories(): Observable<any[]> {
-        return this.api.get<any[]>('blog/categories').pipe(
-            tap(data => {
-                if (data) {
-                    this.categoriesSubject.next(data);
-                }
-            })
-        );
+    async getAllCategories() {
+        const data = await this.api.get('blog/categories');
+        if (data) {
+            this.categoriesData = data;
+        }
+        return data;
     }
 
-    getCategoryById(id: string): Observable<any> {
-        return this.api.get<any>(`blog/categories/${id}`);
+    async getCategoryById(id) {
+        return await this.api.get(`blog/categories/${id}`);
     }
 
-    getCategoryBySlug(slug: string): Observable<any> {
-        return this.api.get<any>(`blog/categories/slug/${slug}`);
+    async getCategoryBySlug(slug) {
+        return await this.api.get(`blog/categories/slug/${slug}`);
     }
 
     // Tags
-    getAllTags(): Observable<any[]> {
-        return this.api.get<any[]>('blog/posts/tags').pipe(
-            tap(data => {
-                if (data) {
-                    this.tagsSubject.next(data);
-                }
-            })
-        );
+    async getAllTags() {
+        const data = await this.api.get('blog/posts/tags');
+        if (data) {
+            this.tagsData = data;
+        }
+        return data;
     }
 
-    getPostsByTagSlug(tagSlug: string): Observable<any[]> {
-        return this.api.get<any[]>(`/blog/posts/tags/${tagSlug}`);
+    async getPostsByTagSlug(tagSlug) {
+        return await this.api.get(`/blog/posts/tags/${tagSlug}`);
     }
 
     // Settings
-    getAllSettings(): Observable<any[]> {
-        return this.api.get<any[]>('settings').pipe(
-            tap(data => {
-                if (data) {
-                    this.settingsSubject.next(data);
-                }
-            })
-        );
+    async getAllSettings() {
+        const data = await this.api.get('settings');
+        if (data) {
+            this.settingsData = data;
+        }
+        return data;
     }
 
     // Posts
-    getPosts(offset: number = 0): Observable<any[]> {
+    async getPosts(offset = 0) {
         const urlQueries = new URLSearchParams({
             limit: '10',
             status: 'published',
@@ -133,10 +148,10 @@ export class BlogService {
             offset: offset.toString()
         }).toString();
 
-        return this.api.get<any[]>(`blog/posts?${urlQueries}`);
+        return await this.api.get(`blog/posts?${urlQueries}`);
     }
 
-    searchPosts(query: string): Observable<any[]> {
+    async searchPosts(query) {
         const urlQueries = new URLSearchParams({
             limit: '10',
             status: 'published',
@@ -146,18 +161,18 @@ export class BlogService {
             searchField: 'title'
         }).toString();
 
-        return this.api.get<any[]>(`blog/posts?${urlQueries}`);
+        return await this.api.get(`blog/posts?${urlQueries}`);
     }
 
-    getPostById(id: string): Observable<any> {
-        return this.api.get<any>(`blog/posts/${id}`);
+    async getPostById(id) {
+        return await this.api.get(`blog/posts/${id}`);
     }
 
-    getPostBySlug(slug: string): Observable<any> {
-        return this.api.get<any>(`blog/posts/slug/${slug}`);
+    async getPostBySlug(slug) {
+        return await this.api.get(`blog/posts/slug/${slug}`);
     }
 
-    getPostByAuthor(author: string): Observable<any[]> {
+    async getPostByAuthor(author) {
         const urlQueries = new URLSearchParams({
             author: author,
             limit: '5',
@@ -166,46 +181,46 @@ export class BlogService {
             sortBy: 'publishedAt'
         }).toString();
 
-        return this.api.get<any[]>(`blog/posts?${urlQueries}`);
+        return await this.api.get(`blog/posts?${urlQueries}`);
     }
 
     // Pages
-    getPageById(id: string): Observable<any> {
-        return this.api.get<any>(`blog/pages/${id}`);
+    async getPageById(id) {
+        return await this.api.get(`blog/pages/${id}`);
     }
 
-    getPageBySlug(slug: string): Observable<any> {
-        return this.api.get<any>(`blog/pages/slug/${slug}`);
+    async getPageBySlug(slug) {
+        return await this.api.get(`blog/pages/slug/${slug}`);
     }
 
     // Authors
-    getAuthorById(id: string): Observable<any> {
-        return this.api.get<any>(`authors/${id}`);
+    async getAuthorById(id) {
+        return await this.api.get(`authors/${id}`);
     }
 
-    getAuthorBySlug(slug: string): Observable<any> {
-        return this.api.get<any>(`authors/slug/${slug}`);
+    async getAuthorBySlug(slug) {
+        return await this.api.get(`authors/slug/${slug}`);
     }
 
     // Members
-    createMember(payload: any): Observable<any> {
-        return this.api.post<any>('members', payload);
+    async createMember(payload) {
+        return await this.api.post('members', payload);
     }
 
-    getMemberProfile(id: string): Observable<any> {
-        return this.api.get<any>(`blog/members/profile/${id}`);
+    async getMemberProfile(id) {
+        return await this.api.get(`blog/members/profile/${id}`);
     }
 
-    getMyProfile(): Observable<any> {
-        return this.api.get<any>('blog/members/me');
+    async getMyProfile() {
+        return await this.api.get('blog/members/me');
     }
 
-    updateMemberProfile(id: string, payload: any): Observable<any> {
-        return this.api.put<any>(`blog/members/profile/${id}`, payload);
+    async updateMemberProfile(id, payload) {
+        return await this.api.put(`blog/members/profile/${id}`, payload);
     }
 
     // Analytics
-    registerAnalyticsAccess(path?: string): void {
+    registerAnalyticsAccess(path) {
         if (typeof window !== 'undefined') {
             window.addEventListener('load', () => {
                 const url = new URL(window.location.href);
@@ -220,7 +235,7 @@ export class BlogService {
         }
     }
 
-    registerAnalyticsUnload(path?: string): void {
+    registerAnalyticsUnload(path) {
         if (typeof window !== 'undefined') {
             window.addEventListener('beforeunload', () => {
                 const url = new URL(window.location.href);
@@ -237,13 +252,21 @@ export class BlogService {
 }
 
 /**
+ * Creates a new blog client instance
+ * @returns {BlogClient} A new BlogClient instance
+ */
+export const createBlogClient = () => {
+    return new BlogClient();
+};
+
+/**
  * @description Create the LD+JSON for the page
  * @param {string} type - The type of the page
  * @param {any} data - The data of the page
  * @param {any} settings - The settings of the blog
- * @returns {string} The LD+JSON
+ * @returns {Object} The LD+JSON object
  */
-export const createLdJSON = (type: string, data: any, settings: any) => {
+export const createLdJSON = (type, data, settings) => {
     switch(type){
         case "post":
             let authorLinks = [];
@@ -352,7 +375,7 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                     {
                         "@type": "BlogPosting",
                         "headline": data.title,
-                        "keywords": data.tags.map((tag: any) => tag.name).join(', ').toLowerCase(),
+                        "keywords": data.tags.map(tag => tag.name).join(', ').toLowerCase(),
                         "description": data.excerpt,
                         "datePublished": data.status === 'published' ?
                             new Date(data.publishedAt).toISOString() :
@@ -384,4 +407,4 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
             }
             break;
     }
-}
+};
