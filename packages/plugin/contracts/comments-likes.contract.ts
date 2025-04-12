@@ -43,7 +43,7 @@ export class CommentsLikesContract extends AbstractContract {
             }
         ]
     })
-    commentId: string;
+    comment: string;
 
     @ContractField({
         protoType: 'string',
@@ -62,5 +62,5 @@ export class CommentsLikesContract extends AbstractContract {
             }
         ]
     })
-    memberId: string;
+    member: string;
 }

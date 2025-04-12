@@ -1,16 +1,20 @@
 import { Service } from '@cmmv/core';
 
 import {
-    Repository
+    Repository, In
 } from "@cmmv/repository"
 
 import {
     IAnalyticsAccess
 } from './analytics.interface';
 
+import {
+    MediasService
+} from "../medias/medias.service";
+
 @Service("blog_analytics")
 export class AnalyticsService {
-    constructor(){
+    constructor(private readonly mediasService: MediasService){
         setInterval(() => {
             this.generateReport();
         }, 1000 * 60 * 30);
@@ -85,7 +89,8 @@ export class AnalyticsService {
         const AnalyticsSummaryEntity = Repository.getEntity("AnalyticsSummaryEntity");
 
         const analyticsAccess = await Repository.findAll(AnalyticsAccessEntity, {
-            summarized: false
+            summarized: false,
+            limit: 10000
         }, [], {
             select: ["id", "path", "ip", "agent", "referer", "startTime", "endTime", "postId"]
         });
@@ -190,5 +195,134 @@ export class AnalyticsService {
         }
 
         return true;
+    }
+
+    /**
+     * Get the summary of the analytics
+     */
+    async getSummary(){
+        const AnalyticsSummaryEntity = Repository.getEntity("AnalyticsSummaryEntity");
+        const summary = await Repository.findAll(AnalyticsSummaryEntity, {}, [], {
+            select: ["date", "totalAccess", "uniqueAccess", "bounceRate", "avgTimeOnPage"]
+        });
+
+        if(!summary)
+            return {
+                data: [],
+                total: 0
+            };
+
+        return {
+            data: summary.data,
+            total: summary.data.length
+        };
+    }
+
+    /**
+     * Get the posts most accessed in the last week
+     */
+    async getPostsMostAccessedWeek(){
+        const AnalyticsAccessEntity = Repository.getEntity("AnalyticsAccessEntity");
+
+        const analyticsAccess = await Repository.findAll(AnalyticsAccessEntity, {
+            summarized: true,
+            limit: 10000
+        }, [], {
+            select: ["postId"]
+        });
+
+        const postsAccess: Record<string, number> = {};
+
+        if(analyticsAccess){
+            for(const record of analyticsAccess.data){
+                if(!postsAccess[record.postId])
+                    postsAccess[record.postId] = 0;
+
+                postsAccess[record.postId]++;
+            }
+        }
+
+        const PostsEntity = Repository.getEntity("PostsEntity");
+
+        const posts = await Repository.findAll(PostsEntity, {
+            id: In(Object.keys(postsAccess)),
+            sortBy: "views",
+            sort: "desc",
+            limit: 10
+        }, [], {
+            select: ["id", "title", "slug", "views", "createdAt", "comments", "featureImage"]
+        });
+
+        if(!posts)
+            return [];
+
+        for(const post of posts.data){
+            post.featureImage = await this.mediasService.getImageUrl(
+                post.featureImage,
+                "webp",
+                1200,
+            );
+        }
+
+        return posts.data.map((post: any) => ({
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            image: post.featureImage,
+            createdAt: post.createdAt,
+            comments: post.comments,
+            views: postsAccess[post.id]
+        }));
+    }
+
+    /**
+     * Get the dashboard data
+     */
+    async getDashboardData(){
+        const PostsEntity = Repository.getEntity("PostsEntity");
+        const CommentsEntity = Repository.getEntity("CommentsEntity");
+        const MemberEntity = Repository.getEntity("MemberEntity");
+        const AnalyticsSummaryEntity = Repository.getEntity("AnalyticsSummaryEntity");
+
+        let totalAccess = 0;
+        let uniqueAccess = 0;
+
+        const summary = await Repository.findAll(AnalyticsSummaryEntity, {
+            limit: 30
+        }, [], {
+            select: ["date", "totalAccess", "uniqueAccess", "bounceRate", "avgTimeOnPage"]
+        });
+
+        if(summary){
+            for(const record of summary.data){
+                totalAccess += record.totalAccess;
+                uniqueAccess += record.uniqueAccess;
+            }
+        }
+
+        const totalPosts = await Repository.count(PostsEntity, {});
+        const totalComments = await Repository.count(CommentsEntity, {});
+        const totalMembers = await Repository.count(MemberEntity, {});
+        const postsFromLastMonth = await Repository.count(PostsEntity, {
+            createdAt: {
+                $gte: new Date(new Date().setMonth(new Date().getMonth() - 1))
+            }
+        });
+
+        const commentsFromLastMonth = await Repository.count(CommentsEntity, {
+            createdAt: {
+                $gte: new Date(new Date().setMonth(new Date().getMonth() - 1))
+            }
+        });
+
+        return {
+            totalPosts,
+            totalComments,
+            totalMembers,
+            postsFromLastMonth,
+            commentsFromLastMonth,
+            totalAccess,
+            uniqueAccess
+        };
     }
 }

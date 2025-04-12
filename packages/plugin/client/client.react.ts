@@ -1,5 +1,22 @@
 //@ts-nocheck
-import { useState, useCallback, useEffect } from "react";
+
+/**
+ * Check if React is installed
+ */
+let React;
+let useState;
+let useCallback;
+let useEffect;
+
+try {
+    React = require('react');
+    useState = React.useState;
+    useCallback = React.useCallback;
+    useEffect = React.useEffect;
+} catch (e) {
+    console.warn('React is not installed, @cmmv/blog React client will not work properly');
+
+}
 
 /**
  * @description Get the environment variable
@@ -8,10 +25,10 @@ import { useState, useCallback, useEffect } from "react";
  */
 export const getEnv = (key: string): string | undefined => {
     if (typeof import.meta !== 'undefined' && import.meta.env)
-      return import.meta.env[key]
+        return import.meta.env[key]
 
     if (typeof process !== 'undefined' && process.env)
-      return process.env[key]
+        return process.env[key]
 
     return undefined
 }
@@ -338,29 +355,29 @@ export const useBlog = () => {
  * @returns {string} The LD+JSON
  */
 export const createLdJSON = (type: string, data: any, settings: any) => {
-    switch(type){
+    switch (type) {
         case "post":
             let authorLinks = [];
 
-            if(data.author.facebook)
+            if (data.author.facebook)
                 authorLinks.push(`https://www.facebook.com/${data.author.facebook}`);
 
-            if(data.author.twitter)
+            if (data.author.twitter)
                 authorLinks.push(`https://twitter.com/${data.author.twitter}`);
 
-            if(data.author.linkedin)
+            if (data.author.linkedin)
                 authorLinks.push(`https://www.linkedin.com/in/${data.author.linkedin}`);
 
-            if(data.author.instagram)
+            if (data.author.instagram)
                 authorLinks.push(`https://www.instagram.com/${data.author.instagram}`);
 
-            if(data.author.youtube)
+            if (data.author.youtube)
                 authorLinks.push(`https://www.youtube.com/${data.author.youtube}`);
 
-            if(data.author.github)
+            if (data.author.github)
                 authorLinks.push(`https://github.com/${data.author.github}`);
 
-            if(data.author.website)
+            if (data.author.website)
                 authorLinks.push(data.author.website);
 
             return {
@@ -422,10 +439,10 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                             new Date(data.publishedAt).toISOString() :
                             new Date(data.updatedAt).toISOString(),
                         "isPartOf": {
-                          "@id": `${getEnv('VITE_WEBSITE_URL')}/#website`
+                            "@id": `${getEnv('VITE_WEBSITE_URL')}/#website`
                         },
                         "primaryImageOfPage": {
-                          "@id": data.featureImage || settings['blog.image']
+                            "@id": data.featureImage || settings['blog.image']
                         },
                         "inLanguage": settings['blog.language']
                     },
@@ -435,14 +452,14 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                         "name": data.author.name,
                         "url": `${getEnv('VITE_WEBSITE_URL')}/author/${data.author.slug}`,
                         "image": {
-                          "@type": "ImageObject",
-                          "@id": data.author.avatar,
-                          "url": data.author.avatar,
-                          "caption": data.author.name,
-                          "inLanguage": settings['blog.language']
+                            "@type": "ImageObject",
+                            "@id": data.author.avatar,
+                            "url": data.author.avatar,
+                            "caption": data.author.name,
+                            "inLanguage": settings['blog.language']
                         },
                         "sameAs": authorLinks
-                      },
+                    },
                     {
                         "@type": "BlogPosting",
                         "headline": data.title,
@@ -461,7 +478,7 @@ export const createLdJSON = (type: string, data: any, settings: any) => {
                         "publisher": {
                             "@id": `${getEnv('VITE_WEBSITE_URL')}/#person`
                         },
-                        "name": data.title + " -" +settings['blog.title'],
+                        "name": data.title + " -" + settings['blog.title'],
                         "@id": `${getEnv('VITE_WEBSITE_URL')}/post/${data.slug}/#richSnippet`,
                         "isPartOf": {
                             "@id": `${getEnv('VITE_WEBSITE_URL')}/#website`

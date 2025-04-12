@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 import {
     Contract, AbstractContract,
     ContractField
@@ -8,7 +10,7 @@ import {
     controllerName: 'Member',
     protoPackage: 'blog',
     subPath: '/blog',
-    generateController: false,
+    generateController: true,
     generateBoilerplates: false,
     auth: true,
     options: {
@@ -23,6 +25,28 @@ export class MemberContract extends AbstractContract {
         nullable: false
     })
     email!: string;
+
+    @ContractField({
+        protoType: 'string',
+        nullable: false,
+        customDecorator: {
+            IsStrongPassword: {
+                import: '@cmmv/core',
+                options: {
+                    message: 'Password must be strong',
+                },
+            },
+        },
+        validations: [
+            {
+                type: 'IsString',
+                message: 'The password must be a string',
+            },
+        ],
+        afterValidation: (value: string) =>
+            crypto.createHash('sha256').update(value).digest('hex'),
+    })
+    password!: string;
 
     @ContractField({
         protoType: 'string',

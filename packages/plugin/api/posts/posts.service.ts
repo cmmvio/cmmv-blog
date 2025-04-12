@@ -359,6 +359,21 @@ export class PostsPublicService {
         return this.getPostById(post.id);
     }
 
+    async getPostIdBySlug(slug: string) {
+        const PostsEntity = Repository.getEntity("PostsEntity");
+        const post: any = await Repository.findOne(PostsEntity, Repository.queryBuilder({
+            slug,
+            type: "post",
+        }), {
+            select: [ "id" ]
+        });
+
+        if(!post)
+            throw new Error("Post not found");
+
+        return post.id;
+    }
+
     /**
      * Get a page by slug
      * @param {string} slug - The slug of the page

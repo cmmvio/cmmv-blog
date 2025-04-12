@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="post-status" v-if="post.status !== 'published'">
-                        <span class="status-badge">{{ post.status.toUpperCase() }}</span>
+                        <span class="status-badge">{{ post.status?.toUpperCase() }}</span>
                     </div>
                 </div>
             </header>
@@ -248,6 +248,8 @@
                     </a>
                 </div>
             </div>
+
+            <div id="comments-container"></div>
         </div>
     </div>
 </template>
@@ -262,6 +264,7 @@ import { useRoute } from 'vue-router'
 import { useHead } from '@unhead/vue'
 import { vue3 } from '@cmmv/blog/client'
 import { formatDate, stripHtml } from '../composables/useUtils'
+import CommentSection from '../components/CommentSection.vue'
 
 const blogAPI = vue3.useBlog()
 const route = useRoute()
@@ -352,7 +355,6 @@ const copyPageUrl = () => {
 </script>
 
 <style scoped>
-/* Add these styles to ensure images, iframes, and other content respect container width */
 .post-content :deep(img) {
     max-width: 100%;
     height: auto;

@@ -91,6 +91,37 @@
                     </li>
                 </ul>
             </div>
+
+            <!-- Member section inside the sidebar -->
+            <div class="p-4 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+                <div v-if="isLoggedIn" class="flex items-center space-x-3">
+                    <div class="h-10 w-10 rounded-full bg-blue-600 dark:bg-blue-700 flex items-center justify-center overflow-hidden">
+                        <img
+                            v-if="currentMember.avatar"
+                            :src="currentMember.avatar"
+                            :alt="currentMember.name"
+                            class="h-full w-full object-cover"
+                        />
+                        <span v-else class="text-sm font-bold text-white">{{ memberInitials }}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-neutral-800 dark:text-white truncate">{{ currentMember.name }}</p>
+                        <div class="flex items-center mt-1">
+                            <a href="/member/profile" class="text-xs text-blue-600 hover:underline">Profile</a>
+                            <span class="text-neutral-300 dark:text-neutral-600 mx-2">|</span>
+                            <button @click="logout" class="text-xs text-blue-600 hover:underline">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="flex items-center justify-between">
+                    <span class="text-xs text-neutral-500 dark:text-neutral-400">Member Area</span>
+                    <div class="flex space-x-2">
+                        <a href="/member/login" class="text-xs text-blue-600 hover:underline">Sign In</a>
+                        <span class="text-neutral-300 dark:text-neutral-600">|</span>
+                        <a href="/member/register" class="text-xs text-neutral-600 dark:text-neutral-400 hover:underline">Register</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </aside>
 
@@ -232,10 +263,140 @@
             </div>
         </div>
     </div>
+
+    <!-- Login Modal (if we want to provide quick login without navigating to the page) -->
+    <div v-if="loginModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="login-modal" role="dialog" aria-modal="true">
+        <div class="flex items-start justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true" @click="closeLoginModal" style="backdrop-filter: blur(4px);"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white dark:bg-neutral-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+                <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full">
+                            <!-- Login header with close button -->
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg leading-6 font-medium text-neutral-900 dark:text-white" id="modal-title">
+                                    Login
+                                </h3>
+                                <button @click="closeLoginModal" class="text-neutral-400 hover:text-neutral-500 focus:outline-none">
+                                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Login form -->
+                            <form @submit.prevent="handleLogin">
+                                <div class="mb-4">
+                                    <label for="email" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                        Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        v-model="loginForm.email"
+                                        required
+                                        class="bg-white dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="your@email.com"
+                                    />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="password" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                        Password
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        v-model="loginForm.password"
+                                        required
+                                        class="bg-white dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 text-neutral-900 dark:text-white text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="flex items-center">
+                                        <input
+                                            id="remember-me"
+                                            type="checkbox"
+                                            v-model="loginForm.rememberMe"
+                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-neutral-300 rounded"
+                                        />
+                                        <label for="remember-me" class="ml-2 block text-sm text-neutral-700 dark:text-neutral-300">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                    <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                        Forgot password?
+                                    </a>
+                                </div>
+                                <div v-if="loginError" class="mb-4 text-sm text-red-600 dark:text-red-400">
+                                    {{ loginError }}
+                                </div>
+                                <div>
+                                    <button
+                                        type="submit"
+                                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        :disabled="isLoggingIn"
+                                    >
+                                        <span v-if="isLoggingIn">
+                                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Logging in...
+                                        </span>
+                                        <span v-else>Sign in</span>
+                                    </button>
+                                </div>
+                                <div class="mt-4 text-center">
+                                    <span class="text-sm text-neutral-600 dark:text-neutral-400">Don't have an account?</span>
+                                    <a href="/member/register" class="ml-1 text-sm text-blue-600 dark:text-blue-400 hover:underline">Register</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add profile button for mobile devices -->
+    <div v-if="isLoggedIn" class="fixed bottom-4 right-4 z-40 lg:hidden">
+        <button
+            @click="toggleProfileDropdown"
+            class="flex items-center space-x-2 px-4 py-2 bg-neutral-800 dark:bg-neutral-700 hover:bg-neutral-700 dark:hover:bg-neutral-600 text-white rounded-full shadow-lg transition-colors"
+        >
+            <div class="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-blue-600 text-white">
+                <img
+                    v-if="currentMember.avatar"
+                    :src="currentMember.avatar"
+                    :alt="currentMember.name"
+                    class="h-full w-full object-cover"
+                />
+                <span v-else class="text-sm font-medium">{{ memberInitials }}</span>
+            </div>
+            <span class="text-sm font-medium">{{ currentMember.name || 'My Profile' }}</span>
+        </button>
+
+        <div v-if="profileDropdownOpen" class="absolute bottom-14 right-0 w-48 py-2 bg-white dark:bg-neutral-800 rounded-md shadow-lg border border-neutral-200 dark:border-neutral-700">
+            <a href="/member/profile" class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                View Profile
+            </a>
+            <a href="/member/settings" class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                Settings
+            </a>
+            <div class="border-t border-neutral-200 dark:border-neutral-700 my-1"></div>
+            <button @click="logout" class="block w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                Sign Out
+            </button>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { vue3 } from '@cmmv/blog/client';
 
 const blogAPI = vue3.useBlog();
@@ -250,6 +411,29 @@ const searchTimeout = ref<any>(null)
 const searchInput = ref<HTMLInputElement | null>(null)
 const recentPosts = ref<any[]>([])
 const isLoadingRecentPosts = ref(false)
+
+// Member authentication state
+const isLoggedIn = ref(false)
+const currentMember = ref<any>({})
+const loginModalOpen = ref(false)
+const loginForm = ref({
+    email: '',
+    password: '',
+    rememberMe: false
+})
+const isLoggingIn = ref(false)
+const loginError = ref('')
+
+// Computed properties
+const memberInitials = computed(() => {
+    if (!currentMember.value?.name) return '';
+    return currentMember.value.name
+        .split(' ')
+        .map((part: string) => part[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase();
+})
 
 const toggle = () => {
     sidebarOpen.value = !sidebarOpen.value
@@ -329,26 +513,170 @@ const performSearch = async () => {
     }
 }
 
-// Handle keyboard shortcuts
+// Member authentication methods
+const openLoginModal = () => {
+    loginModalOpen.value = true
+    loginError.value = ''
+}
+
+const closeLoginModal = () => {
+    loginModalOpen.value = false
+    loginForm.value = {
+        email: '',
+        password: '',
+        rememberMe: false
+    }
+    loginError.value = ''
+}
+
+const handleLogin = async () => {
+    loginError.value = ''
+    isLoggingIn.value = true
+
+    try {
+        // Implementing login logic with the members API
+        // Use direct fetch request instead of blog API method as 'signin' is not available
+        const loginData = {
+            email: loginForm.value.email,
+            password: loginForm.value.password
+        }
+
+        // Making the request directly using fetch as a workaround
+        const response = await fetch('/api/members/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loginData)
+        })
+
+        if (!response.ok) {
+            throw new Error('Invalid login credentials')
+        }
+
+        const data = await response.json()
+
+        if (data && data.token && data.member) {
+            currentMember.value = data.member
+            isLoggedIn.value = true
+            closeLoginModal()
+
+            // Save token and member info in localStorage if rememberMe is checked
+            if (loginForm.value.rememberMe) {
+                localStorage.setItem('member', JSON.stringify({
+                    token: data.token,
+                    member: data.member
+                }))
+            } else {
+                // Use sessionStorage for current session only
+                sessionStorage.setItem('member', JSON.stringify({
+                    token: data.token,
+                    member: data.member
+                }))
+            }
+        } else {
+            loginError.value = 'Invalid login credentials'
+        }
+    } catch (error: any) {
+        console.error('Login error:', error)
+        loginError.value = error.message || 'Failed to login. Please try again.'
+    } finally {
+        isLoggingIn.value = false
+    }
+}
+
+const logout = () => {
+    // Clear member data
+    currentMember.value = {}
+    isLoggedIn.value = false
+
+    // Remove from storage
+    localStorage.removeItem('member')
+    sessionStorage.removeItem('member')
+
+    // Redirect to home if on member pages
+    const currentPath = window.location.pathname
+    if (currentPath.startsWith('/member/')) {
+        window.location.href = '/'
+    }
+}
+
+const checkAuthentication = () => {
+    // Check sessionStorage first
+    const sessionData = sessionStorage.getItem('member')
+    if (sessionData) {
+        try {
+            const parsed = JSON.parse(sessionData)
+            if (parsed.token && parsed.member) {
+                isLoggedIn.value = true
+                currentMember.value = parsed.member
+                return
+            }
+        } catch (e) {
+            console.error('Error parsing session data:', e)
+        }
+    }
+
+    // Then check localStorage
+    const localData = localStorage.getItem('member')
+    if (localData) {
+        try {
+            const parsed = JSON.parse(localData)
+            if (parsed.token && parsed.member) {
+                isLoggedIn.value = true
+                currentMember.value = parsed.member
+                return
+            }
+        } catch (e) {
+            console.error('Error parsing local data:', e)
+        }
+    }
+
+    // No valid auth data found
+    isLoggedIn.value = false
+    currentMember.value = {}
+}
+
 const handleKeydown = (e: KeyboardEvent) => {
-    // Open search on Ctrl+K or Cmd+K
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault()
         openSearchModal()
     }
 
-    // Close on Escape
-    if (e.key === 'Escape' && searchModalOpen.value) {
-        closeSearchModal()
+    if (e.key === 'Escape') {
+        if (searchModalOpen.value) {
+            closeSearchModal()
+        }
+        if (loginModalOpen.value) {
+            closeLoginModal()
+        }
+    }
+}
+
+const profileDropdownOpen = ref(false)
+
+const toggleProfileDropdown = () => {
+    profileDropdownOpen.value = !profileDropdownOpen.value
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+    if (profileDropdownOpen.value) {
+        const target = event.target as HTMLElement
+
+        if (!target.closest('.profile-dropdown'))
+            profileDropdownOpen.value = false
     }
 }
 
 onMounted(() => {
     document.addEventListener('keydown', handleKeydown)
+    document.addEventListener('click', handleClickOutside)
+    checkAuthentication()
 })
 
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeydown)
+    document.removeEventListener('click', handleClickOutside)
 })
 
 // Format date helper function

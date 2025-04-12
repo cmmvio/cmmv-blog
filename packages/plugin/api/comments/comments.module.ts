@@ -5,9 +5,23 @@ import {
     CommentsLikesContract
 } from '../../contracts';
 
+import {
+    CommentsAdminController,
+    CommentsPublicController
+} from './comments.controller';
+
+import {
+    CommentsPublicService
+} from './comments.service';
+
 export const CommentsModule = new Module('blog_comments', {
     contracts: [
         CommentsContract,
         CommentsLikesContract
     ],
+    controllers: [
+        CommentsAdminController,
+        CommentsPublicController
+    ],
+    providers: [CommentsPublicService]
 });

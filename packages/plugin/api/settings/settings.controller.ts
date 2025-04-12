@@ -14,22 +14,22 @@ import {
 } from "@cmmv/auth";
 
 import {
-    BlogSettingsService
-} from "./settings.services";
+    SettingsService
+} from "./settings.service";
 
 import {
     ISettings
 } from "./settings.interface";
 
 @Controller()
-export class BlogSettingsController {
+export class SettingsController {
     constructor(
-        private readonly blogSettingsService: BlogSettingsService
+        private readonly settingsService: SettingsService
     ) {}
 
     @Post('setup', { exclude: true })
     public async getSetup(@Body() setupData: any) {
-        return this.blogSettingsService.getSetup(setupData);
+        return this.settingsService.getSetup(setupData);
     }
 
     @Get('settings', { exclude: true })
@@ -37,13 +37,13 @@ export class BlogSettingsController {
     @ContentType('application/json')
     @Raw()
     public async getSettings() {
-        return await this.blogSettingsService.getSettings();
+        return await this.settingsService.getSettings();
     }
 
     @Get('settings-root', { exclude: true })
     @Auth({ rootOnly: true })
     public async getAllSettings() {
-        return this.blogSettingsService.getAllSettings();
+        return this.settingsService.getAllSettings();
     }
 
     @Get('settings/:key', { exclude: true })
@@ -51,13 +51,13 @@ export class BlogSettingsController {
     @ContentType('application/json')
     @Raw()
     public async getSetting(@Param('key') key: string) {
-        return this.blogSettingsService.getSetting(key);
+        return this.settingsService.getSetting(key);
     }
 
     @Put('settings', { exclude: true })
     @Auth({ rootOnly: true })
     public async updasertSetting(@Body() setting: ISettings[]) {
-        return this.blogSettingsService.upsertSetting(setting);
+        return this.settingsService.upsertSetting(setting);
     }
 
     @Get('robots.txt', { exclude: true })

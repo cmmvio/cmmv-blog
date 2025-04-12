@@ -14,6 +14,8 @@ import TagsView from './views/TagsView.vue'
 import ProfileView from './views/ProfileView.vue'
 import AuthorsView from './views/AuthorsView.vue'
 import MediasView from './views/MediasView.vue'
+import MembersView from './views/MembersView.vue'
+import CommentsView from './views/CommentsView.vue'
 
 const router = createRouter({
     //@ts-ignore
@@ -50,6 +52,12 @@ const router = createRouter({
             }, {
                 path: '/medias',
                 component: MediasView
+            }, {
+                path: '/members',
+                component: MembersView
+            }, {
+                path: '/comments',
+                component: CommentsView
             }],
         },
         {

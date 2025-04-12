@@ -52,10 +52,30 @@ export class AnalyticsController {
     }
 
     @Get("report")
-    //@Auth()
+    @Auth()
     async getAnalyticsReport(){
         await this.analyticsService.generateReport();
         return Buffer.from([0x00]);
+    }
+
+    @Get("summary")
+    @Auth()
+    async getSummary(){
+        return await this.analyticsService.getSummary();
+    }
+
+    @Get("posts-most-accessed")
+    @ContentType("application/json")
+    @Raw()
+    async getPostsMostAccessed(){
+        return await this.analyticsService.getPostsMostAccessedWeek();
+    }
+
+    @Get("dashboard")
+    @ContentType("application/json")
+    @Raw()
+    async getDashboard(){
+        return await this.analyticsService.getDashboardData();
     }
 }
 

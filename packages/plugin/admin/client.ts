@@ -94,8 +94,33 @@ export const useAdminClient = () => {
         updateProfile: (id: string, data: any) => api.authRequest(`blog/members/profile/${id}`, 'PUT', data),
         get: (filters: Record<string, any>) => {
             const query = new URLSearchParams(filters).toString();
-            return api.authRequest(`members?${query}`, 'GET');
-        }
+            return api.authRequest(`member?${query}`, 'GET');
+        },
+        getById: (id: string) => api.authRequest(`member/${id}`, 'GET'),
+        update: (id: string, data: any) => api.authRequest(`member/${id}`, 'PUT', data),
+        insert: (data: any) => api.authRequest('member', 'POST', data),
+        delete: (id: string) => api.authRequest(`member/${id}`, 'DELETE'),
+    };
+
+    const analytics = {
+        getSummary: () => api.authRequest('analytics/summary', 'GET').then((res: any) => res.data),
+        getPostsMostAccessed: () => api.authRequest('analytics/posts-most-accessed', 'GET'),
+        getDashboard: () => api.authRequest('analytics/dashboard', 'GET'),
+    };
+
+    const comments = {
+        get: (filters: Record<string, any>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`comments?${query}`, 'GET');
+        },
+        getWithDetails: (filters: Record<string, any>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`comments-with-details?${query}`, 'GET');
+        },
+        getById: (id: string) => api.authRequest(`comments/${id}`, 'GET'),
+        save: (data: any) => api.authRequest('comments', 'POST', data),
+        update: (id: string, data: any) => api.authRequest(`comments/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`comments/${id}`, 'DELETE'),
     };
 
     return {
@@ -109,5 +134,7 @@ export const useAdminClient = () => {
         authors,
         medias,
         members,
+        analytics,
+        comments,
     };
 };

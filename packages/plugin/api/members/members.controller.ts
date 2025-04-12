@@ -2,9 +2,9 @@ import { Application } from "@cmmv/core";
 import { Auth } from "@cmmv/auth";
 
 import {
-    Controller, Get, Post, Put, Delete,
-    Queries, Param, Body, Req, RouterSchema,
-    CacheControl, ContentType, Raw
+    Controller, Get, Post, Put,
+    Param, Body, Req, RouterSchema,
+    CacheControl, ContentType, Header
 } from "@cmmv/http";
 
 import {
@@ -29,6 +29,7 @@ interface IMemberCreatePayload {
     name: string;
     note?: string;
     getLocation?: string;
+    password: string;
 }
 
 interface IMemberUpdatePayload {
@@ -36,6 +37,11 @@ interface IMemberUpdatePayload {
     note?: string;
     getLocation?: string;
     emailDisabled?: boolean;
+}
+
+interface IMemberLoginPayload {
+    email: string;
+    password: string;
 }
 
 @Controller('blog')
@@ -59,11 +65,8 @@ export class MembersPublicController {
     })
     @CacheControl({ maxAge: 3600, public: false })
     @ContentType('application/json')
-    async getProfile(@Param('id') id: string, @Req() req: any) {
-        // Get the current user ID from the authenticated request
-        const currentUserId = req.user?.id || null;
-
-        return this.membersPublicService.getProfile(id, currentUserId);
+    async getProfile(@Param('id') id: string) {
+        return this.membersPublicService.getProfileByID(id);
     }
 
     @Get('members/me', {
@@ -72,16 +75,10 @@ export class MembersPublicController {
         summary: 'Get current member profile',
         exposeFilters: true
     })
-    @Auth()
     @CacheControl({ maxAge: 0, public: false })
     @ContentType('application/json')
-    async getMyProfile(@Req() req: any) {
-        // Make sure we're authenticated
-        if (!req.user?.id) {
-            throw new Error('Authentication required');
-        }
-
-        return this.membersPublicService.getProfile(req.user.id, req.user.id);
+    async getMyProfile(@Header("Authorization") token: string) {
+        return this.membersPublicService.getProfile(token);
     }
 
     @Put('members/profile/:id', {
@@ -95,11 +92,17 @@ export class MembersPublicController {
         @Body() payload: IMemberUpdatePayload,
         @Req() req: any
     ) {
-        // Make sure we're authenticated
-        if (!req.user?.id) {
+        if (!req.user?.id)
             throw new Error('Authentication required');
-        }
 
         return this.membersPublicService.updateProfile(id, payload, req.user.id);
+    }
+
+    @Post('members/login', {
+        contract: Application.getContract('MemberContract'),
+        summary: 'Login a member'
+    })
+    async login(@Body() payload: IMemberLoginPayload) {
+        return this.membersPublicService.login(payload);
     }
 }

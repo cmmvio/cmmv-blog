@@ -14,7 +14,7 @@ import {
 } from "./settings.interface";
 
 @Service("blog_settings")
-export class BlogSettingsService {
+export class SettingsService {
     /**
      * Get the setup data
      * @param setupData - The setup data

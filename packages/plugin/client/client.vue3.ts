@@ -1,5 +1,19 @@
 //@ts-nocheck
-import { ref, inject, App } from "vue";
+
+// Define fallback implementations
+let ref = (val) => ({ value: val });
+let inject = () => ({});
+let App = function() {};
+
+// Try to import Vue
+try {
+  const Vue = require('vue');
+  ref = Vue.ref;
+  inject = Vue.inject;
+  App = Vue.App;
+} catch (e) {
+  console.warn('Vue is not installed, @cmmv/blog Vue client will not work properly');
+}
 
 const PRELOADED_KEY = Symbol('preloaded');
 type FetchMap = Record<string, Promise<any>>;
@@ -25,8 +39,8 @@ export const getEnv = (key: string): string | undefined => {
  * @returns {Object} The API object
  */
 export const useApi = () => {
-    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:5000";
-    const baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || "http://localhost:5000";
+    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:5001/api";
+    const baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || "http://localhost:5001/api";
     const preloaded = inject<Record<string, any>>(PRELOADED_KEY, {});
     const isSSR = typeof window === 'undefined';
 
@@ -66,11 +80,9 @@ export const useApi = () => {
     };
 
     const post = async <T>(path: string, payload: any, key?: string) => {
-        const cacheKey = key || `post:${path}:${JSON.stringify(payload)}`;
-        const data = ref<T | null>(preloaded[cacheKey] ?? null);
-
         try {
-            const response = await fetch(`${baseUrl}/api/${path}`, {
+            const apiUrl = isSSR ? baseUrl : baseUrlFrontend;
+            const response = await fetch(`${apiUrl}/${path}`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -79,17 +91,83 @@ export const useApi = () => {
             });
 
             const result = await response.json();
-            data.value = result.result || result;
+            return result.result || result;
         } catch (error) {
             console.error(`Error posting to ${path}:`, error);
         }
 
-        return { data };
+        return null;
     };
+
+    const put = async <T>(path: string, payload: any, key?: string) => {
+        try {
+            const apiUrl = isSSR ? baseUrl : baseUrlFrontend;
+            const response = await fetch(`${apiUrl}/${path}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            return result.result || result;
+        } catch (error) {
+            console.error(`Error posting to ${path}:`, error);
+        }
+
+        return null;
+    }
+
+    const getAuth = async <T>(path: string, key?: string) => {
+        const cacheKey = key || `get:${path}`;
+        const data = ref<T | null>(preloaded[cacheKey] ?? null);
+
+        try {
+            const sessionData = sessionStorage.getItem('member');
+            const localData = localStorage.getItem('member');
+            const token = sessionData ? JSON.parse(sessionData).token : localData ? JSON.parse(localData).token : null;
+
+            const response = await fetch(`${baseUrlFrontend}/${path}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const result = await response.json();
+            data.value = result.result || result;
+        } catch (error) {
+            console.error(`Error fetching ${path}:`, error);
+        }
+
+        return { data };
+    }
+
+    const putAuth = async <T>(path: string, payload: any, key?: string) => {
+        try {
+            const apiUrl = isSSR ? baseUrl : baseUrlFrontend;
+            const response = await fetch(`${apiUrl}/${path}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+        } catch (error) {
+            console.error(`Error posting to ${path}:`, error);
+        }
+
+        return null;
+    }
 
     return {
         get,
-        post
+        post,
+        put,
+        getAuth,
+        putAuth
     };
 };
 
@@ -102,7 +180,6 @@ export const useBlog = () => {
     const tagsData = ref<any[]>([]);
     const settingsData = ref<any[]>([]);
     const api = useApi();
-    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:5000";
 
     // Group functions by entity type
     const categories = {
@@ -213,28 +290,24 @@ export const useBlog = () => {
 
     const members = {
         create: async (payload: any) => {
-            const { data } = await api.post<any>("members", payload, "create-member");
-            return data.value || null;
+            const response = await api.post<any>("blog/members", payload, "create-member");
+            return response || null;
         },
         getProfile: async (id: string) => {
-            const { data } = await api.get<any>(`blog/members/profile/${id}`, `member-profile-${id}`);
+            const { data } = await api.getAuth<any>(`blog/members/profile/${id}`, `member-profile-${id}`);
             return data.value || null;
         },
         getMyProfile: async () => {
-            const { data } = await api.get<any>("blog/members/me", "current-member");
+            const { data } = await api.getAuth<any>("blog/members/me", "current-member");
             return data.value || null;
         },
         updateProfile: async (id: string, payload: any) => {
-            const response = await fetch(`${baseUrl}/blog/members/profile/${id}`, {
-                method: "PUT",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-            return result.result || result;
+            const response = await api.putAuth<any>(`blog/members/profile/${id}`, payload, `member-profile-${id}`);
+            return response || null;
+        },
+        login: async (payload: any) => {
+            const response = await api.post<any>("blog/members/login", payload, "login-member");
+            return response || null;
         }
     };
 

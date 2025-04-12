@@ -1,9 +1,9 @@
 import { Module } from '@cmmv/core';
 
-import { BlogSettingsController } from "./settings.controller";
-import { BlogSettingsService } from "./settings.services";
+import { SettingsController } from "./settings.controller";
+import { SettingsService } from "./settings.service";
 
 export const BlogSettingsModule = new Module('blog_settings', {
-    controllers: [BlogSettingsController],
-    providers: [BlogSettingsService]
+    controllers: [SettingsController],
+    providers: [SettingsService]
 });

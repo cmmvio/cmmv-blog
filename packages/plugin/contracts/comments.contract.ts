@@ -16,7 +16,7 @@ import {
     controllerName: 'Comments',
     protoPackage: 'blog',
     subPath: '/blog',
-    generateController: false,
+    generateController: true,
     generateBoilerplates: false,
     auth: true,
     options: {
@@ -33,7 +33,7 @@ export class CommentsContract extends AbstractContract {
         objectType: 'object',
         entityType: 'PostsEntity',
         protoRepeated: false,
-        exclude: true,
+        exclude: false,
         readOnly: true,
         link: [
             {
@@ -52,7 +52,7 @@ export class CommentsContract extends AbstractContract {
         objectType: 'object',
         entityType: 'MemberEntity',
         protoRepeated: false,
-        exclude: true,
+        exclude: false,
         readOnly: true,
         link: [
             {
@@ -95,4 +95,18 @@ export class CommentsContract extends AbstractContract {
         nullable: true
     })
     editedAt?: Date;
+
+    @ContractField({
+        protoType: 'int64',
+        nullable: true,
+        defaultValue: 0
+    })
+    likes?: number;
+
+    @ContractField({
+        protoType: 'int64',
+        nullable: true,
+        defaultValue: 0
+    })
+    replies?: number;
 }

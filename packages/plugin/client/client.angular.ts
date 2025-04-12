@@ -1,8 +1,31 @@
 //@ts-nocheck
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+
+/**
+ * Check if Angular is installed
+ */
+let Angular;
+let HttpClient;
+
+let Injectable = () => {};
+let BehaviorSubject;
+let Observable;
+let from;
+let of;
+let map;
+let catchError;
+let tap;
+
+try {
+  Angular = require('@angular/core');
+  HttpClient = require('@angular/common/http');
+  Injectable = Angular.Injectable;
+  BehaviorSubject = require('rxjs').BehaviorSubject;
+  Observable = require('rxjs').Observable;
+  from = require('rxjs').from;
+  of = require('rxjs').of;
+  map = require('rxjs').map;
+  catchError = require('rxjs').catchError;
+} catch (e) {}
 
 /**
  * @description Get the environment variable
@@ -27,7 +50,7 @@ export class ApiService {
     private baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || 'http://localhost:5000';
     private isSSR = typeof window === 'undefined';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient.HttpClient) {}
 
     get<T>(path: string, key?: string): Observable<T> {
         return this.http.get<any>(`${this.baseUrlFrontend}/${path}`).pipe(
