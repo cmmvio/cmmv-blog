@@ -115,8 +115,10 @@ const route = useRoute();
 const page = ref<any>(null);
 
 page.value = route.params.id ?
-    await blogAPI.getPageById(route.params.id as string) :
-    await blogAPI.getPageBySlug(route.params.slug as string);
+    await blogAPI.pages.getById(route.params.id as string) :
+    await blogAPI.pages.getBySlug(route.params.slug as string);
+
+console.log(page.value);
 
 const author = ref(page.value.authors.find(
     (author: any) => author.user === page.value.author
@@ -127,8 +129,4 @@ const pageUrl = computed(() => {
     return `${import.meta.env.VITE_WEBSITE_URL}/page/${page.value.slug}`;
 });
 
-await vue3.injectSEO("page", {
-    ...page.value,
-    author: author.value
-});
 </script>

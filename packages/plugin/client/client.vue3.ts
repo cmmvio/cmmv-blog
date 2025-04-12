@@ -26,33 +26,37 @@ export const getEnv = (key: string): string | undefined => {
  */
 export const useApi = () => {
     const baseUrl = getEnv('VITE_API_URL') || "http://localhost:5000";
-    const baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || "https://blog.cmmv.io/api";
+    const baseUrlFrontend = getEnv('VITE_API_URL_FRONT') || "http://localhost:5000";
     const preloaded = inject<Record<string, any>>(PRELOADED_KEY, {});
+    const isSSR = typeof window === 'undefined';
 
     const get = async <T>(path: string, key?: string) => {
         const cacheKey = key || `get:${path}`;
         const data = ref<T | null>(preloaded[cacheKey] ?? null);
 
-        if (getEnv('SSR') && !preloaded[cacheKey]) {
-            if (!globalThis.__SSR_DATA__)
+        if (isSSR) {
+            if (!globalThis.__SSR_DATA__) {
                 globalThis.__SSR_DATA__ = {};
-
-            try {
-                globalThis.__SSR_DATA__[cacheKey] = await fetch(`${baseUrl}/${path}`)
-                    .then(res => res.json())
-                    .then(data => data.result || data);
-
-                data.value = globalThis.__SSR_DATA__[cacheKey];
-            } catch (error) {
-                console.error(`Error fetching ${path}:`, error);
             }
-        }
 
-        else if (!getEnv('SSR') && data.value === null) {
+            if (!globalThis.__SSR_DATA__[cacheKey]) {
+                try {
+                    const response = await fetch(`${baseUrl}/${path}`);
+                    const result = await response.json();
+                    globalThis.__SSR_DATA__[cacheKey] = result?.result || result;
+                } catch (error) {
+                    console.error(`Error fetching ${path}:`, error);
+                    globalThis.__SSR_DATA__[cacheKey] = null;
+                }
+            }
+
+            data.value = globalThis.__SSR_DATA__[cacheKey];
+        }
+        else if (data.value === null) {
             try {
                 const response = await fetch(`${baseUrlFrontend}/${path}`);
                 const result = await response.json();
-                data.value = result.result || result;
+                data.value = result?.result || result;
             } catch (error) {
                 console.error(`Error fetching ${path}:`, error);
             }
@@ -94,145 +98,190 @@ export const useApi = () => {
  * @returns {Object} The Blog API object
  */
 export const useBlog = () => {
-    const categories = ref<any[]>([]);
-    const tags = ref<any[]>([]);
-    const settings = ref<any[]>([]);
+    const categoriesData = ref<any[]>([]);
+    const tagsData = ref<any[]>([]);
+    const settingsData = ref<any[]>([]);
     const api = useApi();
+    const baseUrl = getEnv('VITE_API_URL') || "http://localhost:5000";
 
-    const getAllCategories = async () => {
-        const { data } = await api.get<any[]>("blog/categories", "categories");
-        categories.value = data.value || [];
-        return data.value || [];
+    // Group functions by entity type
+    const categories = {
+        getAll: async () => {
+            const { data } = await api.get<any[]>("blog/categories", "categories");
+            categoriesData.value = data.value || [];
+            return data.value || [];
+        },
+        getById: async (id: string) => {
+            const { data } = await api.get<any[]>(`blog/categories/${id}`, "category");
+            return data.value || [];
+        },
+        getBySlug: async (slug: string) => {
+            const { data } = await api.get<any[]>(`blog/categories/slug/${slug}`, "category");
+            return data.value || [];
+        }
     };
 
-    const getAllTags = async () => {
-        const { data } = await api.get<any[]>("blog/posts/tags", "tags");
-        tags.value = data.value || [];
-        return data.value || [];
+    const tags = {
+        getAll: async () => {
+            const { data } = await api.get<any[]>("blog/posts/tags", "tags");
+            tagsData.value = data.value || [];
+            return data.value || [];
+        },
+        getPostsBySlug: async (tagSlug: string) => {
+            const { data } = await api.get<any[]>(`/blog/posts/tags/${tagSlug}`, "post");
+            return data.value || [];
+        }
     };
 
-    const getAllSettings = async () => {
-        const { data } = await api.get<any[]>("settings", "settings");
-        settings.value = data.value || [];
-        return data.value || [];
+    const settings = {
+        getAll: async () => {
+            const { data } = await api.get<any[]>("settings", "settings");
+            settingsData.value = data.value || [];
+            return data.value || [];
+        }
     };
 
-    const getPosts = async (offset: number = 0) => {
-        const urlQueries = new URLSearchParams({
-            limit: "10",
-            status: "published",
-            sort: "ASC",
-            sortBy: "publishedAt",
-            offset: offset.toString()
-        }).toString();
+    const posts = {
+        getAll: async (offset: number = 0) => {
+            const urlQueries = new URLSearchParams({
+                limit: "10",
+                status: "published",
+                sort: "ASC",
+                sortBy: "publishedAt",
+                offset: offset.toString()
+            }).toString();
 
-        const { data } = await api.get<any[]>(`blog/posts?${urlQueries}`, "posts");
-        return data.value || [];
+            const { data } = await api.get<any[]>(`blog/posts?${urlQueries}`, "posts");
+            return data.value || [];
+        },
+        getById: async (id: string) => {
+            const { data } = await api.get<any[]>(`blog/posts/${id}`, "post");
+            return data.value || [];
+        },
+        getBySlug: async (slug: string) => {
+            const { data } = await api.get<any[]>(`blog/posts/slug/${slug}`, "post");
+            return data.value || [];
+        },
+        getByAuthor: async (author: string) => {
+            const urlQueries = new URLSearchParams({
+                author: author,
+                limit: "5",
+                status: "published",
+                sort: "DESC",
+                sortBy: "publishedAt"
+            }).toString();
+
+            const { data } = await api.get<any[]>(`blog/posts?${urlQueries}`, "post");
+            return data.value || [];
+        }
     };
 
-    const getPostById = async (id: string) => {
-        const { data } = await api.get<any[]>(`blog/posts/${id}`, "post");
-        return data.value || [];
+    const pages = {
+        getById: async (id: string) => {
+            const { data } = await api.get<any[]>(`blog/pages/${id}`, "page");
+            return data.value || [];
+        },
+        getBySlug: async (slug: string) => {
+            const { data } = await api.get<any[]>(`blog/pages/slug/${slug}`, "page");
+            return data.value || [];
+        }
     };
 
-    const getPostBySlug = async (slug: string) => {
-        const { data } = await api.get<any[]>(`blog/posts/slug/${slug}`, "post");
-        return data.value || [];
+    const authors = {
+        getById: async (id: string) => {
+            const { data } = await api.get<any[]>(`authors/${id}`, "author");
+            return data.value || [];
+        },
+        getBySlug: async (slug: string) => {
+            const { data } = await api.get<any[]>(`authors/slug/${slug}`, "author");
+            return data.value || [];
+        }
     };
 
-    const getPostByAuthor = async (author: string) => {
-        const urlQueries = new URLSearchParams({
-            author: author,
-            limit: "5",
-            status: "published",
-            sort: "DESC",
-            sortBy: "publishedAt"
-        }).toString();
-
-        const { data } = await api.get<any[]>(`blog/posts?${urlQueries}`, "post");
-        return data.value || [];
-    };
-
-    const getPostsByTagSlug = async (tagSlug: string) => {
-        const { data } = await api.get<any[]>(`/blog/posts/tags/${tagSlug}`, "post");
-        return data.value || [];
-    };
-
-    const getPageById = async (id: string) => {
-        const { data } = await api.get<any[]>(`blog/pages/${id}`, "page");
-        return data.value || [];
-    };
-
-    const getPageBySlug = async (slug: string) => {
-        const { data } = await api.get<any[]>(`blog/pages/slug/${slug}`, "page");
-        return data.value || [];
-    };
-
-    const getCategoryById = async (id: string) => {
-        const { data } = await api.get<any[]>(`blog/categories/${id}`, "category");
-        return data.value || [];
-    };
-
-    const getCategoryBySlug = async (slug: string) => {
-        const { data } = await api.get<any[]>(`blog/categories/slug/${slug}`, "category");
-        return data.value || [];
-    };
-
-    const getAuthorById = async (id: string) => {
-        const { data } = await api.get<any[]>(`authors/${id}`, "author");
-        return data.value || [];
-    };
-
-    const getAuthorBySlug = async (slug: string) => {
-        const { data } = await api.get<any[]>(`authors/slug/${slug}`, "author");
-        return data.value || [];
-    };
-
-    const registerAnalyticsAccess = async (path: string, postId: string) => {
-        window.addEventListener('load', () => {
-            const url = new URL(window.location.href);
-            const data = new URLSearchParams({
-                path: url.pathname,
-                t: Date.now().toString(),
-                r: Math.random().toString()
+    const members = {
+        create: async (payload: any) => {
+            const { data } = await api.post<any>("members", payload, "create-member");
+            return data.value || null;
+        },
+        getProfile: async (id: string) => {
+            const { data } = await api.get<any>(`blog/members/profile/${id}`, `member-profile-${id}`);
+            return data.value || null;
+        },
+        getMyProfile: async () => {
+            const { data } = await api.get<any>("blog/members/me", "current-member");
+            return data.value || null;
+        },
+        updateProfile: async (id: string, payload: any) => {
+            const response = await fetch(`${baseUrl}/blog/members/profile/${id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
             });
 
-            navigator.sendBeacon('/api/analytics/access', data);
-        });
-    }
+            const result = await response.json();
+            return result.result || result;
+        }
+    };
 
-    const registerAnalyticsUnload = async (path: string, postId: string) => {
-        window.addEventListener('beforeunload', () => {
-            const url = new URL(window.location.href);
-            const data = new URLSearchParams({
-                path: url.pathname,
-                t: Date.now().toString(),
-                r: Math.random().toString()
+    const analytics = {
+        registerAccess: async (path: string, postId: string) => {
+            window.addEventListener('load', () => {
+                const url = new URL(window.location.href);
+                const data = new URLSearchParams({
+                    path: url.pathname,
+                    t: Date.now().toString(),
+                    r: Math.random().toString()
+                });
+
+                navigator.sendBeacon('/api/analytics/access', data);
             });
+        },
+        registerUnload: async (path: string, postId: string) => {
+            window.addEventListener('beforeunload', () => {
+                const url = new URL(window.location.href);
+                const data = new URLSearchParams({
+                    path: url.pathname,
+                    t: Date.now().toString(),
+                    r: Math.random().toString()
+                });
 
-            navigator.sendBeacon('/api/analytics/unload', data);
-        });
-    }
+                navigator.sendBeacon('/api/analytics/unload', data);
+            });
+        }
+    };
 
     return {
-        getAllCategories,
-        getAllTags,
-        getAllSettings,
-        getPosts,
-        getPostById,
-        getPostBySlug,
-        getPostByAuthor,
-        getPostsByTagSlug,
-        getPageById,
-        getPageBySlug,
-        getCategoryById,
-        getCategoryBySlug,
-        getAuthorById,
-        getAuthorBySlug,
-        registerAnalyticsAccess,
         categories,
         tags,
-        settings
+        settings,
+        posts,
+        pages,
+        authors,
+        members,
+        analytics,
+        // For backward compatibility
+        getAllCategories: categories.getAll,
+        getAllTags: tags.getAll,
+        getAllSettings: settings.getAll,
+        getPosts: posts.getAll,
+        getPostById: posts.getById,
+        getPostBySlug: posts.getBySlug,
+        getPostByAuthor: posts.getByAuthor,
+        getPostsByTagSlug: tags.getPostsBySlug,
+        getPageById: pages.getById,
+        getPageBySlug: pages.getBySlug,
+        getCategoryById: categories.getById,
+        getCategoryBySlug: categories.getBySlug,
+        getAuthorById: authors.getById,
+        getAuthorBySlug: authors.getBySlug,
+        registerAnalyticsAccess: analytics.registerAccess,
+        registerAnalyticsUnload: analytics.registerUnload,
+        // Exposed refs
+        categoriesData,
+        tagsData,
+        settingsData
     };
 };
 

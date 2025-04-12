@@ -30,6 +30,8 @@
                         Save Draft
                     </button>
                     <button
+                        v-if="post.id"
+                        @click="viewPost(post.id)"
                         class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors cursor-pointer">
                         Preview
                     </button>
@@ -155,7 +157,7 @@
                                 @input="autoResizeTitle"
                                 ref="titleTextarea"
                                 rows="1"
-                                class="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-neutral-400 resize-none overflow-hidden"
+                                class="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-neutral-400 resize-none overflow-hidden min-h-[32px]"
                             ></textarea>
                         </div>
 
@@ -924,6 +926,7 @@ onMounted(async () => {
     }
 
     document.addEventListener('click', handleGlobalClick)
+    loadBlogUrl();
 
     nextTick(() => {
         autoResizeTitle()
@@ -1208,10 +1211,13 @@ async function savePage() {
         const response = await adminClient.pages.save(payload)
 
         if (response && response.id) {
+            // Update the post ID with the one returned from the API
+            post.value.id = response.id
             showNotification('success', 'Page saved successfully')
 
-            if (!post.value.id)
+            if (!route.params.id) {
                 router.push(`/page/${response.id}`)
+            }
 
             return response
         }
@@ -1371,6 +1377,25 @@ function insertTable() {
     editor.chain().focus()
         .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
         .run()
+}
+
+const blogUrl = ref('');
+
+const loadBlogUrl = async () => {
+    try {
+        const settings = await adminClient.settings.getRoot();
+        const urlSetting = settings.find(s => s.key === 'blog.url');
+
+        if (urlSetting)
+            blogUrl.value = urlSetting.value.replace(/\/$/, '');
+    } catch (err) {
+        console.error('Failed to load blog URL:', err);
+        blogUrl.value = '';
+    }
+};
+
+function viewPost(id) {
+    window.open(`${blogUrl.value}/preview-page/${id}`, '_blank')
 }
 </script>
 

@@ -30,6 +30,7 @@
                         Save Draft
                     </button>
                     <button
+                        v-if="post.id"
                         @click="viewPost(post.id)"
                         class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors cursor-pointer">
                         Preview
@@ -158,7 +159,7 @@
                                 @input="autoResizeTitle"
                                 ref="titleTextarea"
                                 rows="1"
-                                class="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-neutral-400 resize-none overflow-hidden"
+                                class="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-neutral-400 resize-none overflow-hidden min-h-[32px]"
                             ></textarea>
                         </div>
 
@@ -1481,10 +1482,13 @@ async function savePost() {
         const response = await adminClient.posts.save(payload)
 
         if (response && response.id) {
+            // Update the post ID with the one returned from the API
+            post.value.id = response.id
             showNotification('success', 'Post saved successfully')
 
-            if (!post.value.id)
+            if (!route.params.id) {
                 router.push(`/post/${response.id}`)
+            }
 
             return response
         }

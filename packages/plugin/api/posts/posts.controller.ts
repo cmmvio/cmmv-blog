@@ -4,7 +4,8 @@ import { Auth } from "@cmmv/auth";
 import {
    Controller, Get, Post,
    Queries, Param, Body, Req, RouterSchema,
-   User, Response, CacheControl, ContentType, Raw
+   User, Response, CacheControl, ContentType, Raw,
+   Delete
 } from "@cmmv/http";
 
 import {
@@ -131,5 +132,17 @@ export class PostsController {
     @Auth("pages:insert")
     async savePage(@Body() body: any, @User() user: any) {
         return this.postsPublicService.savePage(body, user);
+    }
+
+    @Delete("posts/:id", { exclude: true })
+    @Auth("posts:delete")
+    async deletePost(@Param("id") id: string) {
+        return this.postsPublicService.deletePost(id);
+    }
+
+    @Delete("pages/:id", { exclude: true })
+    @Auth("pages:delete")
+    async deletePage(@Param("id") id: string) {
+        return this.postsPublicService.deletePost(id);
     }
 }

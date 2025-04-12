@@ -196,14 +196,14 @@ const settings = ref<any>(null);
 const author = ref<any>(null);
 const authorPosts = ref<any>(null);
 
-settings.value = await blogAPI.getAllSettings()
+settings.value = await blogAPI.settings.getAll()
 
 author.value = route.params.id
-    ? await blogAPI.getAuthorById(route.params.id as string)
-    : await blogAPI.getAuthorBySlug(route.params.slug as string);
+    ? await blogAPI.authors.getById(route.params.id as string)
+    : await blogAPI.authors.getBySlug(route.params.slug as string);
 
 if (author.value) {
-    const postsResponse = await blogAPI.getPostByAuthor(author.value.user);
+    const postsResponse = await blogAPI.posts.getByAuthor(author.value.user);
 
     if (postsResponse)
         authorPosts.value = postsResponse;
@@ -228,6 +228,7 @@ const headData = computed(() => ({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: author.value.name },
         { property: 'og:description', content: author.value.bio || settings.value['blog.description'] },
+        // @ts-ignore
         { property: 'og:url', content: `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value.slug}` },
     ]
 }))

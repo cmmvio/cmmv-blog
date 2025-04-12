@@ -283,10 +283,10 @@ const linkCopied = ref(false)
 
 const isSSR = import.meta.env.SSR
 
-settings.value = await blogAPI.getAllSettings()
+settings.value = await blogAPI.settings.getAll()
 post.value = await route.params.id
-        ? await blogAPI.getPostById(route.params.id as string)
-        : await blogAPI.getPostBySlug(route.params.slug as string)
+        ? await blogAPI.posts.getById(route.params.id as string)
+        : await blogAPI.posts.getBySlug(route.params.slug as string)
 
 const pageUrl = computed(() => {
     return `${import.meta.env.VITE_WEBSITE_URL}/post/${post.value?.slug || ''}`

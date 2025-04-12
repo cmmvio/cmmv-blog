@@ -771,4 +771,23 @@ export class PostsPublicService {
             }
         }
     }
+
+    /**
+     * Delete a post
+     * @param {string} id - The id of the post
+     * @returns {Promise<any>}
+     */
+    async deletePost(id: string) {
+        const PostsEntity = Repository.getEntity("PostsEntity");
+        const MetaEntity = Repository.getEntity("MetaEntity");
+        await Repository.delete(MetaEntity, { post: id });
+        const resultDelete = await Repository.delete(PostsEntity, { id });
+
+        if(resultDelete){
+            await this.recalculateTags();
+            await this.recalculateCategories();
+        }
+
+        return { result: resultDelete };
+    }
 }

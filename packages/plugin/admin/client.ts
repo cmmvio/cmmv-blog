@@ -49,6 +49,7 @@ export const useAdminClient = () => {
         getById: (id: string) => api.authRequest(`blog/posts/${id}`, 'GET'),
         save: (data: any) => api.authRequest('blog/posts', 'POST', data),
         update: (id: string, data: any) => api.authRequest(`blog/posts/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`blog/posts/${id}`, 'DELETE'),
     };
 
     const pages = {
@@ -88,6 +89,13 @@ export const useAdminClient = () => {
 
     const members = {
         create: (data: any) => api.authRequest('members', 'POST', data),
+        getProfile: (id: string) => api.authRequest(`blog/members/profile/${id}`, 'GET'),
+        getMyProfile: () => api.authRequest('blog/members/me', 'GET'),
+        updateProfile: (id: string, data: any) => api.authRequest(`blog/members/profile/${id}`, 'PUT', data),
+        get: (filters: Record<string, any>) => {
+            const query = new URLSearchParams(filters).toString();
+            return api.authRequest(`members?${query}`, 'GET');
+        }
     };
 
     return {

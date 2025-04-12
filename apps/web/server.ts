@@ -54,11 +54,13 @@ async function start() {
                     render = devRender;
                 }
 
-                const { html: appHtml, head, data, metadata } = await render(url);
                 template = await vite.transformIndexHtml(url, template);
+                const { html: appHtml, head, metadata } = await render(url);
+                const serializedData = JSON.stringify(globalThis.__SSR_DATA__).replace(/</g, '\\u003c');
+                const dataScript = `<script>window.__CMMV_DATA__ = ${serializedData};</script>`;
                 template = await transformHtmlTemplate(head, template.replace(`<div id="app"></div>`, `
                     <div id="app">${appHtml}</div>
-                    <script>window.__CMMV_DATA__ = ${JSON.stringify(data)};</script>
+                    ${dataScript}
                 `));
 
                 template = template.replace(/<script type="module" src="\/@vite\/client"><\/script>\s*/g, '');

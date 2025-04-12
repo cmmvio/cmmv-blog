@@ -103,8 +103,8 @@ const route = useRoute();
 const isSSR = import.meta.env.SSR
 
 const data = ref<any>(route.params.id ?
-        await blogAPI.getCategoryById(route.params.id as string) :
-        await blogAPI.getCategoryBySlug(route.params.slug as string));
+        await blogAPI.categories.getById(route.params.id as string) :
+        await blogAPI.categories.getBySlug(route.params.slug as string));
 
 const category = ref<any>(data.value.category);
 const posts = ref<any>(data.value.posts?.data || []);

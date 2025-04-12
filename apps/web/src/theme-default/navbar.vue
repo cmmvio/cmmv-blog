@@ -16,7 +16,14 @@
         <div class="h-full flex flex-col">
             <div class="p-6 border-b border-neutral-100 dark:border-neutral-800" v-if="settings">
                 <a href="/" class="flex flex-col items-center">
-                    <img v-if="settings['blog.logo']" :src="settings['blog.logo']" :alt="settings['blog.title']" class="rounded-full w-[140px] h-[79px]" />
+                    <img
+                        v-if="settings['blog.logo']"
+                        :src="settings['blog.logo']"
+                        :alt="settings['blog.title']"
+                        class="rounded-full w-[140px] h-[79px]"
+                        width="140"
+                        height="79"
+                    />
                     <span v-else class="text-2xl font-bold text-neutral-800 dark:text-white">{{ settings['blog.title'] }}</span>
                     <label class="text-sm text-neutral-400 dark:text-neutral-500">{{ settings['blog.description'] }}</label>
                 </a>
@@ -89,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { vue3 } from '@cmmv/blog/client';
 
 const blogAPI = vue3.useBlog();
@@ -101,8 +108,11 @@ const toggle = () => {
     sidebarOpen.value = !sidebarOpen.value
 }
 
-onMounted(async () => {
-    settings.value = await blogAPI.getAllSettings()
-    categories.value = await blogAPI.getAllCategories()
+blogAPI.categories.getAll().then((res) => {
+    categories.value = res
+})
+
+blogAPI.settings.getAll().then((res) => {
+    settings.value = res
 })
 </script>

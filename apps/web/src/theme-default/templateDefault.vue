@@ -1,5 +1,5 @@
 <template>
-    <Navbar />
+    <Navbar v-cloak />
 
     <div class="bg-neutral-50 dark:bg-neutral-900 z-10 relative">
         <div class="mx-auto z-10">

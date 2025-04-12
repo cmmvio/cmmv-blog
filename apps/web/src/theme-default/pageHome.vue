@@ -126,7 +126,7 @@ const pagination = ref({
 loading.value = true;
 error.value = null;
 
-const response: any = await blogAPI.getPosts((currentPage.value - 1) * pagination.value.limit);
+const response: any = await blogAPI.posts.getAll((currentPage.value - 1) * pagination.value.limit);
 posts.value = response.posts;
 loading.value = false;
 

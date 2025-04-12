@@ -94,6 +94,6 @@ import Navbar from "./navbar.vue";
 
 const blogAPI = vue3.useBlog();
 const route = useRoute();
-const data = ref<any>(await blogAPI.getPostsByTagSlug(route.params.slug as string));
+const data = ref<any>(await blogAPI.tags.getPostsBySlug(route.params.slug as string));
 const posts = ref<any[]>(data.value.posts || []);
 </script>

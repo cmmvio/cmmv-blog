@@ -27,8 +27,6 @@ export class BlogSettingsService {
             select: [ "group", "key", "value", "type", "flags" ]
         });
 
-        console.log(settings)
-
         if(settings && settings.value === "true")
             throw new Error("Setup already finished");
 
