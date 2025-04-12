@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="https://cmmv.io/docs/blog">Documentation</a> &bull;
+  <a href="https://cmmv.io/docs">Documentation</a> &bull;
   <a href="https://github.com/cmmvio/cmmv-blog/issues">Report Issue</a>
 </p>
 
