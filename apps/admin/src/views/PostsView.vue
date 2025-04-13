@@ -58,31 +58,11 @@
         </div>
 
         <template v-else>
-            <!-- Bulk Actions -->
-            <div class="flex items-center mb-4 gap-2">
-                <select v-model="bulkAction"
-                    class="bg-neutral-700 border border-neutral-600 text-white rounded-md px-3 py-1.5 text-sm">
-                    <option value="">Bulk Actions</option>
-                    <option value="publish">Publish</option>
-                    <option value="draft">Move to Draft</option>
-                    <option value="trash">Move to Trash</option>
-                </select>
-                <button @click="applyBulkAction"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                    :disabled="!selectedPosts.length || !bulkAction">
-                    Apply
-                </button>
-                <span v-if="selectedPosts.length" class="text-sm text-neutral-400 ml-2">
-                    {{ selectedPosts.length }} selected
-                </span>
-            </div>
 
             <!-- Mobile Card View -->
             <div class="block md:hidden space-y-4 mb-6">
                 <div v-for="post in paginatedPosts" :key="post.id" class="bg-neutral-800 rounded-lg overflow-hidden">
                     <div class="p-4 border-b border-neutral-700 flex items-center">
-                        <input type="checkbox" class="rounded bg-neutral-600 border-neutral-500 text-blue-600 mr-3"
-                            :value="post.id" v-model="selectedPosts">
                         <div class="flex-1 min-w-0">
                             <div class="font-medium text-white truncate">{{ post.title }}</div>
                             <div class="flex items-center space-x-2 mt-1">
@@ -98,8 +78,8 @@
                     <div class="p-4 space-y-3">
                         <div class="flex items-center">
                             <div class="text-neutral-400 text-sm w-24">Author:</div>
-                            <div class="text-sm flex items-center">
-                                <div v-if="post.authorImage" class="h-5 w-5 rounded-full bg-cover bg-center flex-shrink-0 mr-2"
+                            <div class="text-sm flex items-center text-white">
+                                <div v-if="post.authorImage" class="h-5 w-5 rounded-full bg-cover bg-center flex-shrink-0 mr-2 text-white"
                                      :style="{ backgroundImage: `url(${post.authorImage})` }"></div>
                                 <div v-else class="h-5 w-5 rounded-full bg-neutral-600 flex-shrink-0 mr-2"></div>
                                 {{ post.author }}
@@ -108,10 +88,9 @@
                         <div class="flex items-start">
                             <div class="text-neutral-400 text-sm w-24">Categories:</div>
                             <div class="flex flex-wrap gap-1">
-
                                 <span v-for="category in post.categories" :key="category"
                                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
-                                    {{ category.name }}
+                                    {{ category?.name }}
                                 </span>
                             </div>
                         </div>
@@ -174,10 +153,6 @@
                     <table class="w-full text-left">
                         <thead class="bg-neutral-700 text-neutral-300 text-sm">
                             <tr>
-                                <th class="p-4 w-10">
-                                    <input type="checkbox" class="rounded bg-neutral-600 border-neutral-500 text-blue-600"
-                                        @change="toggleSelectAll" :checked="isAllSelected">
-                                </th>
                                 <th class="p-4 w-16">Image</th>
                                 <th class="p-4 min-w-[250px]">Title</th>
                                 <th class="p-4 w-44 lg:w-48">Categories</th>
@@ -188,10 +163,6 @@
                         </thead>
                         <tbody class="divide-y divide-neutral-700">
                             <tr v-for="post in paginatedPosts" :key="post.id" class="hover:bg-neutral-750">
-                                <td class="p-4">
-                                    <input type="checkbox" class="rounded bg-neutral-600 border-neutral-500 text-blue-600"
-                                        :value="post.id" v-model="selectedPosts">
-                                </td>
                                 <td class="p-2">
                                     <div class="h-14 w-24 rounded-md bg-neutral-700 overflow-hidden flex items-center justify-center">
                                         <img v-if="post.featureImage" :src="post.featureImage" alt="Feature image"
@@ -224,7 +195,7 @@
                                     <div class="flex flex-wrap gap-1">
                                         <span v-for="category in (post.categories || [])" :key="category"
                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
-                                            {{ category.name }}
+                                            {{ category?.name }}
                                         </span>
                                     </div>
                                 </td>
@@ -346,7 +317,7 @@ const adminClient = useAdminClient()
 const loading = ref(false)
 const posts = ref([])
 
-const itemsPerPage = 5
+const itemsPerPage = 10
 const currentPage = ref(1)
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
 const endIndex = computed(() => startIndex.value + itemsPerPage)

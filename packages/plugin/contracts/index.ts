@@ -1,6 +1,7 @@
 export * from './categories.contract';
 export * from './author-profile.contract';
 export * from './medias.contract';
+export * from './redirects.contract';
 
 // Analytics
 export * from './analytics-access.contract';

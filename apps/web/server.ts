@@ -87,4 +87,6 @@ async function start() {
     });
 }
 
-start();
+setTimeout(() => {
+    start();
+}, 4000);

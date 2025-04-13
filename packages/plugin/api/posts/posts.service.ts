@@ -36,7 +36,9 @@ export class PostsPublicService {
 
         const posts = await Repository.findAll(PostsEntity, {
             ...queries,
-            type: "post"
+            type: "post",
+            sortBy: "publishedAt",
+            sort: "DESC"
         }, [], {
             select: [
                 "id", "title", "slug", "content", "status", "autoPublishAt",
@@ -55,24 +57,29 @@ export class PostsPublicService {
             for(const post of posts.data){
                 userIdsIn = [...userIdsIn, ...post.authors];
                 userIdsIn.push(post.author);
-                categoryIdsIn = [...categoryIdsIn, ...post.categories];
 
-                const categoriesData = await Repository.findAll(CategoriesEntity, {
-                    id: In(post.categories),
-                    limit: 100
-                }, [], {
-                    select: [ "id", "name", "slug", "description" ]
-                });
+                if(post.categories && post.categories.length > 0){
+                    categoryIdsIn = [...categoryIdsIn, ...post.categories];
 
-                post.categories = (categoriesData) ? categoriesData.data : [];
+                    const categoriesData = await Repository.findAll(CategoriesEntity, {
+                        id: In(post.categories),
+                        limit: 100
+                    }, [], {
+                        select: [ "id", "name", "slug", "description" ]
+                    });
 
-                post.featureImage = await this.mediasService.getImageUrl(
-                    post.featureImage,
-                    "webp",
-                    1200,
-                    post.featureImageAlt,
-                    post.featureImageCaption
-                );
+                    post.categories = (categoriesData) ? categoriesData.data : [];
+                }
+
+                if(post.featureImage){
+                    post.featureImage = await this.mediasService.getImageUrl(
+                        post.featureImage,
+                        "webp",
+                        1200,
+                        post.featureImageAlt,
+                        post.featureImageCaption
+                    );
+                }
             }
 
             //@ts-ignore
@@ -425,13 +432,15 @@ export class PostsPublicService {
         });
 
         if(post){
-            post.featureImage = await this.mediasService.getImageUrl(
-                post.featureImage,
-                "webp",
-                1200,
-                post.featureImageAlt,
-                post.featureImageCaption
-            );
+            if(post.featureImage){
+                post.featureImage = await this.mediasService.getImageUrl(
+                    post.featureImage,
+                    "webp",
+                    1200,
+                    post.featureImageAlt,
+                    post.featureImageCaption
+                );
+            }
 
             const meta: any = await Repository.findOne(MetaEntity, Repository.queryBuilder({
                 post: post.id
@@ -446,7 +455,7 @@ export class PostsPublicService {
             post.meta = meta;
 
             let userIdsIn = [...post.authors];
-            let categoryIdsIn = [...post.categories];
+            let categoryIdsIn = (post.categories && post.categories.length > 0) ? [...post.categories] : [];
 
             //@ts-ignore
             const usersIn = [...new Set(userIdsIn)];
@@ -486,14 +495,16 @@ export class PostsPublicService {
                 );
             }
 
-            const categoriesData = await Repository.findAll(CategoriesEntity, {
-                id: In(categoryIn),
-                limit: 100
-            }, [], {
-                select: [ "id", "name", "slug", "description" ]
-            });
+            if(categoryIn.length > 0){
+                const categoriesData = await Repository.findAll(CategoriesEntity, {
+                    id: In(categoryIn),
+                    limit: 100
+                }, [], {
+                    select: [ "id", "name", "slug", "description" ]
+                });
 
-            post.categories = (categoriesData) ? categoriesData.data : [];
+                post.categories = (categoriesData) ? categoriesData.data : [];
+            }
 
             //Tags
             const tagsData = await Repository.findAll(TagsEntity, {
@@ -533,13 +544,15 @@ export class PostsPublicService {
         });
 
         if(page){
-            page.featureImage = await this.mediasService.getImageUrl(
-                page.featureImage,
-                "webp",
-                1200,
-                page.featureImageAlt,
-                page.featureImageCaption
-            );
+            if(page.featureImage){
+                page.featureImage = await this.mediasService.getImageUrl(
+                    page.featureImage,
+                    "webp",
+                    1200,
+                    page.featureImageAlt,
+                    page.featureImageCaption
+                );
+            }
 
             const meta: any = await Repository.findOne(MetaEntity, Repository.queryBuilder({
                 post: page.id

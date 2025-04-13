@@ -123,6 +123,11 @@ export const useAdminClient = () => {
         delete: (id: string) => api.authRequest(`comments/${id}`, 'DELETE'),
     };
 
+    const imports = {
+        wordpress: (data: any) => api.authRequest('imports/wordpress', 'POST', data),
+        ghost: (data: any) => api.authRequest('imports/blogger', 'POST', data),
+    };
+
     return {
         settings,
         profile,
@@ -136,5 +141,6 @@ export const useAdminClient = () => {
         members,
         analytics,
         comments,
+        imports,
     };
 };

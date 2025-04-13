@@ -59,8 +59,6 @@
             <div class="block md:hidden space-y-4 mb-6">
                 <div v-for="post in paginatedPosts" :key="post.id" class="bg-neutral-800 rounded-lg overflow-hidden">
                     <div class="p-4 border-b border-neutral-700 flex items-center">
-                        <input type="checkbox" class="rounded bg-neutral-600 border-neutral-500 text-blue-600 mr-3"
-                            :value="post.id" v-model="selectedPosts">
                         <div class="flex-1 min-w-0">
                             <div class="font-medium text-white truncate">{{ post.title }}</div>
                             <div class="flex items-center space-x-2 mt-1">
@@ -118,10 +116,6 @@
                     <table class="w-full text-left">
                         <thead class="bg-neutral-700 text-neutral-300 text-sm">
                             <tr>
-                                <th class="p-4 w-10">
-                                    <input type="checkbox" class="rounded bg-neutral-600 border-neutral-500 text-blue-600"
-                                        @change="toggleSelectAll" :checked="isAllSelected">
-                                </th>
                                 <th class="p-4 w-16">Image</th>
                                 <th class="p-4 min-w-[250px]">Title</th>
                                 <th class="p-4 w-28 text-right">Actions</th>
@@ -129,10 +123,6 @@
                         </thead>
                         <tbody class="divide-y divide-neutral-700">
                             <tr v-for="post in paginatedPosts" :key="post.id" class="hover:bg-neutral-750">
-                                <td class="p-4">
-                                    <input type="checkbox" class="rounded bg-neutral-600 border-neutral-500 text-blue-600"
-                                        :value="post.id" v-model="selectedPosts">
-                                </td>
                                 <td class="p-2">
                                     <div class="h-14 w-24 rounded-md bg-neutral-700 overflow-hidden flex items-center justify-center">
                                         <img v-if="post.featureImage" :src="post.featureImage" alt="Feature image"
@@ -261,7 +251,7 @@ const adminClient = useAdminClient()
 const loading = ref(false)
 const posts = ref([])
 
-const itemsPerPage = 5
+const itemsPerPage = 10
 const currentPage = ref(1)
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
 const endIndex = computed(() => startIndex.value + itemsPerPage)

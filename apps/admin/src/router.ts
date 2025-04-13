@@ -16,6 +16,7 @@ import AuthorsView from './views/AuthorsView.vue'
 import MediasView from './views/MediasView.vue'
 import MembersView from './views/MembersView.vue'
 import CommentsView from './views/CommentsView.vue'
+import ImportsView from './views/ImportsView.vue'
 
 const router = createRouter({
     //@ts-ignore
@@ -58,6 +59,9 @@ const router = createRouter({
             }, {
                 path: '/comments',
                 component: CommentsView
+            }, {
+                path: '/imports',
+                component: ImportsView
             }],
         },
         {

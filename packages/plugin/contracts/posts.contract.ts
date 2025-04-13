@@ -117,7 +117,7 @@ export class PostsContract extends AbstractContract {
 
     @ContractField({
         protoType: 'array',
-        nullable: false,
+        nullable: true,
         objectType: 'string',
         entityType: 'CategoriesEntity',
         protoRepeated: true,
