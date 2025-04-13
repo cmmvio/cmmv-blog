@@ -172,10 +172,13 @@ export class SettingsService {
             select: [ "group", "key", "value", "type", "flags" ]
         });
 
-        if(!setting.data.flags.includes("PUBLIC"))
-            throw new Error("Setting not found");
+        if(!setting)
+            return null;
 
-        return setting ? setting.data : null;
+        if(!setting.flags.includes("PUBLIC"))
+            return null;
+
+        return setting ? setting : null;
     }
 
     /**
