@@ -612,4 +612,29 @@ export class CommentsPublicService {
         await Repository.update(CommentsEntity, { id: commentId }, { status: 'rejected' });
         return { success: true };
     }
+
+    /**
+     * Get comments pending
+     * @param queries - Filter and pagination options
+     * @returns The comments
+     */
+    public async getCommentsPending(queries: any) {
+        const CommentsEntity = Repository.getEntity("CommentsEntity");
+        const limit = queries.limit ? parseInt(queries.limit) : 10;
+        const offset = queries.offset ? parseInt(queries.offset) : 0;
+        const filter: any = {};
+
+        if (queries.search && queries.searchField === 'content')
+            filter.content = { contains: queries.search };
+
+        const comments = await Repository.findAll(CommentsEntity, {
+            status: 'pending',
+            limit,
+            offset,
+            sortBy: 'createdAt',
+            sort: 'DESC'
+        });
+
+        return comments;
+    }
 }

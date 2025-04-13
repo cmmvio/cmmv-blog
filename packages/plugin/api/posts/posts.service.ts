@@ -41,7 +41,7 @@ export class PostsPublicService {
             select: [
                 "id", "title", "slug", "content", "status", "autoPublishAt",
                 "authors", "author", "categories", "featureImage", "publishedAt",
-                "updatedAt", "createdAt"
+                "updatedAt", "createdAt", "comments", "views"
             ]
         });
 
@@ -359,6 +359,11 @@ export class PostsPublicService {
         return this.getPostById(post.id);
     }
 
+    /**
+     * Get a post id by slug
+     * @param {string} slug - The slug of the post
+     * @returns {Promise<any>}
+     */
     async getPostIdBySlug(slug: string) {
         const PostsEntity = Repository.getEntity("PostsEntity");
         const post: any = await Repository.findOne(PostsEntity, Repository.queryBuilder({

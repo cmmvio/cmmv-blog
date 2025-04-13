@@ -259,6 +259,11 @@
                                     approved</label>
                             </div>
                             <div class="flex items-center">
+                                <input id="approve-comments" type="checkbox" v-model="settings.approveComments"
+                                    class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
+                                <label for="approve-comments" class="text-sm text-neutral-300">Enable comment approval system</label>
+                            </div>
+                            <div class="flex items-center">
                                 <input id="require-name-email" type="checkbox" v-model="settings.requireNameEmail"
                                     class="h-4 w-4 mr-2 rounded text-blue-600 bg-neutral-700 border-neutral-600 focus:ring-blue-500" />
                                 <label for="require-name-email" class="text-sm text-neutral-300">Comment author must
@@ -570,6 +575,7 @@ const settings = ref({
     // Discussion
     enablecomments: true,
     moderatecomments: true,
+    approveComments: true,
     requireNameEmail: true,
     nestedComments: true,
     commentPagination: false,
@@ -601,7 +607,7 @@ const tabFieldMap = {
     general: ['title', 'description', 'url', 'language', 'timezone', 'adminEmail'],
     appearance: ['logo', 'favicon', 'primaryColor', 'secondaryColor', 'fontFamily'],
     reading: ['homepageDisplay', 'homepage', 'postsPage', 'postsperpage', 'rssFeedItems', 'feedContent'],
-    discussion: ['enablecomments', 'moderatecomments', 'requireNameEmail', 'nestedComments',
+    discussion: ['enablecomments', 'moderatecomments', 'approveComments', 'requireNameEmail', 'nestedComments',
         'commentPagination', 'commentsPerPage', 'emailOnComment', 'emailOnModeration'],
     social: ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'github'],
     seo: ['metaDescription', 'metaKeywords', 'defaultFeaturedImage'],

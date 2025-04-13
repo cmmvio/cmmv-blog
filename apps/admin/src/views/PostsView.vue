@@ -124,6 +124,21 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="flex items-center mt-2">
+                            <div class="flex items-center mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-neutral-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <span class="text-xs text-neutral-400">{{ formatNumber(post.views || 0) }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-neutral-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                                <span class="text-xs text-neutral-400">{{ formatNumber(post.comments || 0) }}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="p-3 bg-neutral-750 border-t border-neutral-700 flex justify-between">
                         <button @click="viewPost(post.id)" class="text-neutral-400 hover:text-white p-1">
@@ -166,6 +181,7 @@
                                 <th class="p-4 w-16">Image</th>
                                 <th class="p-4 min-w-[250px]">Title</th>
                                 <th class="p-4 w-44 lg:w-48">Categories</th>
+                                <th class="p-4 w-32 hidden lg:table-cell">Stats</th>
                                 <th class="p-4 hidden xl:table-cell w-44">Published</th>
                                 <th class="p-4 w-28 text-right">Actions</th>
                             </tr>
@@ -210,6 +226,21 @@
                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">
                                             {{ category.name }}
                                         </span>
+                                    </div>
+                                </td>
+                                <td class="p-4 hidden lg:table-cell text-xs text-neutral-400">
+                                    <div class="flex items-center mb-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        {{ formatNumber(post.views || 0) }}
+                                    </div>
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                        </svg>
+                                        {{ formatNumber(post.comments || 0) }}
                                     </div>
                                 </td>
                                 <td class="p-4 hidden xl:table-cell text-xs text-neutral-400">
@@ -591,5 +622,16 @@ const displayedPages = computed(() => {
 // Add a refresh function
 function refreshData() {
     loadPosts()
+}
+
+function formatNumber(num) {
+    if (!num && num !== 0) return '0';
+
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
 }
 </script>

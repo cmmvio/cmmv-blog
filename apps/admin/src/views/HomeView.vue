@@ -27,26 +27,6 @@
             </svg>
           </div>
         </div>
-        <div class="mt-4 flex items-center text-sm">
-                    <span class="text-green-500 flex items-center" v-if="summary.postsGrowth > 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-            </svg>
-                        {{ summary.postsGrowth }}%
-                    </span>
-                    <span class="text-red-500 flex items-center" v-else-if="summary.postsGrowth < 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                        {{ Math.abs(summary.postsGrowth) }}%
-                    </span>
-                    <span class="text-neutral-400 flex items-center" v-else>
-                        0%
-          </span>
-          <span class="text-neutral-400 ml-2">from last month</span>
-        </div>
       </div>
 
       <div class="bg-neutral-800 rounded-lg shadow-md p-6">
@@ -62,26 +42,6 @@
                                 d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
           </div>
-        </div>
-        <div class="mt-4 flex items-center text-sm">
-                    <span class="text-green-500 flex items-center" v-if="summary.commentsGrowth > 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                        </svg>
-                        {{ summary.commentsGrowth }}%
-                    </span>
-                    <span class="text-red-500 flex items-center" v-else-if="summary.commentsGrowth < 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-                        {{ Math.abs(summary.commentsGrowth) }}%
-                    </span>
-                    <span class="text-neutral-400 flex items-center" v-else>
-                        0%
-          </span>
-          <span class="text-neutral-400 ml-2">from last month</span>
         </div>
       </div>
 
@@ -101,26 +61,6 @@
             </svg>
           </div>
         </div>
-        <div class="mt-4 flex items-center text-sm">
-                    <span class="text-green-500 flex items-center" v-if="summary.viewsGrowth > 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-            </svg>
-                        {{ summary.viewsGrowth }}%
-                    </span>
-                    <span class="text-red-500 flex items-center" v-else-if="summary.viewsGrowth < 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                        {{ Math.abs(summary.viewsGrowth) }}%
-                    </span>
-                    <span class="text-neutral-400 flex items-center" v-else>
-                        0%
-          </span>
-          <span class="text-neutral-400 ml-2">from last month</span>
-        </div>
       </div>
 
       <div class="bg-neutral-800 rounded-lg shadow-md p-6">
@@ -136,26 +76,6 @@
                                 d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-        </div>
-        <div class="mt-4 flex items-center text-sm">
-                    <span class="text-green-500 flex items-center" v-if="summary.subscribersGrowth > 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-            </svg>
-                        {{ summary.subscribersGrowth }}%
-                    </span>
-                    <span class="text-red-500 flex items-center" v-else-if="summary.subscribersGrowth < 0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                        {{ Math.abs(summary.subscribersGrowth) }}%
-                    </span>
-                    <span class="text-neutral-400 flex items-center" v-else>
-                        0%
-          </span>
-          <span class="text-neutral-400 ml-2">from last month</span>
         </div>
       </div>
     </div>
@@ -254,83 +174,49 @@
         <div class="p-6 border-b border-neutral-700 flex justify-between items-center">
           <h3 class="text-lg font-medium text-white">Comments Needing Approval</h3>
                     <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">{{
-                        summary.pendingComments || 0 }} New</span>
+                        pendingComments.length || 0 }} New</span>
         </div>
         <div class="p-6">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="p-4 bg-neutral-700/50 rounded-lg">
+            <div v-for="comment in pendingComments.slice(0, 3)" :key="comment.id" class="p-4 bg-neutral-700/50 rounded-lg">
               <div class="flex items-start gap-3">
                 <div class="flex-shrink-0">
-                  <div class="w-8 h-8 rounded-full bg-neutral-600"></div>
+                  <div v-if="comment.memberInfo?.avatar" class="w-8 h-8 rounded-full overflow-hidden">
+                    <img :src="comment.memberInfo.avatar" alt="Avatar" class="w-full h-full object-cover">
+                  </div>
+                  <div v-else class="w-8 h-8 rounded-full bg-neutral-600 flex items-center justify-center text-white text-sm">
+                    {{ comment.memberInfo?.name?.charAt(0) || '?' }}
+                  </div>
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between mb-1">
-                    <p class="text-sm font-medium text-white">Sarah Johnson</p>
+                    <p class="text-sm font-medium text-white">{{ comment.memberInfo?.name || 'Anonymous' }}</p>
                   </div>
-                                    <p class="text-sm text-neutral-300 line-clamp-2">This is a great article! I've
-                                        implemented some of these SEO tips and my traffic has already improved...</p>
-                                    <div class="mt-1 text-xs text-neutral-400">On: 10 Ways to Improve Your Blog's SEO...
-                                    </div>
+                  <p class="text-sm text-neutral-300 line-clamp-2">{{ comment.content }}</p>
+                  <div class="mt-1 text-xs text-neutral-400">On: {{ comment.postInfo?.title || 'Unknown Post' }}</div>
                   <div class="flex gap-1 mt-2">
-                                        <button
-                                            class="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded">Approve</button>
-                                        <button
-                                            class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded">Reject</button>
+                    <button
+                      @click="approveComment(comment.id)"
+                      class="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded">
+                      Approve
+                    </button>
+                    <button
+                      @click="rejectComment(comment.id)"
+                      class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded">
+                      Reject
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="p-4 bg-neutral-700/50 rounded-lg">
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div class="w-8 h-8 rounded-full bg-neutral-600"></div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between mb-1">
-                    <p class="text-sm font-medium text-white">Michael Chen</p>
-                  </div>
-                                    <p class="text-sm text-neutral-300 line-clamp-2">Have you considered writing about
-                                        the impact of AI on content marketing? That would be a fascinating...</p>
-                                    <div class="mt-1 text-xs text-neutral-400">On: The Ultimate Guide to Content...
-                                    </div>
-                  <div class="flex gap-1 mt-2">
-                                        <button
-                                            class="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded">Approve</button>
-                                        <button
-                                            class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded">Reject</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="p-4 bg-neutral-700/50 rounded-lg">
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div class="w-8 h-8 rounded-full bg-neutral-600"></div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between mb-1">
-                    <p class="text-sm font-medium text-white">Emily Rodriguez</p>
-                  </div>
-                                    <p class="text-sm text-neutral-300 line-clamp-2">I've been following your blog for
-                                        years and the community you've built is truly inspiring. The tips...</p>
-                                    <div class="mt-1 text-xs text-neutral-400">On: How to Build a Loyal Community...
-                                    </div>
-                  <div class="flex gap-1 mt-2">
-                                        <button
-                                            class="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded">Approve</button>
-                                        <button
-                                            class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded">Reject</button>
-                  </div>
-                </div>
-              </div>
+            <div v-if="pendingComments.length === 0" class="col-span-3 p-4 bg-neutral-700/20 rounded-lg">
+              <p class="text-sm text-neutral-400 text-center">No pending comments to approve.</p>
             </div>
           </div>
         </div>
         <div class="px-6 py-4 border-t border-neutral-700">
-                    <a href="/comments" class="text-blue-500 hover:text-blue-400 text-sm font-medium">View all pending comments
-                        →</a>
+          <a href="/comments" class="text-blue-500 hover:text-blue-400 text-sm font-medium">View all pending comments →</a>
         </div>
       </div>
     </div>
@@ -346,6 +232,7 @@ import { useAdminClient } from '@cmmv/blog/admin';
 
 const adminAPI = useAdminClient();
 const analytics = adminAPI.analytics;
+const comments = adminAPI.comments;
 
 // Reference for the chart canvas
 const trafficChart = ref(null);
@@ -370,6 +257,7 @@ const summary = ref({
 });
 
 const popularPosts = ref([]);
+const pendingComments = ref([]);
 
 // Create traffic chart
 const createTrafficChart = () => {
@@ -566,6 +454,31 @@ const createTrafficChart = () => {
     }
 };
 
+// Comment moderation methods
+const approveComment = async (commentId) => {
+    try {
+        await comments.approveComment(commentId);
+        // Remove the comment from the list after approval
+        pendingComments.value = pendingComments.value.filter(comment => comment.id !== commentId);
+        // Update the summary count
+        summary.value.pendingComments = Math.max(0, summary.value.pendingComments - 1);
+    } catch (error) {
+        console.error('Error approving comment:', error);
+    }
+};
+
+const rejectComment = async (commentId) => {
+    try {
+        await comments.rejectComment(commentId);
+        // Remove the comment from the list after rejection
+        pendingComments.value = pendingComments.value.filter(comment => comment.id !== commentId);
+        // Update the summary count
+        summary.value.pendingComments = Math.max(0, summary.value.pendingComments - 1);
+    } catch (error) {
+        console.error('Error rejecting comment:', error);
+    }
+};
+
 // Fetch data on component mount
 onMounted(async () => {
     try {
@@ -576,6 +489,16 @@ onMounted(async () => {
         // Get analytics summary for the traffic chart
         const summaryData = await analytics.getSummary();
         console.log('Summary data:', summaryData);
+
+        // Get pending comments
+        try {
+            const pendingCommentsData = await comments.getPendingComments();
+            console.log('Pending comments:', pendingCommentsData);
+            pendingComments.value = pendingCommentsData.data || [];
+        } catch (error) {
+            console.error('Error fetching pending comments:', error);
+            pendingComments.value = [];
+        }
 
         if (dashboardData) {
             // Calculate growth percentages
@@ -646,7 +569,7 @@ onMounted(async () => {
                     trafficData: trafficData,
 
                     // Other values
-                    pendingComments: summaryData?.pendingComments || 0,
+                    pendingComments: pendingComments.value.length || 0,
                 };
             } else {
                 // If no traffic data, just use the dashboard data
@@ -661,7 +584,7 @@ onMounted(async () => {
                     subscribersGrowth: subscribersGrowth,
                     totalVisitors: dashboardData.totalAccess || 0,
                     uniqueVisitors: dashboardData.uniqueAccess || 0,
-                    pendingComments: summaryData?.pendingComments || 0,
+                    pendingComments: pendingComments.value.length || 0,
                     bounceRate: 0,
                     avgTime: 0,
                     trafficData: []

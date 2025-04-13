@@ -48,6 +48,15 @@ export class CommentsAdminController {
     async rejectComment(@Param("commentId") commentId: string) {
         return await this.commentsService.rejectComment(commentId);
     }
+
+    @Get("comments/pending", {
+        summary: "Get pending comments",
+        exposeFilters: true
+    })
+    @Auth({ rootOnly: true })
+    async getCommentsPending(@Queries() queries: any) {
+        return await this.commentsService.getCommentsPending(queries);
+    }
 }
 
 @Controller("blog")
