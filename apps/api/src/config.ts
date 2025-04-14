@@ -24,5 +24,11 @@ Config.assign({
         jwtSecret: process.env.JWT_SECRET || 'secret',
         jwtSecretRefresh: process.env.JWT_SECRET_REFRESH || 'secret',
         expiresIn: 60 * 60 * 24
-    }
+    },
+
+    cache: {
+        store: "cache-manager-fs-binary",
+        path: "./cache",
+        ttl: 600
+    },
 });

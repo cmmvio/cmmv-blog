@@ -9,6 +9,10 @@ import {
 } from "@cmmv/core";
 
 import {
+    Cache
+} from "@cmmv/cache";
+
+import {
     CategoriesPublicService
 } from "./categories.service";
 
@@ -23,6 +27,7 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
+    @Cache("categories:getAll")
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()
@@ -37,6 +42,7 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
+    @Cache("categories:")
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()

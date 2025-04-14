@@ -19,9 +19,11 @@
     },
     "dependencies": {
         "@cmmv/auth": "latest",
+        "@cmmv/cache": "^0.11.4",
         "@cmmv/core": "latest",
         "@cmmv/http": "latest",
         "busboy": "^1.6.0",
+        "cache-manager-fs-binary": "^1.0.4",
         "jsonwebtoken": "^9.0.2",
         "sharp": "^0.34.0",
         "uuid": "^11.1.0",

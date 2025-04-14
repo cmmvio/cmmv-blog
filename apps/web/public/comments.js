@@ -139,13 +139,11 @@ class CMMVComments {
      * Check if user is authenticated
      */
     checkAuthStatus() {
-        // Try to get auth data from sessionStorage first, then localStorage
         let memberData = null;
+
         try {
             const sessionData = sessionStorage.getItem('member');
             const localData = localStorage.getItem('member');
-
-            // Use sessionStorage data if available, otherwise use localStorage
             const dataString = sessionData || localData;
 
             if (dataString) {
@@ -155,7 +153,6 @@ class CMMVComments {
             console.error('Error parsing auth data:', e);
         }
 
-        // Check if we have valid member data with token and member object
         if (memberData && memberData.token && memberData.member && memberData.member.name) {
             this.state.isLoggedIn = true;
             this.state.currentUser = {
@@ -176,17 +173,11 @@ class CMMVComments {
      * Fetch comments for the current post
      */
     fetchComments() {
-        // Mostrar um estado de carregamento ou placeholder se desejado
         this.state.isLoading = true;
         this.updateUI();
 
-        // Construir a URL da API com parâmetros de consulta
         const url = `${this.options.apiBaseUrl}/blog/comments/${this.options.postId}?offset=0&sortBy=recent`;
 
-        // Para depuração
-        console.log('Fetching comments from URL:', url);
-
-        // Fazer a requisição à API
         fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -195,34 +186,25 @@ class CMMVComments {
                 return response.json();
             })
             .then(data => {
-                // Para depuração
-                console.log('API response:', data);
-
-                // Acessar os dados da resposta aninhada dentro de result
                 const result = data.result || {};
 
-                // Processar os dados recebidos
                 this.state.comments = result.comments || [];
                 this.state.totalComments = result.total || 0;
                 this.state.hasMoreComments = result.hasMore || false;
                 this.state.commentOffset = this.state.comments.length;
 
-                // Verificar os likes do usuário se estiver logado
-                if (this.state.isLoggedIn) {
+                if (this.state.isLoggedIn)
                     this.checkUserLikes();
-                }
 
-                // Atualizar os usuários para menções
                 this.updateMentionUsers();
 
-                // Atualizar a UI com os novos comentários
                 this.state.isLoading = false;
                 this.updateUI();
             })
             .catch(error => {
                 console.error('Error fetching comments:', error);
                 this.state.isLoading = false;
-                this.state.comments = []; // Garantir que o array de comentários está vazio em caso de erro
+                this.state.comments = [];
                 this.updateUI();
             });
     }
@@ -239,14 +221,11 @@ class CMMVComments {
         if (!token) return;
 
         try {
-            // Criar um array com todos os IDs de comentários (principais e respostas)
             const commentIds = [];
 
-            // Adicionar comentários principais
             this.state.comments.forEach(comment => {
                 commentIds.push(comment.id);
 
-                // Adicionar respostas, se houver
                 if (comment.replies && comment.replies.length > 0) {
                     comment.replies.forEach(reply => {
                         commentIds.push(reply.id);
@@ -256,10 +235,8 @@ class CMMVComments {
 
             if (commentIds.length === 0) return;
 
-            // Usar o endpoint hasLikeBulk para verificar todos os likes de uma vez
             const url = new URL(`${this.options.apiBaseUrl}/blog/comments/hasLikeBulk`);
 
-            // Adicionar os IDs de comentários como parâmetros de consulta
             commentIds.forEach(id => {
                 url.searchParams.append('commentIds', id);
             });
@@ -276,17 +253,9 @@ class CMMVComments {
             }
 
             const data = await response.json();
-            console.log('Bulk like check response:', data);
-
-            // Acessar o resultado aninhado
             const result = data.result || {};
-
-            // O resultado deve conter um mapa de IDs de comentários para status de like
             const likesMap = result.likes || {};
 
-            console.log('Likes map from API:', likesMap);
-
-            // Atualizar os comentários com as informações de like
             this.state.comments.forEach(comment => {
                 comment.hasLiked = likesMap[comment.id] === true;
 
@@ -297,11 +266,9 @@ class CMMVComments {
                 }
             });
 
-            // Atualizar a interface
             this.updateUI();
         } catch (error) {
             console.error('Error checking likes:', error);
-            // Fallback para o método individual em caso de erro
             this.checkLikesIndividually();
         }
     }
@@ -310,22 +277,18 @@ class CMMVComments {
      * Método de fallback para verificar likes individualmente
      */
     async checkLikesIndividually() {
-        if (!this.state.isLoggedIn || this.state.comments.length === 0) {
+        if (!this.state.isLoggedIn || this.state.comments.length === 0)
             return;
-        }
 
         const token = this.getAuthToken();
         if (!token) return;
 
         try {
-            // Criar um array com todos os IDs de comentários (principais e respostas)
             const commentIds = [];
 
-            // Adicionar comentários principais
             this.state.comments.forEach(comment => {
                 commentIds.push(comment.id);
 
-                // Adicionar respostas, se houver
                 if (comment.replies && comment.replies.length > 0) {
                     comment.replies.forEach(reply => {
                         commentIds.push(reply.id);
@@ -333,7 +296,6 @@ class CMMVComments {
                 }
             });
 
-            // Verificar likes para cada comentário individualmente
             const likesPromises = commentIds.map(commentId => {
                 const url = `${this.options.apiBaseUrl}/blog/comments/${commentId}/hasLike`;
 
@@ -348,7 +310,6 @@ class CMMVComments {
                         return { commentId, hasLike: false };
                     }
                     return response.json().then(data => {
-                        // Corrigir acesso à propriedade hasLike na estrutura de dados
                         const hasLike = data.result && data.result.hasLike;
                         return {
                             commentId,
@@ -362,16 +323,12 @@ class CMMVComments {
                 });
             });
 
-            // Processar os resultados e atualizar o estado
             const likesResults = await Promise.all(likesPromises);
-
-            // Criar um mapa para facilitar a busca
             const likesMap = {};
             likesResults.forEach(result => {
                 likesMap[result.commentId] = result.hasLike;
             });
 
-            // Atualizar os comentários com as informações de like
             this.state.comments.forEach(comment => {
                 comment.hasLiked = likesMap[comment.id] === true;
 
@@ -382,7 +339,6 @@ class CMMVComments {
                 }
             });
 
-            // Atualizar a interface
             this.updateUI();
         } catch (error) {
             console.error('Error checking likes (fallback):', error);
@@ -409,22 +365,18 @@ class CMMVComments {
                 return response.json();
             })
             .then(data => {
-                // Acessar os dados da resposta aninhada dentro de result
                 const result = data.result || {};
 
-                // Adicionar os novos comentários aos existentes
                 if (result.comments && result.comments.length > 0) {
                     const newComments = result.comments;
                     this.state.comments = [...this.state.comments, ...newComments];
                     this.state.hasMoreComments = result.hasMore || false;
                     this.state.commentOffset = this.state.comments.length;
 
-                    // Verificar os likes do usuário para os novos comentários se estiver logado
                     if (this.state.isLoggedIn) {
                         this.checkLikesForComments(newComments);
                     }
 
-                    // Atualizar os usuários para menções
                     this.updateMentionUsers();
                 }
 
@@ -450,14 +402,11 @@ class CMMVComments {
         if (!token) return;
 
         try {
-            // Criar um array com todos os IDs de comentários (principais e respostas)
             const commentIds = [];
 
-            // Adicionar comentários principais
             comments.forEach(comment => {
                 commentIds.push(comment.id);
 
-                // Adicionar respostas, se houver
                 if (comment.replies && comment.replies.length > 0) {
                     comment.replies.forEach(reply => {
                         commentIds.push(reply.id);
@@ -465,7 +414,6 @@ class CMMVComments {
                 }
             });
 
-            // Verificar likes para cada comentário
             const likesPromises = commentIds.map(commentId => {
                 const url = `${this.options.apiBaseUrl}/blog/comments/${commentId}/hasLike`;
 
@@ -480,7 +428,6 @@ class CMMVComments {
                         return { commentId, hasLike: false };
                     }
                     return response.json().then(data => {
-                        // Corrigir acesso à propriedade hasLike na estrutura de dados
                         const hasLike = data.result && data.result.hasLike;
                         return {
                             commentId,
@@ -493,16 +440,12 @@ class CMMVComments {
                 });
             });
 
-            // Processar os resultados e atualizar o estado
             const likesResults = await Promise.all(likesPromises);
-
-            // Criar um mapa para facilitar a busca
             const likesMap = {};
             likesResults.forEach(result => {
                 likesMap[result.commentId] = result.hasLike;
             });
 
-            // Atualizar os comentários com as informações de like
             comments.forEach(comment => {
                 comment.hasLiked = likesMap[comment.id] === true;
 
@@ -528,10 +471,7 @@ class CMMVComments {
         comment.isLoadingReplies = true;
         this.updateUI();
 
-        // Determinar o offset baseado nas respostas já carregadas
         const repliesOffset = comment.replies ? comment.replies.length : 0;
-
-        // Construir a URL para buscar mais respostas
         const url = `${this.options.apiBaseUrl}/blog/comments/${commentId}/replies?offset=${repliesOffset}`;
 
         fetch(url)
@@ -542,25 +482,19 @@ class CMMVComments {
                 return response.json();
             })
             .then(data => {
-                // Acessar os dados da resposta aninhada dentro de result
                 const result = data.result || {};
 
                 if (result.replies && result.replies.length > 0) {
-                    // Inicializar o array de respostas se for undefined
-                    if (!comment.replies) {
+                    if (!comment.replies)
                         comment.replies = [];
-                    }
 
-                    // Adicionar as novas respostas às existentes
                     const newReplies = result.replies;
                     comment.replies = [...comment.replies, ...newReplies];
                     comment.hasMoreReplies = result.hasMore || false;
                     comment.replyCount = result.total || comment.replies.length;
 
-                    // Verificar os likes do usuário para as novas respostas se estiver logado
-                    if (this.state.isLoggedIn) {
+                    if (this.state.isLoggedIn)
                         this.checkLikesForReplies(newReplies);
-                    }
                 }
 
                 comment.isLoadingReplies = false;
@@ -585,10 +519,8 @@ class CMMVComments {
         if (!token) return;
 
         try {
-            // Criar um array com todos os IDs de respostas
             const replyIds = replies.map(reply => reply.id);
 
-            // Verificar likes para cada resposta
             const likesPromises = replyIds.map(replyId => {
                 const url = `${this.options.apiBaseUrl}/blog/comments/${replyId}/hasLike`;
 
@@ -603,7 +535,6 @@ class CMMVComments {
                         return { commentId: replyId, hasLike: false };
                     }
                     return response.json().then(data => {
-                        // Corrigir acesso à propriedade hasLike na estrutura de dados
                         const hasLike = data.result && data.result.hasLike;
                         return {
                             commentId: replyId,
@@ -616,16 +547,12 @@ class CMMVComments {
                 });
             });
 
-            // Processar os resultados e atualizar o estado
             const likesResults = await Promise.all(likesPromises);
-
-            // Criar um mapa para facilitar a busca
             const likesMap = {};
             likesResults.forEach(result => {
                 likesMap[result.commentId] = result.hasLike;
             });
 
-            // Atualizar as respostas com as informações de like
             replies.forEach(reply => {
                 reply.hasLiked = likesMap[reply.id] === true;
             });
@@ -638,7 +565,6 @@ class CMMVComments {
      * Update the UI to reflect current state
      */
     updateUI() {
-        // Store current focus state and selection/cursor position
         const activeElement = document.activeElement;
         const isTextareaFocused = activeElement && activeElement.classList.contains('comment-textarea');
         let selectionStart = null;
@@ -649,10 +575,8 @@ class CMMVComments {
             selectionEnd = activeElement.selectionEnd;
         }
 
-        // Update UI
         this.renderCommentSection();
 
-        // Restore focus and selection if textarea was focused
         if (isTextareaFocused && this.elements.commentTextarea) {
             this.elements.commentTextarea.focus();
 
@@ -669,18 +593,13 @@ class CMMVComments {
     renderCommentSection() {
         if (!this.elements.container) return;
 
-        // Clear container
         this.elements.container.innerHTML = '';
-
-        // Create comment section wrapper
         const commentsContainer = document.createElement('div');
         commentsContainer.className = 'comments-container mt-8 mb-12';
 
-        // Add form section
         const formSection = this.renderFormSection();
         commentsContainer.appendChild(formSection);
 
-        // Add comments list
         const comments = this.getParentComments();
         if ((comments.length > 0 || this.state.isLoading) && !this.state.isSubmitting) {
             const commentsListSection = this.renderCommentsListSection(comments);
@@ -690,15 +609,10 @@ class CMMVComments {
             commentsContainer.appendChild(emptySection);
         }
 
-        // Apply dark mode if needed
-        if (this.options.theme === 'dark') {
+        if (this.options.theme === 'dark')
             commentsContainer.classList.add('dark');
-        }
 
-        // Add to DOM
         this.elements.container.appendChild(commentsContainer);
-
-        // Initialize references to dynamic elements
         this.initElementReferences();
     }
 
@@ -707,27 +621,21 @@ class CMMVComments {
      */
     initElementReferences() {
         try {
-            // Obter referências para os elementos
             this.elements.commentTextarea = this.elements.container.querySelector('.comment-textarea');
             this.elements.commentForm = this.elements.container.querySelector('.comment-form');
             this.elements.emojiPicker = this.elements.container.querySelector('.emoji-picker');
             this.elements.emojiButton = this.elements.container.querySelector('.emoji-button');
             this.elements.mentionSuggestions = this.elements.container.querySelector('.mention-suggestions');
 
-            // Add event listeners to dynamic elements, verificando se existem antes
-            if (this.elements.commentForm) {
+            if (this.elements.commentForm)
                 this.elements.commentForm.addEventListener('submit', this.handleSubmitComment.bind(this));
-            }
 
-            if (this.elements.commentTextarea) {
+            if (this.elements.commentTextarea)
                 this.elements.commentTextarea.addEventListener('input', this.handleTextareaInput.bind(this));
-            }
 
-            if (this.elements.emojiButton) {
+            if (this.elements.emojiButton)
                 this.elements.emojiButton.addEventListener('click', this.toggleEmojiPicker.bind(this));
-            }
 
-            // Add event listeners to emoji buttons
             const emojiButtons = this.elements.container.querySelectorAll('.emoji-item');
             emojiButtons.forEach(button => {
                 if (button) {
@@ -738,7 +646,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to like buttons
             const likeButtons = this.elements.container.querySelectorAll('.like-button');
             likeButtons.forEach(button => {
                 if (button) {
@@ -749,7 +656,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to reply buttons
             const replyButtons = this.elements.container.querySelectorAll('.reply-button');
             replyButtons.forEach(button => {
                 if (button) {
@@ -761,7 +667,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to edit buttons
             const editButtons = this.elements.container.querySelectorAll('.edit-button');
             editButtons.forEach(button => {
                 if (button) {
@@ -772,7 +677,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to delete buttons
             const deleteButtons = this.elements.container.querySelectorAll('.delete-button');
             deleteButtons.forEach(button => {
                 if (button) {
@@ -785,7 +689,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to cancel edit buttons
             const cancelEditButtons = this.elements.container.querySelectorAll('.cancel-edit-button');
             cancelEditButtons.forEach(button => {
                 if (button) {
@@ -796,7 +699,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to update comment buttons
             const updateButtons = this.elements.container.querySelectorAll('.update-comment-button');
             updateButtons.forEach(button => {
                 if (button) {
@@ -816,7 +718,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to inline reply forms
             const inlineReplyForms = this.elements.container.querySelectorAll('.inline-reply-form');
             inlineReplyForms.forEach(form => {
                 if (form) {
@@ -831,7 +732,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to cancel inline reply buttons
             const cancelInlineReplyButtons = this.elements.container.querySelectorAll('.cancel-inline-reply-button');
             cancelInlineReplyButtons.forEach(button => {
                 if (button) {
@@ -842,7 +742,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to reply emoji buttons
             const replyEmojiButtons = this.elements.container.querySelectorAll('.reply-emoji-button');
             replyEmojiButtons.forEach(button => {
                 if (button) {
@@ -853,7 +752,6 @@ class CMMVComments {
                 }
             });
 
-            // Add event listeners to reply emoji items
             const replyEmojiItems = this.elements.container.querySelectorAll('.reply-emoji-item');
             replyEmojiItems.forEach(item => {
                 if (item) {
@@ -882,7 +780,6 @@ class CMMVComments {
         section.appendChild(title);
 
         if (!this.state.isLoggedIn) {
-            // Login required message
             const loginMessage = document.createElement('div');
             loginMessage.className = 'bg-neutral-50 dark:bg-neutral-800 p-6 rounded-lg text-center mb-6 border border-neutral-200 dark:border-neutral-700';
 
@@ -905,7 +802,6 @@ class CMMVComments {
 
             section.appendChild(loginMessage);
         } else {
-            // Comment form
             const form = document.createElement('form');
             form.className = 'comment-form';
 
@@ -1021,7 +917,6 @@ class CMMVComments {
             return;
         }
 
-        // Fechar o seletor de emoji das respostas se estiver aberto
         if (this.state.showReplyEmojiPicker) {
             this.state.showReplyEmojiPicker = false;
             this.state.activeEmojiCommentId = null;
@@ -1030,12 +925,9 @@ class CMMVComments {
         this.state.showMainEmojiPicker = !this.state.showMainEmojiPicker;
         console.log('Main emoji picker toggled:', this.state.showMainEmojiPicker);
 
-        if (this.state.showMainEmojiPicker) {
-            // Close mention suggestions if open
+        if (this.state.showMainEmojiPicker)
             this.state.showMentionSuggestions = false;
-        }
 
-        // Store current focus and selection
         const activeElement = document.activeElement;
         const isTextareaFocused = activeElement && activeElement.classList.contains('comment-textarea');
         const selectionStart = isTextareaFocused ? activeElement.selectionStart : null;
@@ -1043,7 +935,6 @@ class CMMVComments {
 
         this.updateUI();
 
-        // Restore focus and selection
         if (isTextareaFocused && this.elements.commentTextarea) {
             this.elements.commentTextarea.focus();
 
@@ -1086,8 +977,6 @@ class CMMVComments {
      * Render the comments list section
      */
     renderCommentsListSection(comments) {
-        console.log('Rendering comments list with', comments.length, 'comments');
-
         const section = document.createElement('div');
 
         const title = document.createElement('h3');
@@ -1114,8 +1003,6 @@ class CMMVComments {
                 const commentElement = this.renderComment(comment);
                 commentsList.appendChild(commentElement);
             } catch (error) {
-                console.error('Error rendering comment:', error, comment);
-                // Adicionar um elemento de fallback para comentários que não podem ser renderizados
                 const errorElement = document.createElement('div');
                 errorElement.className = 'bg-red-50 dark:bg-red-900 p-3 rounded-lg text-red-600 dark:text-red-300';
                 errorElement.textContent = 'Error rendering this comment';
@@ -1123,7 +1010,6 @@ class CMMVComments {
             }
         });
 
-        // Adicionar o botão "Carregar mais" se houver mais comentários
         if (this.state.hasMoreComments) {
             const loadMoreBtn = document.createElement('div');
             loadMoreBtn.className = 'text-center mt-6';
@@ -1147,35 +1033,24 @@ class CMMVComments {
      * Render an individual comment
      */
     renderComment(comment) {
-        if (!comment || typeof comment !== 'object') {
-            console.error('Invalid comment object:', comment);
+        if (!comment || typeof comment !== 'object')
             throw new Error('Invalid comment object');
-        }
 
         const commentElement = document.createElement('div');
         commentElement.className = 'comment mb-4';
         commentElement.setAttribute('data-comment-id', comment.id || 'unknown');
 
-        // Verificar se o usuário atual é o autor do comentário
         const isAuthor = this.state.isLoggedIn && this.state.currentUser &&
                          comment.member === this.state.currentUser.id;
 
-        // Verificar se este comentário está sendo editado
         const isEditing = this.state.editingComment === comment.id;
-
-        // Verificar se este comentário tem um formulário de resposta aberto
         const hasReplyForm = this.state.replyForms.has(comment.id);
-
-        // Garantir que likes nunca seja null ou undefined
         const likes = comment.likes === null || comment.likes === undefined ? 0 : comment.likes;
-
-        // Garantir que temos um objeto memberInfo válido
         const memberInfo = comment.memberInfo || {};
         const memberName = memberInfo.name || comment.name || 'Anonymous';
 
         // Parent comment HTML
         if (!isEditing) {
-            // Modo de visualização normal
             commentElement.innerHTML = `
                 <div class="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-4 shadow-sm border-l-4 border-blue-500 dark:border-blue-700">
                     <div class="flex items-start">
@@ -1247,7 +1122,6 @@ class CMMVComments {
                 </div>
             `;
         } else {
-            // Modo de edição
             commentElement.innerHTML = `
                 <div class="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-4 shadow-sm border-l-4 border-yellow-500 dark:border-yellow-600">
                     <div class="flex items-start">
@@ -1292,7 +1166,6 @@ class CMMVComments {
             `;
         }
 
-        // Adicionar formulário de resposta se necessário
         if (hasReplyForm && !isEditing) {
             const replyFormContainer = document.createElement('div');
             replyFormContainer.className = 'reply-form-container ml-6 mt-4';

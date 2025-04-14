@@ -4,9 +4,13 @@ import { Auth } from "@cmmv/auth";
 import {
    Controller, Get, Post,
    Queries, Param, Body, Req, RouterSchema,
-   User, Response, CacheControl, ContentType, Raw,
-   Delete
+   User, Response, CacheControl, ContentType,
+   Raw, Delete
 } from "@cmmv/http";
+
+import {
+    Cache
+} from "@cmmv/cache";
 
 import {
     PostsPublicService
@@ -23,6 +27,8 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @Cache("posts:getAll")
+    @CacheControl({ maxAge: 3600, public: true })
     async getPosts(@Queries() queries: any, @Req() req: any) {
         return this.postsPublicService.getAllPosts(queries, req);
     }
@@ -34,6 +40,8 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @Cache("pages:getAll")
+    @CacheControl({ maxAge: 3600, public: true })
     async getPages(@Queries() queries: any, @Req() req: any) {
         return this.postsPublicService.getAllPages(queries, req);
     }
@@ -45,6 +53,7 @@ export class PostsController {
         exposeFilters: true,
         exclude: true
     })
+    @Cache("posts:")
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()
