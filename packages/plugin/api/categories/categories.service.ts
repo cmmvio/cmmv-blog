@@ -28,8 +28,7 @@ export class CategoriesPublicService {
 
         const categories = await Repository.findAll(CategoriesEntity, {
             limit: 1000,
-            active: true,
-            postCount: MoreThan(0)
+            active: true
         }, [], {
             select: [ "id", "name", "slug", "parentCategory", "active", "navigationLabel", "postCount" ]
         });
