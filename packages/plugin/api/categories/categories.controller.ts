@@ -27,7 +27,7 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
-    @Cache("categories:getAll")
+    //@Cache("categories:getAll")
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()
@@ -42,7 +42,7 @@ export class CategoriesPublicController {
         exposeFilters: true,
         exclude: true
     })
-    @Cache("categories:")
+    //@Cache("categories:")
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()
