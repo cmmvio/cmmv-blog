@@ -375,10 +375,10 @@
                         <label class="block text-sm font-medium text-neutral-300">YouTube</label>
                         <div class="flex items-center">
                             <span
-                                class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://youtube.com/c/</span>
+                                class="bg-neutral-700 rounded-l-md border border-neutral-600 px-3 py-2 text-neutral-400">https://youtube.com/</span>
                             <input v-model="settings.youtube" type="text"
                                 class="flex-1 rounded-none rounded-r-md bg-neutral-700 border border-l-0 border-neutral-600 px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                placeholder="yourchannel" />
+                                placeholder="@yourchannel" />
                         </div>
                     </div>
 
