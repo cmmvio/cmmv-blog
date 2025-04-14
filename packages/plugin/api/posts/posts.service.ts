@@ -381,7 +381,7 @@ export class PostsPublicService {
         });
 
         if(!post)
-            throw new Error("Post not found");
+            return null;
 
         return post.id;
     }

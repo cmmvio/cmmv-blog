@@ -63,25 +63,25 @@ export class SitemapService {
             select: ["updatedAt"]
         });
 
-        if(post){
+        if(post && post.data.length > 0){
             sitemapIndex.push(
                 `\t<sitemap>`,
                     `\t\t<loc>${apiUrl}/post-sitemap.xml</loc>`,
-                    `\t\t<lastmod>${post.data[0].publishedAt.toISOString()}</lastmod>`,
+                    `\t\t<lastmod>${post.data[0]?.publishedAt.toISOString()}</lastmod>`,
                 `\t</sitemap>`
             );
         }
 
-        if(page){
+        if(page && page.data.length > 0){
             sitemapIndex.push(
                 `\t<sitemap>`,
                     `\t\t<loc>${apiUrl}/page-sitemap.xml</loc>`,
-                    `\t\t<lastmod>${page.data[0].publishedAt.toISOString()}</lastmod>`,
+                    `\t\t<lastmod>${page.data[0]?.publishedAt.toISOString()}</lastmod>`,
                 `\t</sitemap>`
             );
         }
 
-        if(category){
+        if(category && category.data.length > 0){
             sitemapIndex.push(
                 `\t<sitemap>`,
                     `\t\t<loc>${apiUrl}/category-sitemap.xml</loc>`,

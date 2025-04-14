@@ -7,7 +7,6 @@ import ClientOnly from './components/ClientOnly.vue'
 
 export async function render(url: string) {
     try {
-        // Initialize SSR data container
         globalThis.__SSR_DATA__ = {}
         globalThis.__SSR_METADATA__ = {}
 
@@ -17,6 +16,13 @@ export async function render(url: string) {
 
         router.push(url)
         await router.isReady()
+
+        const route = router.currentRoute.value
+
+        const match = matchLegacyRedirect(route)
+
+        if (match)
+            return { redirect: match }
 
         app.component('ClientOnly', ClientOnly)
         app.use(router)
@@ -37,6 +43,25 @@ export async function render(url: string) {
     } catch (e: any) {
         console.error('Render error:', e);
     }
+}
+
+function matchLegacyRedirect(route: any): string | null {
+    const slug = route.params.slug;
+    const legacyPaths = [
+        /^\/\d{4}\/\d{2}\/\d{2}\/(.+?)\/?$/,
+        /^\/\d{4}\/\d{2}\/(.+?)\/?$/,
+        /^\/arquivos\/(\d+)$/,
+        /^\/\?p=(\d+)$/
+    ];
+
+    for (const pattern of legacyPaths) {
+        const match = route.fullPath.match(pattern);
+
+        if (match)
+            return `/post/${match[1]}`;
+    }
+
+    return null;
 }
 
 async function resolveSSRData(obj: Record<string, Promise<any>>) {

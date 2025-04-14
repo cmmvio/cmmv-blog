@@ -55,7 +55,13 @@ async function start() {
                 }
 
                 template = await vite.transformIndexHtml(url, template);
-                const { html: appHtml, head, metadata } = await render(url);
+                const { html: appHtml, head, metadata, redirect } = await render(url);
+
+                if (redirect) {
+                    res.writeHead(301, { Location: redirect });
+                    return res.end();
+                }
+
                 const serializedData = JSON.stringify(globalThis.__SSR_DATA__).replace(/</g, '\\u003c');
                 const dataScript = `<script>window.__CMMV_DATA__ = ${serializedData};</script>`;
                 template = await transformHtmlTemplate(head, template.replace(`<div id="app"></div>`, `

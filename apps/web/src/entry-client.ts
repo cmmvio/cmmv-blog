@@ -5,9 +5,9 @@ import ClientOnly from './components/ClientOnly.vue'
 import App from './App.vue';
 
 declare global {
-  interface Window {
-    __CMMV_DATA__: Record<string, any>;
-  }
+    interface Window {
+        __CMMV_DATA__: Record<string, any>;
+    }
 }
 
 const head = createHead();

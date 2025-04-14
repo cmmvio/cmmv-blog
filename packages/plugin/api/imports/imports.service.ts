@@ -1,4 +1,17 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import * as util from 'node:util';
+import { Readable } from 'node:stream';
+import * as crypto from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
+import * as xml2js from 'xml2js';
+import * as busboy from 'busboy';
+import { cwd } from "node:process";
+import * as sharp from "sharp";
+
 import {
+    Config,
     Service,
 } from "@cmmv/core";
 
@@ -9,16 +22,6 @@ import {
 import {
     PostsPublicService
 } from "../posts/posts.service";
-
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
-import * as util from 'node:util';
-import * as stream from 'node:stream';
-import { Readable } from 'node:stream';
-import { v4 as uuidv4 } from 'uuid';
-import * as xml2js from 'xml2js';
-import * as busboy from 'busboy';
 
 type FileError = Error | null;
 type StreamInfo = { filename: string; encoding: string; mimeType: string; };
@@ -60,6 +63,7 @@ interface WordPressItem {
     "wp:post_parent"?: string;
     "wp:menu_order"?: string;
     "wp:post_type"?: string;
+    "wp:attachment_url"?: string;
     "category"?: Array<{
         "_": string,
         "$": {
@@ -346,6 +350,7 @@ export class ImportService {
             const CategoriesEntity = Repository.getEntity("CategoriesEntity");
             const PostsEntity = Repository.getEntity("PostsEntity");
             const RedirectsEntity = Repository.getEntity("RedirectsEntity");
+            const MediasEntity = Repository.getEntity("MediasEntity");
 
             const rootAuthor = await Repository.findOne(ProfilesEntity, {}, {
                 select: ["user"]
@@ -353,6 +358,69 @@ export class ImportService {
 
             if(!rootAuthor)
                 throw new Error("Root author not found");
+
+            const mediasPath = path.join(cwd(), "medias", "images");
+
+            if(!fs.existsSync(mediasPath))
+                await fs.mkdirSync(mediasPath, { recursive: true });
+
+            let attachments: Record<string, string> = {};
+            let imagesFormat = ["jpg", "jpeg", "png", "gif", "webp"];
+            const apiUrl = Config.get<string>("blog.url", process.env.API_URL);
+
+            for (const item of items) {
+                if(item["wp:post_type"] === "attachment" && item["wp:attachment_url"]){
+                    const url = item["wp:attachment_url"];
+                    const filename = path.basename(url);
+                    const imageUrl = `${apiUrl}/images/${filename}`;
+                    //@ts-ignore
+                    attachments[item["wp:post_parent"]] = imageUrl;
+                    console.log("Processing attachment", item["wp:post_id"]);
+                    const media = await Repository.findOne(MediasEntity, { filepath: filename });
+
+                    if(media)
+                        continue;
+
+                    console.log(`Downloading attachment ${item["wp:attachment_url"]}`);
+
+                    const destPath = path.join(mediasPath, filename);
+                    const res = await fetch(item["wp:attachment_url"]);
+
+                    if (!res.ok) {
+                        console.error(`Failed to download attachment ${item["wp:attachment_url"]}`);
+                        continue;
+                    }
+
+                    const buffer = await res.arrayBuffer();
+                    await fs.writeFileSync(destPath, Buffer.from(buffer));
+                    let metadata: any = null;
+
+                    if(imagesFormat.includes(filename.split(".").pop() || "")){
+                         //@ts-ignore
+                        let processor = sharp(buffer);
+                        metadata = await processor.metadata();
+                    }
+
+                    if(!metadata){
+                        metadata = {
+                            width: 0,
+                            height: 0,
+                            size: 0
+                        };
+                    }
+
+                    const imageHash = await crypto.createHash('sha1').update(url).digest('hex');
+
+                    await Repository.insert(MediasEntity, {
+                        filepath: filename,
+                        sha1: imageHash,
+                        name: filename,
+                        width: metadata.width,
+                        height: metadata.height,
+                        size: metadata.size
+                    });
+                }
+            }
 
             for (const item of items) {
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -371,7 +439,7 @@ export class ImportService {
                             });
 
                             if(!tag){
-                                const tagData = await Repository.insert(TagsEntity, {
+                                await Repository.insert(TagsEntity, {
                                     slug: category["$"].nicename,
                                     name: category["_"]
                                 });
@@ -424,7 +492,9 @@ export class ImportService {
                         author: rootAuthor.user,
                         authors: [rootAuthor.user],
                         categories: categories,
-                        tags: tags
+                        tags: tags,
+                        //@ts-ignore
+                        featureImage: attachments[item["wp:post_id"]]
                     });
 
                     await Repository.insert(RedirectsEntity, {
@@ -447,7 +517,12 @@ export class ImportService {
         }
     }
 
+    /**
+     * Import Ghost posts from an XML file
+     * @param data Import data
+     * @returns Promise<any>
+     */
     async importGhost(data: any) {
-        console.log(data);
+        throw new Error("Not implemented");
     }
 }

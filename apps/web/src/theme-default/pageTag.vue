@@ -3,7 +3,7 @@
         <div class="mx-auto z-10">
             <div class="flex">
                 <main class="flex-1">
-                    <div class="lg:ml-64 bg-white dark:bg-neutral-900 rounded-lg">
+                    <div class="lg:ml-64 lg:max-w-4xl md:max-w-3xl px-4 sm:px-6 mx-auto bg-white dark:bg-neutral-900 rounded-lg pl-[40px] pr-[40px]">
                         <div v-if="!posts" class="container mx-auto max-w-4xl px-4 py-12">
                             <div class="bg-neutral-800 p-6 rounded-lg text-center">
                                 <h1 class="text-2xl font-bold text-white mb-4">Tag not found</h1>
@@ -12,7 +12,7 @@
                         </div>
 
                         <div v-else class="max-w-4xl mx-auto px-4 py-8 pt-4">
-                            <header class="border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-4 px-4 pt-4">
+                            <header class="border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-4 pr-4 pt-4">
                                 <h1 class="text-3xl font-bold text-neutral-900 dark:text-white mb-3">Tag: {{ data.tag.name }}</h1>
                                 <p v-if="data.tag.description" class="text-neutral-600 dark:text-neutral-300 mb-4">{{ data.tag.description }}</p>
                                 <div class="text-sm text-neutral-500 dark:text-neutral-400">{{ data.tag.postCount }} posts in this tag</div>

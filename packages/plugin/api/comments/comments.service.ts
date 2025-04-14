@@ -106,11 +106,10 @@ export class CommentsPublicService {
      * @returns Object containing comments, total count, and hasMore flag
      */
     public async getCommentsByPostId(
-        slug: string,
+        postId: string,
         offset: number = 0,
         sortBy: 'recent' | 'relevant' = 'recent'
     ) {
-        const postId = await this.postsService.getPostIdBySlug(slug);
         const CommentsEntity = Repository.getEntity("CommentsEntity");
         const limit = 10;
 
