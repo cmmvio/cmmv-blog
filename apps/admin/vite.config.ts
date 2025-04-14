@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), 'VITE')
+    const apiUrl = env.VITE_API_URL || 'http://localhost:5000';
 
     return {
         plugins: [vue()],
@@ -36,6 +37,11 @@ export default defineConfig(({ mode }) => {
                                 proxyReq.setHeader('refresh-token', refreshToken)
                         })
                     },
+                },
+                '/images': {
+                    target: apiUrl,
+                    changeOrigin: true,
+                    secure: false
                 },
             },
         },

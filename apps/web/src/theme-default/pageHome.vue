@@ -3,9 +3,9 @@
         <div class="mx-auto z-10 px-4">
             <div class="flex">
                 <main class="flex-1">
-                    <div class="lg:ml-64 bg-white dark:bg-neutral-900 rounded-lg">
+                    <div class="lg:ml-64 bg-white dark:bg-neutral-900 rounded-lg max-w-[1200px] m-auto overflow-hidden justify-center">
                         <div class="mx-auto px-4 py-8">
-                            <div v-if="loading" class="flex justify-center items-center py-20">
+                            <div v-if="loading && posts.length === 0" class="flex justify-center items-center py-20">
                                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                             </div>
 
@@ -72,30 +72,20 @@
                                     </div>
                                 </div>
 
-                                <div v-if="pagination && pagination.total > pagination.limit" class="mt-10 flex justify-center">
-                                    <div class="flex space-x-1">
-                                        <button
-                                            @click="changePage(currentPage - 1)"
-                                            :disabled="currentPage === 1"
-                                            :class="{'opacity-50 cursor-not-allowed': currentPage === 1}"
-                                            class="px-4 py-2 bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-neutral-600"
-                                        >
-                                            Previous
-                                        </button>
-
-                                        <button
-                                            @click="changePage(currentPage + 1)"
-                                            :disabled="currentPage === Math.ceil(pagination.total / pagination.limit)"
-                                            :class="{'opacity-50 cursor-not-allowed': currentPage === Math.ceil(pagination.total / pagination.limit)}"
-                                            class="px-4 py-2 bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-neutral-600"
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
+                                <!-- Loading indicator for infinite scroll -->
+                                <div v-if="loadingMore" class="mt-8 flex justify-center items-center py-6">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
                                 </div>
+
+                                <!-- No more posts indicator -->
+                                <div v-if="!hasMorePosts && posts.length > 0 && !loadingMore" class="mt-8 text-center py-4 text-gray-500 dark:text-gray-400">
+
+                                </div>
+
+                                <!-- Intersection observer target -->
+                                <div ref="observerTarget" class="h-4 w-full"></div>
                             </div>
                         </div>
-
                     </div>
                 </main>
             </div>
@@ -104,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { vue3 } from '@cmmv/blog/client';
 
 import {
@@ -115,36 +105,101 @@ const blogAPI = vue3.useBlog();
 
 const posts = ref<any[]>([]);
 const loading = ref(true);
+const loadingMore = ref(false);
 const error = ref(null);
-const currentPage = ref(1);
+const currentPage = ref(0);
+const hasMorePosts = ref(true);
+const observerTarget = ref<HTMLElement | null>(null);
+const observer = ref<IntersectionObserver | null>(null);
+
 const pagination = ref({
     total: 0,
-    limit: 9,
+    limit: 32,
     offset: 0
 });
 
-loading.value = true;
-error.value = null;
+const loadPosts = async () => {
+    try {
+        loading.value = true;
+        error.value = null;
 
-const response: any = await blogAPI.posts.getAll((currentPage.value - 1) * pagination.value.limit);
-posts.value = response.posts;
-loading.value = false;
+        const response: any = await blogAPI.posts.getAll(currentPage.value * pagination.value.limit);
 
-if(response){
-    pagination.value = {
-        total: response.meta?.pagination?.total || 0,
-        limit: response.meta?.pagination?.limit || 9,
-        offset: response.meta?.pagination?.offset || 0
-    };
-}
+        if (response) {
+            posts.value = response.posts;
 
-const changePage = (page: number) => {
-    if (page < 1 || page > Math.ceil(pagination.value.total / pagination.value.limit))
-        return;
+            pagination.value = {
+                total: response.meta?.pagination?.total || 0,
+                limit: response.meta?.pagination?.limit || 32,
+                offset: response.meta?.pagination?.offset || 0
+            };
 
-    currentPage.value = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+            hasMorePosts.value = posts.value.length < response.count;
+        }
+    } catch (err: any) {
+        console.error('Failed to load posts:', err);
+        error.value = err;
+    } finally {
+        loading.value = false;
+    }
 };
+
+const loadMorePosts = async () => {
+    if (loadingMore.value || !hasMorePosts.value) return;
+
+    try {
+        loadingMore.value = true;
+        currentPage.value++;
+
+        const response: any = await blogAPI.posts.getAll(posts.value.length);
+
+        if (response && response.posts && response.posts.length > 0) {
+            posts.value = [...posts.value, ...response.posts];
+
+            pagination.value = {
+                total: response.meta?.pagination?.total || 0,
+                limit: response.meta?.pagination?.limit || 9,
+                offset: response.meta?.pagination?.offset || 0
+            };
+
+            hasMorePosts.value = posts.value.length < response.count;
+        } else {
+            hasMorePosts.value = false;
+        }
+    } catch (err: any) {
+        console.error('Failed to load more posts:', err);
+    } finally {
+        loadingMore.value = false;
+    }
+};
+
+const setupIntersectionObserver = () => {
+    observer.value = new IntersectionObserver(
+        (entries) => {
+            const [entry] = entries;
+
+            if (entry.isIntersecting && hasMorePosts.value && !loadingMore.value)
+                loadMorePosts();
+        },
+        { threshold: 0.1 }
+    );
+
+    if (observerTarget.value) {
+        observer.value.observe(observerTarget.value);
+    }
+};
+
+onMounted(async () => {
+    await loadPosts();
+    setupIntersectionObserver();
+});
+
+onUnmounted(() => {
+    if (observer.value && observerTarget.value) {
+        observer.value.unobserve(observerTarget.value);
+        observer.value.disconnect();
+    }
+});
 
 const getAuthor = (post: any) => {
     if (!post.authors || !post.authors.length) return null;

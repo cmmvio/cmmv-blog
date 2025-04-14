@@ -427,7 +427,6 @@ const loadTags = async () => {
         const response = await adminClient.tags.get(apiFilters)
 
         if (response && response.data) {
-            console.log('Tag data sample:', response.data[0])
             tags.value = response.data || []
 
             const paginationData = response.pagination || {}
@@ -468,12 +467,10 @@ const loadTags = async () => {
     }
 }
 
-// Refresh data
 const refreshData = () => {
     loadTags()
 }
 
-// Pagination methods
 const goToPage = (page) => {
     if (page === '...') return
     filters.value.page = page
@@ -491,12 +488,10 @@ const nextPage = () => {
     }
 }
 
-// Watch for filter changes
 watch(filters, () => {
     loadTags()
 }, { deep: true })
 
-// Dialog methods
 const openAddDialog = () => {
     isEditing.value = false
     tagForm.value = { name: '', slug: '' }
@@ -522,13 +517,11 @@ const closeDialog = () => {
     tagToEdit.value = null
 }
 
-// Save tag
 const saveTag = async () => {
     try {
         formLoading.value = true
         formErrors.value = {}
 
-        // Validate
         if (!tagForm.value.name.trim()) {
             formErrors.value.name = 'Tag name is required'
             formLoading.value = false
@@ -584,7 +577,6 @@ const generateSlug = (text) => {
         .replace(/-+$/, '');         // Trim - from end of text
 }
 
-// Delete methods
 const confirmDelete = (tag) => {
     tagToDelete.value = tag
     showDeleteDialog.value = true
@@ -612,7 +604,6 @@ const deleteTag = async () => {
     }
 }
 
-// Notification
 const showNotification = (type, message) => {
     notification.value = {
         show: true,
@@ -626,25 +617,21 @@ const showNotification = (type, message) => {
     }, notification.value.duration)
 }
 
-// Add a toggle sort method
 const toggleSort = (column) => {
     if (filters.value.sortBy === column) {
-        // Toggle sort order if clicking the same column
         filters.value.sortOrder = filters.value.sortOrder === 'asc' ? 'desc' : 'asc'
     } else {
-        // Set new sort column with default asc order
         filters.value.sortBy = column
         filters.value.sortOrder = 'asc'
     }
 }
 
-// Add this function to load the blog URL
 const loadBlogUrl = async () => {
     try {
         const settings = await adminClient.getRootSettings();
         const urlSetting = settings.find(s => s.key === 'blog.url');
         if (urlSetting) {
-            blogUrl.value = urlSetting.value.replace(/\/$/, ''); // Remove trailing slash if present
+            blogUrl.value = urlSetting.value.replace(/\/$/, '');
         }
     } catch (err) {
         console.error('Failed to load blog URL:', err);
@@ -652,7 +639,6 @@ const loadBlogUrl = async () => {
     }
 };
 
-// Update the onMounted function to also load the blog URL
 onMounted(() => {
     loadTags()
     loadBlogUrl()

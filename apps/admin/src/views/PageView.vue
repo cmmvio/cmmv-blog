@@ -1008,7 +1008,6 @@ function handleFeatureImageSelect(event) {
         img.crossOrigin = "Anonymous"
 
         img.onload = () => {
-            console.log('Feature image loaded', { width: img.width, height: img.height })
             selectedFeatureImage.value = img
             featureCropModalOpen.value = true
 
@@ -1211,13 +1210,11 @@ async function savePage() {
         const response = await adminClient.pages.save(payload)
 
         if (response && response.id) {
-            // Update the post ID with the one returned from the API
             post.value.id = response.id
             showNotification('success', 'Page saved successfully')
 
-            if (!route.params.id) {
+            if (!route.params.id)
                 router.push(`/page/${response.id}`)
-            }
 
             return response
         }

@@ -608,14 +608,15 @@ export class PostsPublicService {
      * @param {string} categoryId - The id of the category
      * @returns {Promise<any>}
      */
-    async getPostsByCategory(categoryId: string) {
+    async getPostsByCategory(categoryId: string, queries: any) {
         const PostsEntity = Repository.getEntity("PostsEntity");
         const TagsEntity = Repository.getEntity("TagsEntity");
 
         const posts = await Repository.findAll(PostsEntity, {
             searchField: 'categories',
             search: categoryId,
-            limit: 10,
+            limit: queries.limit || 10,
+            offset: queries.offset || 0,
             status: "published",
             sortBy: "publishedAt",
             sort: "DESC",

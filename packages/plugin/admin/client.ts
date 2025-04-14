@@ -126,6 +126,8 @@ export const useAdminClient = () => {
     const imports = {
         wordpress: (data: any) => api.authRequest('imports/wordpress', 'POST', data),
         ghost: (data: any) => api.authRequest('imports/blogger', 'POST', data),
+        progress: () => api.authRequest('imports/progress', 'GET'),
+        progressById: (id: string) => api.authRequest(`imports/progress/${id}`, 'GET'),
     };
 
     return {

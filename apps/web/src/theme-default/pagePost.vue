@@ -299,7 +299,7 @@ const pageUrl = computed(() => {
 const keywords = computed(() => post.value.keywords ||
     (post.value.tags?.map((tag: any) => tag.name).join(', ') || ''))
 const description = computed(() =>
-    stripHtml(post.value.description || post.value.excerpt || '')
+    stripHtml(post.value.description || post.value.excerpt || post.value.content || '')
         .substring(0, 150) + '...'
 )
 

@@ -40,8 +40,8 @@ export class CategoriesPublicController {
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()
-    async getBySlug(@Param("slug") slug: string) {
-        return await this.categoriesPublicService.getBySlug(slug);
+    async getBySlug(@Param("slug") slug: string, @Queries() queries: any) {
+        return await this.categoriesPublicService.getBySlug(slug, queries);
     }
 
     @Get("categories/:id", {
@@ -54,7 +54,7 @@ export class CategoriesPublicController {
     @CacheControl({ maxAge: 3600, public: true })
     @ContentType('application/json')
     @Raw()
-    async getById(@Param("id") id: string) {
-        return await this.categoriesPublicService.getById(id);
+    async getById(@Param("id") id: string, @Queries() queries: any) {
+        return await this.categoriesPublicService.getById(id, queries);
     }
 }

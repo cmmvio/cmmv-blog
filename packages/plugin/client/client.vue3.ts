@@ -188,12 +188,14 @@ export const useBlog = () => {
             categoriesData.value = data.value || [];
             return data.value || [];
         },
-        getById: async (id: string) => {
-            const { data } = await api.get<any[]>(`blog/categories/${id}`, "category");
+        getById: async (id: string, offset: number = 0) => {
+            const urlQueries = new URLSearchParams({ limit: "10", offset: offset.toString() }).toString();
+            const { data } = await api.get<any[]>(`blog/categories/${id}?${urlQueries}`, "category");
             return data.value || [];
         },
-        getBySlug: async (slug: string) => {
-            const { data } = await api.get<any[]>(`blog/categories/slug/${slug}`, "category");
+        getBySlug: async (slug: string, offset: number = 0) => {
+            const urlQueries = new URLSearchParams({ limit: "10", offset: offset.toString() }).toString();
+            const { data } = await api.get<any[]>(`blog/categories/slug/${slug}?${urlQueries}`, "category");
             return data.value || [];
         }
     };
@@ -204,8 +206,9 @@ export const useBlog = () => {
             tagsData.value = data.value || [];
             return data.value || [];
         },
-        getPostsBySlug: async (tagSlug: string) => {
-            const { data } = await api.get<any[]>(`/blog/posts/tags/${tagSlug}`, "post");
+        getPostsBySlug: async (tagSlug: string, offset: number = 0) => {
+            const urlQueries = new URLSearchParams({ limit: "32", offset: offset.toString() }).toString();
+            const { data } = await api.get<any[]>(`blog/posts/tags/${tagSlug}?${urlQueries}`, "post");
             return data.value || [];
         }
     };
@@ -221,7 +224,7 @@ export const useBlog = () => {
     const posts = {
         getAll: async (offset: number = 0) => {
             const urlQueries = new URLSearchParams({
-                limit: "10",
+                limit: "32",
                 status: "published",
                 sort: "ASC",
                 sortBy: "publishedAt",

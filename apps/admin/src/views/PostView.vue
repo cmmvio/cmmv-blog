@@ -1279,7 +1279,6 @@ function handleFeatureImageSelect(event) {
         img.crossOrigin = "Anonymous"
 
         img.onload = () => {
-            console.log('Feature image loaded', { width: img.width, height: img.height })
             selectedFeatureImage.value = img
             featureCropModalOpen.value = true
 

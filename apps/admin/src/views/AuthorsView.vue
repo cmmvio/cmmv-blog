@@ -961,7 +961,8 @@ const showNotification = (type, message) => {
 
 // Format date
 const formatDate = (timestamp) => {
-    if (!timestamp) return 'Never'
+    if (!timestamp) return 'Never';
+
     try {
         const date = new Date(timestamp)
         if (isNaN(date.getTime())) return 'Never'

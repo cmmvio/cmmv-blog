@@ -90,7 +90,6 @@ class CMMVComments {
      * Initialize the comment section
      */
     init() {
-        // Verificar se os métodos que serão usados com bind existem
         this.handleSubmitComment = this.handleSubmitComment || function() { console.warn('handleSubmitComment not found'); };
         this.handleTextareaInput = this.handleTextareaInput || function() { console.warn('handleTextareaInput not found'); };
         this.toggleEmojiPicker = this.toggleEmojiPicker || function() { console.warn('toggleEmojiPicker not found'); };
@@ -98,37 +97,25 @@ class CMMVComments {
         this.loadMoreComments = this.loadMoreComments || function() { console.warn('loadMoreComments not found'); };
         this.loadMoreReplies = this.loadMoreReplies || function() { console.warn('loadMoreReplies not found'); };
 
-        // Get container element
         if (typeof this.options.container === 'string') {
             this.elements.container = document.querySelector(this.options.container);
         } else {
             this.elements.container = this.options.container;
         }
 
-        if (!this.elements.container) {
-            console.error('CMMV Comments: Container element not found');
+        if (!this.elements.container)
             return;
-        }
 
-        console.log('Initializing comments for post:', this.options.postId);
-
-        // Adicionar propriedades de estado adicionais para gerenciar paginação
         this.state.isLoading = false;
         this.state.isLoadingMore = false;
         this.state.commentOffset = 0;
         this.state.totalComments = 0;
         this.state.hasMoreComments = false;
 
-        // Check authentication status
         this.checkAuthStatus();
-
-        // Fetch comments
         this.fetchComments();
-
-        // Render initial UI
         this.renderCommentSection();
 
-        // Add global click listener for emoji picker
         document.addEventListener('click', (event) => {
             if (this.state.showEmojiPicker && this.elements.emojiPicker) {
                 if (!this.elements.emojiPicker.contains(event.target) &&

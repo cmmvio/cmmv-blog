@@ -3,7 +3,7 @@ import {
 } from "@cmmv/core";
 
 import {
-    Repository
+    Repository, MoreThan
 } from "@cmmv/repository";
 
 import {
@@ -28,7 +28,8 @@ export class CategoriesPublicService {
 
         const categories = await Repository.findAll(CategoriesEntity, {
             limit: 1000,
-            active: true
+            active: true,
+            postCount: MoreThan(0)
         }, [], {
             select: [ "id", "name", "slug", "parentCategory", "active", "navigationLabel", "postCount" ]
         });
@@ -41,7 +42,7 @@ export class CategoriesPublicService {
      * @param slug
      * @returns
      */
-    async getBySlug(slug: string) {
+    async getBySlug(slug: string, queries: any) {
         const CategoriesEntity = Repository.getEntity("CategoriesEntity");
 
         const category = await Repository.findOne(CategoriesEntity, Repository.queryBuilder({
@@ -51,7 +52,7 @@ export class CategoriesPublicService {
         if(!category)
             throw new Error("Category not found");
 
-        return this.getById(category.id);
+        return this.getById(category.id, queries);
     }
 
     /**
@@ -59,7 +60,7 @@ export class CategoriesPublicService {
      * @param id
      * @returns
      */
-    async getById(id: string) {
+    async getById(id: string, queries: any) {
         const CategoriesEntity = Repository.getEntity("CategoriesEntity");
 
         const category = await Repository.findOne(CategoriesEntity, Repository.queryBuilder({
@@ -68,7 +69,7 @@ export class CategoriesPublicService {
             select: [ "id", "name", "slug", "parentCategory", "active", "navigationLabel", "postCount", "description" ]
         });
 
-        const posts = await this.postsService.getPostsByCategory(id);
+        const posts = await this.postsService.getPostsByCategory(id, queries);
 
         return {
             category: category,

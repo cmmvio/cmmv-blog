@@ -454,13 +454,10 @@ const createTrafficChart = () => {
     }
 };
 
-// Comment moderation methods
 const approveComment = async (commentId) => {
     try {
         await comments.approveComment(commentId);
-        // Remove the comment from the list after approval
         pendingComments.value = pendingComments.value.filter(comment => comment.id !== commentId);
-        // Update the summary count
         summary.value.pendingComments = Math.max(0, summary.value.pendingComments - 1);
     } catch (error) {
         console.error('Error approving comment:', error);
@@ -470,30 +467,20 @@ const approveComment = async (commentId) => {
 const rejectComment = async (commentId) => {
     try {
         await comments.rejectComment(commentId);
-        // Remove the comment from the list after rejection
         pendingComments.value = pendingComments.value.filter(comment => comment.id !== commentId);
-        // Update the summary count
         summary.value.pendingComments = Math.max(0, summary.value.pendingComments - 1);
     } catch (error) {
         console.error('Error rejecting comment:', error);
     }
 };
 
-// Fetch data on component mount
 onMounted(async () => {
     try {
-        // Get dashboard data
         const dashboardData = await analytics.getDashboard();
-        console.log('Dashboard data:', dashboardData);
-
-        // Get analytics summary for the traffic chart
         const summaryData = await analytics.getSummary();
-        console.log('Summary data:', summaryData);
 
-        // Get pending comments
         try {
             const pendingCommentsData = await comments.getPendingComments();
-            console.log('Pending comments:', pendingCommentsData);
             pendingComments.value = pendingCommentsData.data || [];
         } catch (error) {
             console.error('Error fetching pending comments:', error);
@@ -501,8 +488,6 @@ onMounted(async () => {
         }
 
         if (dashboardData) {
-            // Calculate growth percentages
-            // For posts and comments, use the values provided by the API
             const postsGrowth = dashboardData.postsFromLastMonth > 0
                 ? Math.round(((dashboardData.totalPosts - dashboardData.postsFromLastMonth) / dashboardData.postsFromLastMonth) * 100)
                 : 0;
@@ -511,11 +496,9 @@ onMounted(async () => {
                 ? Math.round(((dashboardData.totalComments - dashboardData.commentsFromLastMonth) / dashboardData.commentsFromLastMonth) * 100)
                 : 0;
 
-            // For views and subscribers, calculate based on historical data if available
             let viewsGrowth = 0;
             let subscribersGrowth = 0;
 
-            // If the API provides values for last month's views and subscribers
             if (dashboardData.accessFromLastMonth !== undefined) {
                 viewsGrowth = dashboardData.accessFromLastMonth > 0
                     ? Math.round(((dashboardData.totalAccess - dashboardData.accessFromLastMonth) / dashboardData.accessFromLastMonth) * 100)
@@ -528,12 +511,9 @@ onMounted(async () => {
                     : 0;
             }
 
-            // Store the traffic data
             const trafficData = summaryData?.trafficData || summaryData || [];
 
-            // Calculate metrics not provided by the dashboard API
             if (Array.isArray(trafficData) && trafficData.length > 0) {
-                // Calculate average bounce rate
                 const bounceRate = Math.round(
                     trafficData.reduce((sum, item, index, array) => {
                         return sum + (item.bounceRate || 0) * (item.totalAccess || 1) /
@@ -541,7 +521,6 @@ onMounted(async () => {
                     }, 0)
                 );
 
-                // Calculate weighted average time on page
                 const avgTime = Math.round(
                     trafficData.reduce((sum, item, index, array) => {
                         return sum + (item.avgTimeOnPage || 0) * (item.totalAccess || 1) /
@@ -549,9 +528,7 @@ onMounted(async () => {
                     }, 0)
                 );
 
-                // Update the summary with both dashboard and calculated values
                 summary.value = {
-                    // Dashboard API values
                     posts: dashboardData.totalPosts || 0,
                     postsGrowth: postsGrowth,
                     comments: dashboardData.totalComments || 0,
@@ -562,17 +539,12 @@ onMounted(async () => {
                     subscribersGrowth: subscribersGrowth,
                     totalVisitors: dashboardData.totalAccess || 0,
                     uniqueVisitors: dashboardData.uniqueAccess || 0,
-
-                    // Values from traffic data
                     bounceRate: bounceRate,
                     avgTime: avgTime,
                     trafficData: trafficData,
-
-                    // Other values
                     pendingComments: pendingComments.value.length || 0,
                 };
             } else {
-                // If no traffic data, just use the dashboard data
                 summary.value = {
                     posts: dashboardData.totalPosts || 0,
                     postsGrowth: postsGrowth,
@@ -592,22 +564,17 @@ onMounted(async () => {
             }
         }
 
-        // Get most accessed posts
         const postsData = await analytics.getPostsMostAccessed();
-        console.log('Most accessed posts:', postsData);
 
-        if (postsData) {
+        if (postsData)
             popularPosts.value = postsData;
-        }
 
-        // Create the traffic chart after data is loaded
         createTrafficChart();
     } catch (error) {
         console.error('Error fetching analytics data:', error);
     }
 });
 
-// Helper functions for formatting
 const formatNumber = (num) => {
     if (num >= 1000000) {
         return (num / 1000000).toFixed(1) + 'M';

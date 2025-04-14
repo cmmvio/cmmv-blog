@@ -5,6 +5,137 @@
             <h1 class="text-2xl font-bold text-white">Imports</h1>
         </div>
 
+        <!-- Active Imports -->
+        <div v-if="activeImports.length > 0 || selectedImportId" class="bg-neutral-800 rounded-lg shadow-md mb-6">
+            <div class="p-6 border-b border-neutral-700">
+                <h2 class="text-lg font-medium text-white">Active Imports</h2>
+                <p class="text-sm text-neutral-400 mt-1">View the progress of your content imports</p>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Imports List -->
+                <div v-if="!selectedImportId" class="grid grid-cols-1 gap-4">
+                    <div v-for="importItem in activeImports" :key="importItem.id"
+                         class="bg-neutral-700 rounded-lg p-4 hover:bg-neutral-600 cursor-pointer transition-colors"
+                         @click="viewImportDetails(importItem.id)">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg font-medium text-white capitalize">{{ importItem.platform }} Import</span>
+                                <span :class="{
+                                    'bg-blue-500': importItem.status === 'pending',
+                                    'bg-yellow-500': importItem.status === 'processing',
+                                    'bg-green-500': importItem.status === 'completed',
+                                    'bg-red-500': importItem.status === 'failed'
+                                }" class="px-2 py-0.5 text-xs rounded-full text-white">
+                                    {{ importItem.status }}
+                                </span>
+                            </div>
+                            <span class="text-sm text-neutral-400">
+                                {{ new Date(importItem.startTime).toLocaleString() }}
+                            </span>
+                        </div>
+                        <div class="w-full bg-neutral-800 rounded-full h-2.5 mb-2">
+                            <div class="h-2.5 rounded-full"
+                                :style="{width: `${Math.round((importItem.processedItems / importItem.totalItems) * 100)}%`}"
+                                :class="{
+                                    'bg-blue-500': importItem.status === 'pending',
+                                    'bg-yellow-500': importItem.status === 'processing',
+                                    'bg-green-500': importItem.status === 'completed',
+                                    'bg-red-500': importItem.status === 'failed'
+                                }">
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm text-neutral-400">
+                            <span>{{ importItem.processedItems }} / {{ importItem.totalItems }} items</span>
+                            <span>{{ Math.round((importItem.processedItems / importItem.totalItems) * 100) }}% complete</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Details -->
+                <div v-else>
+                    <div class="flex justify-between mb-4">
+                        <button @click="selectedImportId = null" class="text-blue-400 hover:text-blue-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Back to imports
+                        </button>
+                        <div class="text-sm">
+                            <span class="text-neutral-400">Started: </span>
+                            <span class="text-white">{{ selectedImport?.startTime ? new Date(selectedImport.startTime).toLocaleString() : '' }}</span>
+                            <span v-if="selectedImport?.endTime" class="ml-4 text-neutral-400">Ended: </span>
+                            <span v-if="selectedImport?.endTime" class="text-white">{{ new Date(selectedImport.endTime).toLocaleString() }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg font-medium text-white capitalize">{{ selectedImport?.platform }} Import</span>
+                                <span :class="{
+                                    'bg-blue-500': selectedImport?.status === 'pending',
+                                    'bg-yellow-500': selectedImport?.status === 'processing',
+                                    'bg-green-500': selectedImport?.status === 'completed',
+                                    'bg-red-500': selectedImport?.status === 'failed'
+                                }" class="px-2 py-0.5 text-xs rounded-full text-white">
+                                    {{ selectedImport?.status }}
+                                </span>
+                            </div>
+                            <span class="text-sm">
+                                <span class="text-neutral-400">ID: </span>
+                                <span class="text-white">{{ selectedImport?.id }}</span>
+                            </span>
+                        </div>
+                        <div class="w-full bg-neutral-800 rounded-full h-2.5 mb-2">
+                            <div class="h-2.5 rounded-full"
+                                :style="{width: selectedImport ? `${Math.round((selectedImport.processedItems / selectedImport.totalItems) * 100)}%` : '0%'}"
+                                :class="{
+                                    'bg-blue-500': selectedImport?.status === 'pending',
+                                    'bg-yellow-500': selectedImport?.status === 'processing',
+                                    'bg-green-500': selectedImport?.status === 'completed',
+                                    'bg-red-500': selectedImport?.status === 'failed'
+                                }">
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm text-neutral-400">
+                            <span>{{ selectedImport?.processedItems || 0 }} / {{ selectedImport?.totalItems || 0 }} items</span>
+                            <span>{{ selectedImport ? Math.round((selectedImport.processedItems / selectedImport.totalItems) * 100) : 0 }}% complete</span>
+                        </div>
+                    </div>
+
+                    <!-- Import Logs -->
+                    <div class="mb-4">
+                        <h3 class="text-md font-medium text-white mb-2">Import Logs</h3>
+                        <div class="bg-neutral-900 rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm">
+                            <div v-for="(log, index) in selectedImport?.logs" :key="index" class="mb-2">
+                                <div class="flex">
+                                    <span class="text-neutral-500 mr-2">{{ new Date(log.timestamp).toLocaleTimeString() }}</span>
+                                    <span :class="{
+                                        'text-white': log.type === 'info',
+                                        'text-yellow-400': log.type === 'warning',
+                                        'text-red-400': log.type === 'error'
+                                    }">{{ log.message }}</span>
+                                </div>
+                            </div>
+                            <div v-if="!selectedImport?.logs?.length" class="text-neutral-500 text-center py-4">
+                                No logs available
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auto-refresh Toggle -->
+                    <div class="flex items-center justify-end">
+                        <span class="text-sm text-neutral-400 mr-2">Auto-refresh</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="autoRefresh" class="sr-only peer">
+                            <div class="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Import Options -->
         <div class="bg-neutral-800 rounded-lg shadow-md">
             <div class="p-6 border-b border-neutral-700">
@@ -185,7 +316,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
 import { useAdminClient } from '@cmmv/blog/admin/client';
 
 const adminClient = useAdminClient();
@@ -202,8 +333,106 @@ const importing = ref({
 
 const wordpressFileInput = ref(null);
 const ghostFileInput = ref(null);
+const activeImports = ref([]);
+const selectedImportId = ref(null);
+const lastImportId = ref(null);
+const pollingInterval = ref(null);
+const autoRefresh = ref(true);
 
-// Notification system
+const selectedImport = computed(() => {
+    if (!selectedImportId.value) return null;
+    return activeImports.value.find(imp => imp.id === selectedImportId.value);
+});
+
+const fetchActiveImports = async () => {
+    try {
+        const response = await adminClient.imports.progress();
+
+        if (response.data) {
+            activeImports.value = response.data;
+
+            if (lastImportId.value && !selectedImportId.value) {
+                const foundImport = activeImports.value.find(imp => imp.id === lastImportId.value);
+                if (foundImport) {
+                    selectedImportId.value = lastImportId.value;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching active imports:', error);
+        showNotification('error', `Error fetching import progress: ${error.message}`);
+    }
+};
+
+const fetchImportProgress = async (importId) => {
+    try {
+        const response = await adminClient.imports.progressById(importId);
+
+        if (response.data) {
+            const index = activeImports.value.findIndex(imp => imp.id === importId);
+
+            if (index !== -1)
+                activeImports.value[index] = response.data;
+            else
+                activeImports.value.push(response.data);
+
+            if (selectedImportId.value === importId) {
+                selectedImportId.value = null;
+                setTimeout(() => {
+                    selectedImportId.value = importId;
+                }, 0);
+            }
+
+            if (['completed', 'failed'].includes(response.data.status) && response.data.id === lastImportId.value) {
+                const type = response.data.status === 'completed' ? 'success' : 'error';
+                const message = response.data.status === 'completed'
+                    ? `Import completed successfully!`
+                    : `Import failed: ${response.data.error}`;
+                showNotification(type, message);
+            }
+        }
+    } catch (error) {
+        console.error(`Error fetching import progress for ${importId}:`, error);
+    }
+};
+
+const startPolling = () => {
+    if (pollingInterval.value)
+        clearInterval(pollingInterval.value);
+
+    fetchActiveImports();
+
+    pollingInterval.value = setInterval(() => {
+        if (autoRefresh.value) {
+            if (selectedImportId.value) {
+                fetchImportProgress(selectedImportId.value);
+            } else {
+                fetchActiveImports();
+            }
+        }
+    }, 3000);
+};
+
+const stopPolling = () => {
+    if (pollingInterval.value) {
+        clearInterval(pollingInterval.value);
+        pollingInterval.value = null;
+    }
+};
+
+const viewImportDetails = (importId) => {
+    selectedImportId.value = importId;
+    fetchImportProgress(importId);
+};
+
+watch(autoRefresh, (newValue) => {
+    if (newValue && !pollingInterval.value) {
+        startPolling();
+    } else if (!newValue && pollingInterval.value) {
+        stopPolling();
+    }
+});
+
 const notification = ref({
     show: false,
     type: 'success',
@@ -229,7 +458,7 @@ const importFrom = (type) => {
         activeImporter.value = null;
     } else {
         activeImporter.value = type;
-        // Use a nextTick to ensure the file input is available after the UI updates
+
         setTimeout(() => {
             if (type === 'wordpress' && wordpressFileInput.value) {
                 wordpressFileInput.value.click();
@@ -273,16 +502,18 @@ const uploadFile = async (type) => {
     try {
         const formData = new FormData();
         formData.append('file', files.value[type]);
+        const token = localStorage.getItem('token')
 
         let response;
 
         // Direct API calls to the correct endpoints
         if (type === 'wordpress') {
             // WordPress uses XML format
-            response = await fetch('/api/import/wordpress', {
+            response = await fetch('/api/imports/wordpress', {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                     // DO NOT set Content-Type for FormData - browser will set it with proper boundary
                 },
                 body: formData
@@ -291,12 +522,20 @@ const uploadFile = async (type) => {
             if (!response.ok) {
                 throw new Error(`Server returned ${response.status}: ${await response.text()}`);
             }
+
+            const result = await response.json();
+            if (result.importId) {
+                lastImportId.value = result.importId;
+                // Start polling
+                startPolling();
+            }
         } else if (type === 'ghost') {
             // Ghost uses JSON format
-            response = await fetch('/api/import/ghost', {
+            response = await fetch('/api/imports/ghost', {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: formData
             });
@@ -304,9 +543,16 @@ const uploadFile = async (type) => {
             if (!response.ok) {
                 throw new Error(`Server returned ${response.status}: ${await response.text()}`);
             }
+
+            const result = await response.json();
+            if (result.importId) {
+                lastImportId.value = result.importId;
+                // Start polling
+                startPolling();
+            }
         }
 
-        showNotification('success', `${type === 'wordpress' ? 'WordPress' : 'Ghost'} import started successfully! You'll be notified when the import is complete.`);
+        showNotification('success', `${type === 'wordpress' ? 'WordPress' : 'Ghost'} import started successfully! You can monitor progress in the Active Imports section.`);
 
         // Reset the file input
         removeFile(type);
@@ -318,4 +564,13 @@ const uploadFile = async (type) => {
         importing.value[type] = false;
     }
 };
+
+// Lifecycle hooks
+onMounted(() => {
+    startPolling();
+});
+
+onBeforeUnmount(() => {
+    stopPolling();
+});
 </script>

@@ -286,7 +286,6 @@ const userAvatar = computed(() => {
 const refreshUserProfile = async () => {
     try {
         user.value = await api.profile.get()
-        console.log('User profile refreshed:', user.value)
     } catch (error) {
         console.error('Failed to refresh user profile:', error)
     }

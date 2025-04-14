@@ -25,7 +25,7 @@
                         height="79"
                     />
                     <span v-else class="text-2xl font-bold text-neutral-800 dark:text-white">{{ settings['blog.title'] }}</span>
-                    <label class="text-sm text-neutral-400 dark:text-neutral-500">{{ settings['blog.description'] }}</label>
+                    <label class="text-sm text-neutral-400 dark:text-neutral-400">{{ settings['blog.description'] }}</label>
                 </a>
 
                 <div class="mt-4 flex items-center justify-center gap-4">
@@ -114,11 +114,11 @@
                     </div>
                 </div>
                 <div v-else class="flex items-center justify-between">
-                    <span class="text-xs text-neutral-500 dark:text-neutral-400">Member Area</span>
+                    <span class="text-sm text-neutral-500 dark:text-neutral-400">Member Area</span>
                     <div class="flex space-x-2">
-                        <a href="/member/login" class="text-xs text-blue-600 hover:underline">Sign In</a>
+                        <a href="/member/login" class="text-sm text-blue-400 hover:underline">Sign In</a>
                         <span class="text-neutral-300 dark:text-neutral-600">|</span>
-                        <a href="/member/register" class="text-xs text-neutral-600 dark:text-neutral-400 hover:underline">Register</a>
+                        <a href="/member/register" class="text-sm text-neutral-600 dark:text-neutral-400 hover:underline">Register</a>
                     </div>
                 </div>
             </div>
