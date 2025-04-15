@@ -513,7 +513,6 @@ const performSearch = async () => {
     }
 }
 
-// Member authentication methods
 const openLoginModal = () => {
     loginModalOpen.value = true
     loginError.value = ''
@@ -586,19 +585,16 @@ const handleLogin = async () => {
 }
 
 const logout = () => {
-    // Clear member data
-    currentMember.value = {}
-    isLoggedIn.value = false
+    currentMember.value = {};
+    isLoggedIn.value = false;
 
-    // Remove from storage
-    localStorage.removeItem('member')
-    sessionStorage.removeItem('member')
+    localStorage.removeItem('member');
+    sessionStorage.removeItem('member');
 
-    // Redirect to home if on member pages
-    const currentPath = window.location.pathname
-    if (currentPath.startsWith('/member/')) {
+    const currentPath = window.location.pathname;
+
+    if (currentPath.startsWith('/member/'))
         window.location.href = '/'
-    }
 }
 
 const checkAuthentication = () => {
@@ -679,7 +675,6 @@ onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
 })
 
-// Format date helper function
 const formatDate = (dateString: string) => {
     if (!dateString) return ''
     const date = new Date(dateString)
@@ -690,7 +685,6 @@ const formatDate = (dateString: string) => {
     }).format(date)
 }
 
-// Fetch initial data
 blogAPI.categories.getAll().then((res) => {
     categories.value = res
 })
@@ -699,13 +693,3 @@ blogAPI.settings.getAll().then((res) => {
     settings.value = res
 })
 </script>
-
-<style scoped>
-/* Add these styles for the line clamp */
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>
