@@ -6,12 +6,11 @@ import * as sharp from "sharp";
 
 import {
     AbstractService,
-    Config,
-    Service
+    Config, Service
 } from "@cmmv/core";
 
 import {
-    Repository
+    Repository, In
 } from "@cmmv/repository";
 
 @Service("blog_medias")
@@ -276,13 +275,63 @@ export class MediasService extends AbstractService {
      */
     async getMedias(queries: any){
         const MediasEntity = Repository.getEntity("MediasEntity");
+        delete queries.type;
+
+        if(queries.type === "image")
+            queries.format = In(["webp", "jpeg", "jpg", "png", "avif", "gif", "svg", "svg+xml"]);
+        else if(queries.type === "video")
+            queries.format = In(["mp4", "webm", "ogg", "mov", "avi", "wmv", "flv", "mkv", "m4v", "3gp", "3g2", "m3u8", "m3u"]);
+
         const medias = await Repository.findAll(MediasEntity, queries);
         const apiUrl = Config.get<string>("blog.url", process.env.API_URL);
 
-        for(const media of medias?.data){
+        for(const media of medias?.data)
             media.url = `${apiUrl}/images/${media.sha1}.${media.format}`;;
-        }
 
         return medias;
+    }
+
+    /**
+     * Update media
+     * @param id - ID
+     * @param data - Data
+     * @returns True if updated
+     */
+    async updateMedia(id: number, data: {
+        alt: string;
+        caption: string;
+    }) {
+        const MediasEntity = Repository.getEntity("MediasEntity");
+        const media = await Repository.findOne(MediasEntity, { id });
+
+        if(!media)
+            throw new Error("Media not found");
+
+        await Repository.update(MediasEntity, { id }, {
+            alt: data.alt,
+            caption: data.caption
+        });
+
+        return true;
+    }
+
+    /**
+     * Delete media
+     * @param id - ID
+     * @returns True if deleted
+     */
+    async deleteMedia(id: number) {
+        const MediasEntity = Repository.getEntity("MediasEntity");
+        const media = await Repository.findOne(MediasEntity, { id });
+
+        if(!media)
+            throw new Error("Media not found");
+
+        if(media.filepath && fs.existsSync(media.filepath))
+            await fs.unlinkSync(media.filepath);
+
+        await Repository.delete(MediasEntity, { id });
+
+        return true;
     }
 }

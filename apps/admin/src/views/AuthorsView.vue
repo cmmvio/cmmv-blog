@@ -87,6 +87,9 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-300 uppercase tracking-wider w-16">
                                 ID
                             </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-300 uppercase tracking-wider w-16">
+                                Avatar
+                            </th>
                             <th
                                 @click="toggleSort('name')"
                                 scope="col"
@@ -129,6 +132,12 @@
                         <tr v-for="author in authors" :key="author.id" class="hover:bg-neutral-750">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-400" :title="author.id">
                                 {{ author.id.substring(0, 6) }}...
+                            </td>
+                            <td class="px-2 py-4">
+                                <div class="w-10 h-10 rounded-full overflow-hidden bg-neutral-700 flex items-center justify-center">
+                                    <img v-if="author.image" :src="author.image" alt="Author avatar" class="w-full h-full object-cover" />
+                                    <span v-else class="text-white font-medium">{{ getAuthorInitials(author.name) }}</span>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
                                 {{ author.name }}
@@ -254,7 +263,7 @@
                         </div>
                     </div>
 
-                    <form @submit.prevent="saveAuthor">
+                    <form @submit.prevent="saveAuthor($event)">
                         <div class="px-4">
                             <!-- Information Tab -->
                             <div v-show="activeTab === 'information'">
@@ -307,6 +316,48 @@
                                         class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         placeholder="Author biography"
                                     ></textarea>
+                                </div>
+
+                                <!-- Cover and Avatar images -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-neutral-300 mb-1">Cover Image</label>
+                                    <div class="relative h-32 bg-neutral-700 border border-neutral-600 rounded-md overflow-hidden mb-2">
+                                        <div v-if="authorForm.coverImage" class="w-full h-full">
+                                            <img :src="authorForm.coverImage" alt="Cover image" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div v-else class="w-full h-full bg-gradient-to-r from-blue-800 to-neutral-900"></div>
+
+                                        <button
+                                            @click.stop.prevent="openAuthorCoverImageUpload($event)"
+                                            class="absolute bottom-2 right-2 bg-neutral-800/80 hover:bg-neutral-700 text-white p-1.5 rounded-full transition-colors"
+                                            title="Change cover image"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 flex items-center">
+                                    <div class="w-16 h-16 rounded-full relative bg-neutral-700 border-2 border-neutral-600 overflow-hidden group mr-3">
+                                        <img v-if="authorForm.image" :src="authorForm.image" alt="Author avatar" class="w-full h-full object-cover" />
+                                        <div v-else class="w-full h-full flex items-center justify-center text-xl font-bold text-white">
+                                            {{ authorInitials }}
+                                        </div>
+                                        <button
+                                            @click.stop.prevent="openAuthorImageUpload($event)"
+                                            class="absolute bottom-0 right-0 left-0 bg-black/50 hover:bg-black/70 text-white py-1 text-xs transition-all duration-200 opacity-0 group-hover:opacity-100"
+                                            title="Change avatar"
+                                        >
+                                            Change
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-neutral-300 mb-1">Author Avatar</label>
+                                        <p class="text-xs text-neutral-500">Upload a square image for the author avatar</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -570,6 +621,151 @@
                 </svg>
             </button>
         </div>
+
+        <!-- Add file input for avatar image -->
+        <input
+            type="file"
+            ref="authorImageInput"
+            @change="handleAuthorImageSelect"
+            accept="image/*"
+            class="hidden"
+        />
+
+        <!-- Add file input for cover image -->
+        <input
+            type="file"
+            ref="authorCoverImageInput"
+            @change="handleAuthorCoverImageSelect"
+            accept="image/*"
+            class="hidden"
+        />
+
+        <!-- Add the crop modal dialog for avatar -->
+        <div v-if="cropModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-neutral-800 rounded-lg max-w-md w-full p-6">
+                <h3 class="text-lg font-medium text-white mb-4">Crop Author Avatar</h3>
+
+                <div class="relative mb-4">
+                    <div class="w-full aspect-square relative overflow-hidden rounded-lg border-2 border-neutral-600">
+                        <canvas
+                            ref="cropCanvas"
+                            class="absolute inset-0 w-full h-full"
+                            @mousedown="startDrag"
+                            @mousemove="onDrag"
+                            @mouseup="stopDrag"
+                            @mouseleave="stopDrag"
+                            @wheel="handleWheel"
+                            @touchstart="startDrag"
+                            @touchmove="onDrag"
+                            @touchend="stopDrag"
+                        ></canvas>
+                    </div>
+
+                    <!-- Zoom controls -->
+                    <div class="flex items-center justify-center mt-4">
+                        <button
+                            @click="adjustZoom(-0.1)"
+                            class="p-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-l-md"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="px-4 py-2 bg-neutral-700 text-white text-sm font-medium">
+                            Zoom: {{ Math.round(zoomLevel * 100) }}%
+                        </div>
+                        <button
+                            @click="adjustZoom(0.1)"
+                            class="p-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-r-md"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex justify-end space-x-2">
+                    <button
+                        @click="cropModalOpen = false"
+                        class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        @click="cropImage"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                    >
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add cover image crop modal -->
+        <div v-if="coverCropModalOpen" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-neutral-800 rounded-lg max-w-2xl w-full p-6">
+                <h3 class="text-lg font-medium text-white mb-4">Crop Cover Image</h3>
+
+                <div class="relative mb-4">
+                    <div class="w-full aspect-[3/1] relative overflow-hidden rounded-lg border-2 border-neutral-600">
+                        <!-- Canvas for crop preview -->
+                        <canvas
+                            ref="coverCropCanvas"
+                            class="absolute inset-0 w-full h-full"
+                            @mousedown="startCoverDrag"
+                            @mousemove="onCoverDrag"
+                            @mouseup="stopCoverDrag"
+                            @mouseleave="stopCoverDrag"
+                            @wheel="handleCoverWheel"
+                            @touchstart="startCoverDrag"
+                            @touchmove="onCoverDrag"
+                            @touchend="stopCoverDrag"
+                        ></canvas>
+                    </div>
+
+                    <!-- Zoom controls -->
+                    <div class="flex items-center justify-center mt-4">
+                        <button
+                            @click="adjustCoverZoom(-0.1)"
+                            class="p-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-l-md"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="px-4 py-2 bg-neutral-700 text-white text-sm font-medium">
+                            Zoom: {{ Math.round(coverZoomLevel * 100) }}%
+                        </div>
+                        <button
+                            @click="adjustCoverZoom(0.1)"
+                            class="p-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-r-md"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex justify-end space-x-2">
+                    <button
+                        @click="coverCropModalOpen = false"
+                        class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        @click="cropCoverImage"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                    >
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -607,7 +803,9 @@ const authorForm = ref({
     emailDisabled: false,
     commentNotifications: true,
     mentionNotifications: true,
-    recommendationNotifications: true
+    recommendationNotifications: true,
+    image: '',
+    coverImage: ''
 })
 const authorToEdit = ref(null)
 const formErrors = ref({})
@@ -791,7 +989,9 @@ const openAddDialog = () => {
         emailDisabled: false,
         commentNotifications: true,
         mentionNotifications: true,
-        recommendationNotifications: true
+        recommendationNotifications: true,
+        image: '',
+        coverImage: ''
     }
     formErrors.value = {}
     showDialog.value = true
@@ -818,7 +1018,9 @@ const openEditDialog = (author) => {
         emailDisabled: author.emailDisabled || false,
         commentNotifications: author.commentNotifications !== false,
         mentionNotifications: author.mentionNotifications !== false,
-        recommendationNotifications: author.recommendationNotifications !== false
+        recommendationNotifications: author.recommendationNotifications !== false,
+        image: author.image || '',
+        coverImage: author.coverImage || ''
     }
     formErrors.value = {}
     showDialog.value = true
@@ -843,33 +1045,39 @@ const closeDialog = () => {
         emailDisabled: false,
         commentNotifications: true,
         mentionNotifications: true,
-        recommendationNotifications: true
+        recommendationNotifications: true,
+        image: '',
+        coverImage: ''
     }
     formErrors.value = {}
     authorToEdit.value = null
 }
 
 // Save author
-const saveAuthor = async () => {
+const saveAuthor = async (e) => {
+    if (e) {
+        e.preventDefault();
+    }
+
     try {
-        formLoading.value = true
-        formErrors.value = {}
+        formLoading.value = true;
+        formErrors.value = {};
 
         // Validate
         if (!authorForm.value.name.trim()) {
-            formErrors.value.name = 'Author name is required'
-            formLoading.value = false
-            return
+            formErrors.value.name = 'Author name is required';
+            formLoading.value = false;
+            return;
         }
 
         if (!authorForm.value.email.trim()) {
-            formErrors.value.email = 'Email is required'
-            formLoading.value = false
-            return
+            formErrors.value.email = 'Email is required';
+            formLoading.value = false;
+            return;
         }
 
         if (!authorForm.value.slug.trim()) {
-            authorForm.value.slug = generateSlug(authorForm.value.name)
+            authorForm.value.slug = generateSlug(authorForm.value.name);
         }
 
         // Prepare data with all fields
@@ -891,28 +1099,30 @@ const saveAuthor = async () => {
             emailDisabled: authorForm.value.emailDisabled,
             commentNotifications: authorForm.value.commentNotifications,
             mentionNotifications: authorForm.value.mentionNotifications,
-            recommendationNotifications: authorForm.value.recommendationNotifications
-        }
+            recommendationNotifications: authorForm.value.recommendationNotifications,
+            image: authorForm.value.image,
+            coverImage: authorForm.value.coverImage
+        };
 
         if (isEditing.value) {
-            await adminClient.authors.update(authorToEdit.value.id, authorData)
-            showNotification('success', 'Author updated successfully')
+            await adminClient.authors.update(authorToEdit.value.id, authorData);
+            showNotification('success', 'Author updated successfully');
         } else {
-            await adminClient.authors.create(authorData)
-            showNotification('success', 'Author created successfully')
+            await adminClient.authors.create(authorData);
+            showNotification('success', 'Author created successfully');
         }
 
-        formLoading.value = false
-        closeDialog()
-        refreshData()
-    } catch (err) {
-        formLoading.value = false
-        console.error('Failed to save author:', err)
+        formLoading.value = false;
+        closeDialog();
+        refreshData();
+    } catch (error) {
+        formLoading.value = false;
+        console.error('Failed to save author:', error);
 
-        if (err.response?.data?.errors) {
-            formErrors.value = err.response.data.errors
+        if (error.response?.data?.errors) {
+            formErrors.value = error.response.data.errors;
         } else {
-            showNotification('error', err.message || 'Failed to save author')
+            showNotification('error', error.message || 'Failed to save author');
         }
     }
 }
@@ -986,6 +1196,464 @@ const toggleSort = (column) => {
 // Add function to update slug when name changes
 const updateSlug = () => {
     authorForm.value.slug = slugify(authorForm.value.name);
+}
+
+// Adicionar as variáveis para manipulação de imagens
+// Crop state para avatar
+const cropModalOpen = ref(false)
+const zoomLevel = ref(1)
+const cropCanvas = ref(null)
+const authorImageInput = ref(null)
+const selectedImage = ref(null)
+const cropContext = ref(null)
+
+// Variáveis para drag do avatar
+const isDragging = ref(false)
+const dragStart = ref({ x: 0, y: 0 })
+const imagePosition = ref({ x: 0, y: 0 })
+
+// Cover image crop state
+const coverCropModalOpen = ref(false)
+const coverZoomLevel = ref(1)
+const coverCropCanvas = ref(null)
+const authorCoverImageInput = ref(null)
+const selectedCoverImage = ref(null)
+const coverCropContext = ref(null)
+const isCoverDragging = ref(false)
+const coverDragStart = ref({ x: 0, y: 0 })
+const coverImagePosition = ref({ x: 0, y: 0 })
+
+// Adicionar iniciais do autor computadas
+const authorInitials = computed(() => {
+    if (!authorForm.value.name) return '?';
+
+    const nameParts = authorForm.value.name.split(' ');
+    if (nameParts.length === 1) {
+        return nameParts[0].charAt(0).toUpperCase();
+    }
+
+    return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+});
+
+// Funções para manipulação do avatar
+function openAuthorImageUpload(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    authorImageInput.value.click();
+}
+
+function handleAuthorImageSelect(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+
+        img.onload = () => {
+            selectedImage.value = img;
+            cropModalOpen.value = true;
+
+            setTimeout(() => {
+                initCropCanvas();
+            }, 100);
+        };
+
+        img.onerror = (err) => {
+            console.error('Image loading error', err);
+            showNotification('error', 'Failed to load image');
+        };
+
+        img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
+function initCropCanvas() {
+    if (!cropCanvas.value || !selectedImage.value) return;
+
+    const canvas = cropCanvas.value;
+    const ctx = canvas.getContext('2d');
+    cropContext.value = ctx;
+
+    // Set fixed dimensions for the canvas
+    canvas.width = 300;
+    canvas.height = 300;
+
+    // Reset zoom and position
+    zoomLevel.value = 1;
+    imagePosition.value = { x: 0, y: 0 };
+
+    // Draw initial image
+    drawImageOnCanvas();
+}
+
+function drawImageOnCanvas() {
+    if (!cropCanvas.value || !selectedImage.value || !cropContext.value) return;
+
+    const canvas = cropCanvas.value;
+    const ctx = cropContext.value;
+    const img = selectedImage.value;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Calculate dimensions for centered, zoomed image
+    const scale = Math.max(canvas.width / img.width, canvas.height / img.height) * zoomLevel.value;
+    const scaledWidth = img.width * scale;
+    const scaledHeight = img.height * scale;
+
+    // Use imagePosition for x,y coordinates (for dragging)
+    const x = imagePosition.value.x + (canvas.width - scaledWidth) / 2;
+    const y = imagePosition.value.y + (canvas.height - scaledHeight) / 2;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(canvas.width, canvas.height) * 0.375;
+
+    // First draw the image at full opacity
+    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+    // Create clipping region (save current state)
+    ctx.save();
+
+    // Create inverted circular mask (everything OUTSIDE the circle)
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true); // true = counterclockwise
+    ctx.clip();
+
+    // Draw darkened overlay for outside the circle
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Restore to remove clipping
+    ctx.restore();
+
+    // Draw circle outline
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.stroke();
+}
+
+// Funções de drag do avatar
+function startDrag(e) {
+    isDragging.value = true;
+
+    // Get initial position
+    if (e.type.includes('mouse')) {
+        dragStart.value = { x: e.clientX, y: e.clientY };
+    } else { // touch event
+        dragStart.value = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+}
+
+function onDrag(e) {
+    if (!isDragging.value) return;
+
+    // Prevent default to avoid scrolling on touch devices
+    e.preventDefault();
+
+    let currentX, currentY;
+    if (e.type.includes('mouse')) {
+        currentX = e.clientX;
+        currentY = e.clientY;
+    } else { // touch event
+        currentX = e.touches[0].clientX;
+        currentY = e.touches[0].clientY;
+    }
+
+    // Calculate the distance moved
+    const deltaX = currentX - dragStart.value.x;
+    const deltaY = currentY - dragStart.value.y;
+
+    // Update image position
+    imagePosition.value = {
+        x: imagePosition.value.x + deltaX,
+        y: imagePosition.value.y + deltaY
+    };
+
+    // Update drag start for next movement
+    dragStart.value = { x: currentX, y: currentY };
+
+    // Redraw canvas
+    drawImageOnCanvas();
+}
+
+function stopDrag() {
+    isDragging.value = false;
+}
+
+function adjustZoom(delta) {
+    zoomLevel.value = Math.max(0.5, Math.min(3, zoomLevel.value + delta));
+    drawImageOnCanvas();
+}
+
+function handleWheel(e) {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    adjustZoom(delta);
+}
+
+function cropImage() {
+    if (!cropCanvas.value || !cropContext.value) return;
+
+    const canvas = cropCanvas.value;
+
+    // Calculate the circle center and radius
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(canvas.width, canvas.height) * 0.375; // 3/4 of half the canvas (as per overlay)
+
+    // Create a temporary canvas for the circular crop
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // Set dimensions for output (reasonable size for avatar)
+    tempCanvas.width = 400;
+    tempCanvas.height = 400;
+
+    // Draw circular mask
+    tempCtx.beginPath();
+    tempCtx.arc(tempCanvas.width / 2, tempCanvas.height / 2, tempCanvas.width / 2, 0, Math.PI * 2);
+    tempCtx.closePath();
+    tempCtx.clip();
+
+    // Scale the source canvas to fit the temp canvas
+    const scale = tempCanvas.width / (radius * 2);
+
+    // Draw the source canvas onto the temp canvas
+    tempCtx.drawImage(
+        canvas,
+        centerX - radius, centerY - radius, radius * 2, radius * 2,
+        0, 0, tempCanvas.width, tempCanvas.height
+    );
+
+    // Convert to base64
+    const base64Image = tempCanvas.toDataURL('image/jpeg', 0.9);
+
+    // Update form only, don't save or close the edit dialog
+    authorForm.value.image = base64Image;
+
+    // Close just the crop modal, not the main edit modal
+    cropModalOpen.value = false;
+
+    // Show confirmation
+    showNotification('success', 'Author avatar updated');
+}
+
+// Funções para manipulação da imagem de capa
+function openAuthorCoverImageUpload(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    authorCoverImageInput.value.click();
+}
+
+function handleAuthorCoverImageSelect(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+
+        img.onload = () => {
+            selectedCoverImage.value = img;
+            coverCropModalOpen.value = true;
+
+            setTimeout(() => {
+                initCoverCropCanvas();
+            }, 100);
+        };
+
+        img.onerror = (err) => {
+            console.error('Cover image loading error', err);
+            showNotification('error', 'Failed to load cover image');
+        };
+
+        img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
+function initCoverCropCanvas() {
+    if (!coverCropCanvas.value || !selectedCoverImage.value) return;
+
+    const canvas = coverCropCanvas.value;
+    const ctx = canvas.getContext('2d');
+    coverCropContext.value = ctx;
+
+    // Set fixed dimensions for the canvas
+    canvas.width = 600;
+    canvas.height = 200;
+
+    // Reset zoom and position
+    coverZoomLevel.value = 1;
+    coverImagePosition.value = { x: 0, y: 0 };
+
+    // Draw initial image
+    drawCoverImageOnCanvas();
+}
+
+function drawCoverImageOnCanvas() {
+    if (!coverCropCanvas.value || !selectedCoverImage.value || !coverCropContext.value) return;
+
+    const canvas = coverCropCanvas.value;
+    const ctx = coverCropContext.value;
+    const img = selectedCoverImage.value;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Calculate dimensions for centered, zoomed image
+    const scale = Math.max(canvas.width / img.width, canvas.height / img.height) * coverZoomLevel.value;
+    const scaledWidth = img.width * scale;
+    const scaledHeight = img.height * scale;
+    const x = coverImagePosition.value.x + (canvas.width - scaledWidth) / 2;
+    const y = coverImagePosition.value.y + (canvas.height - scaledHeight) / 2;
+
+    // Draw image
+    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+    // Optional light shading at top and bottom to show boundaries
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, 1); // Top edge indicator
+    ctx.fillRect(0, canvas.height - 1, canvas.width, 1); // Bottom edge indicator
+}
+
+// Funções de drag para a imagem de capa
+function startCoverDrag(e) {
+    isCoverDragging.value = true;
+
+    // Get initial position
+    if (e.type.includes('mouse')) {
+        coverDragStart.value = { x: e.clientX, y: e.clientY };
+    } else { // touch event
+        coverDragStart.value = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+}
+
+function onCoverDrag(e) {
+    if (!isCoverDragging.value) return;
+
+    // Prevent default to avoid scrolling on touch devices
+    e.preventDefault();
+
+    let currentX, currentY;
+    if (e.type.includes('mouse')) {
+        currentX = e.clientX;
+        currentY = e.clientY;
+    } else { // touch event
+        currentX = e.touches[0].clientX;
+        currentY = e.touches[0].clientY;
+    }
+
+    // Calculate the distance moved
+    const deltaX = currentX - coverDragStart.value.x;
+    const deltaY = currentY - coverDragStart.value.y;
+
+    // Update image position
+    coverImagePosition.value = {
+        x: coverImagePosition.value.x + deltaX,
+        y: coverImagePosition.value.y + deltaY
+    };
+
+    // Update drag start for next movement
+    coverDragStart.value = { x: currentX, y: currentY };
+
+    // Redraw canvas
+    drawCoverImageOnCanvas();
+}
+
+function stopCoverDrag() {
+    isCoverDragging.value = false;
+}
+
+function adjustCoverZoom(delta) {
+    coverZoomLevel.value = Math.max(0.5, Math.min(3, coverZoomLevel.value + delta));
+    drawCoverImageOnCanvas();
+}
+
+function handleCoverWheel(e) {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    adjustCoverZoom(delta);
+}
+
+function cropCoverImage() {
+    if (!coverCropCanvas.value || !selectedCoverImage.value || !coverCropContext.value) return;
+
+    const canvas = coverCropCanvas.value;
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // Set output dimensions (use reasonable size for web display)
+    const outputWidth = 1200;
+    const outputHeight = 400;
+
+    // Set temp canvas size
+    tempCanvas.width = outputWidth;
+    tempCanvas.height = outputHeight;
+
+    // Calculate dimensions for centered, zoomed image
+    const scale = Math.max(canvas.width / selectedCoverImage.value.width, canvas.height / selectedCoverImage.value.height) * coverZoomLevel.value;
+    const scaledWidth = selectedCoverImage.value.width * scale;
+    const scaledHeight = selectedCoverImage.value.height * scale;
+    const x = coverImagePosition.value.x + (canvas.width - scaledWidth) / 2;
+    const y = coverImagePosition.value.y + (canvas.height - scaledHeight) / 2;
+
+    // Draw only the visible portion of the image directly to the temp canvas
+    tempCtx.drawImage(
+        selectedCoverImage.value,
+        -x / scale,
+        -y / scale,
+        canvas.width / scale,
+        canvas.height / scale,
+        0, 0,
+        outputWidth, outputHeight
+    );
+
+    // Convert to base64 with compression
+    const base64Image = tempCanvas.toDataURL('image/jpeg', 0.8);
+
+    // Update form only, don't save or close the edit dialog
+    authorForm.value.coverImage = base64Image;
+
+    // Close just the crop modal, not the main edit modal
+    coverCropModalOpen.value = false;
+
+    // Show confirmation
+    showNotification('success', 'Author cover image updated');
+}
+
+// Adicionar função para obter iniciais do autor na tabela
+function getAuthorInitials(name) {
+    if (!name) return '?';
+
+    const nameParts = name.split(' ');
+    if (nameParts.length === 1) {
+        return nameParts[0].charAt(0).toUpperCase();
+    }
+
+    return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
 }
 
 // Initial load

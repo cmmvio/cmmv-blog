@@ -20,7 +20,7 @@
     },
     "scripts": {
         "dev": "cmmv dev --watch",
-        "build": "echo build",
+        "build": "cmmv build",
         "start": "cmmv dev"
     },
     "peerDependencies": {
@@ -29,8 +29,8 @@
         "signal-exit": "^4.1.0"
     },
     "dependencies": {
-        "@cmmv/auth": "latest",
         "@cmmv/blog": "workspace:plugin",
+        "@cmmv/auth": "latest",
         "@cmmv/cache": "^0.11.4",
         "@cmmv/cli": "latest",
         "@cmmv/http": "latest",

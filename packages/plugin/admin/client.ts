@@ -44,9 +44,9 @@ export const useAdminClient = () => {
     const posts = {
         get: (filters: Record<string, any>) => {
             const query = new URLSearchParams(filters).toString();
-            return api.authRequest(`blog/posts?${query}`, 'GET');
+            return api.authRequest(`blog/posts?${query}&t=${new Date().getTime()}`, 'GET');
         },
-        getById: (id: string) => api.authRequest(`blog/posts/${id}`, 'GET'),
+        getById: (id: string) => api.authRequest(`blog/posts/${id}?t=${new Date().getTime()}`, 'GET'),
         save: (data: any) => api.authRequest('blog/posts', 'POST', data),
         update: (id: string, data: any) => api.authRequest(`blog/posts/${id}`, 'PUT', data),
         delete: (id: string) => api.authRequest(`blog/posts/${id}`, 'DELETE'),
@@ -55,7 +55,7 @@ export const useAdminClient = () => {
     const pages = {
         get: (filters: Record<string, any>) => {
             const query = new URLSearchParams(filters).toString();
-            return api.authRequest(`blog/pages?${query}`, 'GET');
+            return api.authRequest(`blog/pages?${query}&t=${new Date().getTime()}`, 'GET');
         },
         getById: (id: string) => api.authRequest(`blog/pages/${id}`, 'GET'),
         save: (data: any) => api.authRequest('blog/pages', 'POST', data),
@@ -85,6 +85,11 @@ export const useAdminClient = () => {
             alt: string;
             caption: string;
         }) => api.authRequest('images', 'POST', data),
+        update: (id: string, data: {
+            alt: string;
+            caption: string;
+        }) => api.authRequest(`medias/${id}`, 'PUT', data),
+        delete: (id: string) => api.authRequest(`medias/${id}`, 'DELETE'),
     };
 
     const members = {

@@ -2,8 +2,18 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "dist",
-        "rootDir": "."
+        "rootDir": ".",
+        "paths": {
+            "@cmmv/blog": ["../../packages/plugin/api"],
+            "@cmmv/blog/*": ["../../packages/plugin/api/*"]
+        }
     },
     "include": ["**/*.ts", ".generated/**/*.ts"],
-    "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+    "exclude": [
+        "node_modules", "test", "dist",
+        "**/*spec.ts", "packages/plugin"
+    ],
+    "references": [
+        { "path": "../../packages/plugin/tsconfig.build.json" }
+    ]
 }

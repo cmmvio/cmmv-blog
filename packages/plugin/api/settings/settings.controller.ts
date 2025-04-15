@@ -4,9 +4,8 @@ import {
 
 import {
     Controller, Get, Param,
-    Post, Body, Put, Response,
-    ContentType, CacheControl,
-    Raw
+    Post, Body, Put, ContentType,
+    CacheControl, Raw
 } from "@cmmv/http";
 
 import {

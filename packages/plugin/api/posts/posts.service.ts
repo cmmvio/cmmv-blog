@@ -34,6 +34,8 @@ export class PostsPublicService {
         const ProfilesEntity = Repository.getEntity("ProfilesEntity");
         const CategoriesEntity = Repository.getEntity("CategoriesEntity");
 
+        delete queries.t;
+
         const posts = await Repository.findAll(PostsEntity, {
             ...queries,
             type: "post",
@@ -151,6 +153,8 @@ export class PostsPublicService {
         const PostsEntity = Repository.getEntity("PostsEntity");
         const ProfilesEntity = Repository.getEntity("ProfilesEntity");
 
+        delete queries.t;
+
         const posts = await Repository.findAll(PostsEntity, {
             ...queries,
             type: "page"
@@ -247,8 +251,10 @@ export class PostsPublicService {
                 data.post.authors = [];
 
                 for(const author of authors){
-                    //@ts-ignore
-                    data.post.authors.push(author.user);
+                    if(typeof author === "string")
+                        data.post.authors.push(author);
+                    else //@ts-ignore
+                        data.post.authors.push(author.user);
                 }
             }
 
@@ -335,8 +341,6 @@ export class PostsPublicService {
             data.post.type = "page";
 
             const page: any = await Repository.insert(PostsEntity, data.post);
-
-            console.log(page);
 
             if(page){
                 data.meta.post = page.data.id;
@@ -815,7 +819,7 @@ export class PostsPublicService {
         const PostsEntity = Repository.getEntity("PostsEntity");
         const MetaEntity = Repository.getEntity("MetaEntity");
         await Repository.delete(MetaEntity, { post: id });
-        const resultDelete = await Repository.delete(PostsEntity, { id });
+        const resultDelete = await Repository.delete(PostsEntity, id);
 
         if(resultDelete){
             await this.recalculateTags();

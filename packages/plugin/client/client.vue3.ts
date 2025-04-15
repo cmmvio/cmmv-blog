@@ -189,12 +189,12 @@ export const useBlog = () => {
             return data.value || [];
         },
         getById: async (id: string, offset: number = 0) => {
-            const urlQueries = new URLSearchParams({ limit: "10", offset: offset.toString() }).toString();
+            const urlQueries = new URLSearchParams({ limit: "32", offset: offset.toString() }).toString();
             const { data } = await api.get<any[]>(`blog/categories/${id}?${urlQueries}`, "category");
             return data.value || [];
         },
         getBySlug: async (slug: string, offset: number = 0) => {
-            const urlQueries = new URLSearchParams({ limit: "10", offset: offset.toString() }).toString();
+            const urlQueries = new URLSearchParams({ limit: "32", offset: offset.toString() }).toString();
             const { data } = await api.get<any[]>(`blog/categories/slug/${slug}?${urlQueries}`, "category");
             return data.value || [];
         }

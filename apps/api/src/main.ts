@@ -4,7 +4,7 @@ import { Application } from "@cmmv/core";
 import { AuthModule } from "@cmmv/auth";
 import { DefaultAdapter, DefaultHTTPModule } from "@cmmv/http";
 import { RepositoryModule, Repository } from "@cmmv/repository";
-import { BlogModule } from "@cmmv/blog/api/blog.module";
+import { BlogModule } from "@cmmv/blog/blog.module";
 
 Application.create({
     httpAdapter: DefaultAdapter,

@@ -501,7 +501,6 @@ export class CommentsPublicService {
             });
 
             if (!commentsResult || !commentsResult.data || !commentsResult.data.length) {
-                console.log("No comments found");
                 return {
                     data: [],
                     count: 0,

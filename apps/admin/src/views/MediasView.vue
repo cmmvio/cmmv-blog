@@ -139,6 +139,15 @@
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
                                     <button
+                                        @click="openEditDialog(media)"
+                                        title="Edit media"
+                                        class="text-neutral-400 hover:text-yellow-500 transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button
                                         @click="openInNewTab(media)"
                                         title="Open in new tab"
                                         class="text-neutral-400 hover:text-blue-500 transition-colors"
@@ -154,6 +163,13 @@
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
+                                    </button>
+                                    <button @click="confirmDelete(media)" class="text-neutral-400 hover:text-red-500 p-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
                                 </div>
@@ -222,12 +238,97 @@
                 </svg>
             </button>
         </div>
+
+        <!-- Adicionar o diálogo de confirmação para deletar mídia -->
+        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+            style="backdrop-filter: blur(4px);">
+            <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
+                <div class="p-6 border-b border-neutral-700">
+                    <h3 class="text-lg font-medium text-white">Confirm Deletion</h3>
+                </div>
+                <div class="p-6">
+                    <p class="text-neutral-300 mb-4">
+                        Are you sure you want to delete this media? This action cannot be undone.
+                    </p>
+                    <div class="flex justify-end space-x-3">
+                        <button @click="showDeleteDialog = false"
+                            class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors">
+                            Cancel
+                        </button>
+                        <button @click="deleteMedia"
+                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Library Dialog -->
+        <MediaDialog
+            v-model="showMediaDialog"
+            :type="mediaDialogType"
+            @select="handleMediaSelected"
+        />
+
+        <!-- Adicionar diálogo de edição de mídia -->
+        <div v-if="showDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+            style="backdrop-filter: blur(4px);">
+            <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
+                <div class="p-6 border-b border-neutral-700">
+                    <h3 class="text-lg font-medium text-white">Edit Media Details</h3>
+                </div>
+                <div class="p-6">
+                    <div v-if="mediaToEdit" class="space-y-4">
+                        <div class="mb-4">
+                            <div class="aspect-video overflow-hidden bg-neutral-700 rounded-lg mb-4">
+                                <img :src="mediaToEdit.url" :alt="mediaToEdit.alt || ''" class="object-contain w-full h-full" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-1">Alt Text</label>
+                            <input
+                                v-model="mediaForm.alt"
+                                type="text"
+                                class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Image description for accessibility"
+                            />
+                            <p v-if="formErrors.alt" class="mt-1 text-sm text-red-500">{{ formErrors.alt }}</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-1">Caption</label>
+                            <textarea
+                                v-model="mediaForm.caption"
+                                rows="3"
+                                class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                                placeholder="Image caption (optional)"
+                            ></textarea>
+                            <p v-if="formErrors.caption" class="mt-1 text-sm text-red-500">{{ formErrors.caption }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button @click="showDialog = false"
+                            class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors">
+                            Cancel
+                        </button>
+                        <button @click="saveMedia"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminClient } from '@cmmv/blog/admin/client'
+import MediaDialog from '../components/MediaDialog.vue'
 
 const adminClient = useAdminClient()
 
@@ -271,6 +372,9 @@ const filters = ref({
     sortOrder: 'desc',
     page: 1
 })
+
+const showMediaDialog = ref(false)
+const mediaDialogType = ref('all')
 
 const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -387,7 +491,8 @@ const nextPage = () => {
 }
 
 const openAddDialog = () => {
-    console.log('Open add dialog')
+    mediaDialogType.value = 'all'
+    showMediaDialog.value = true
 }
 
 const openEditDialog = (media) => {
@@ -448,6 +553,79 @@ const copyUrl = (media) => {
             showNotification('error', 'Failed to copy URL');
         });
 }
+
+const deleteMedia = async () => {
+    if (!mediaToDelete.value) return;
+
+    try {
+        // Mostrar estado de carregamento se necessário
+        showDeleteDialog.value = false;
+
+        // Chamar a API para excluir a mídia
+        await adminClient.medias.delete(mediaToDelete.value.id);
+
+        // Mostrar notificação de sucesso
+        showNotification('success', 'Media deleted successfully');
+
+        // Atualizar a lista de mídias
+        refreshData();
+    } catch (err) {
+        console.error('Failed to delete media:', err);
+        showNotification('error', err.message || 'Failed to delete media');
+    } finally {
+        mediaToDelete.value = null;
+    }
+};
+
+const handleMediaSelected = (media) => {
+    refreshData();
+    showNotification('success', 'Media added successfully');
+}
+
+const saveMedia = async () => {
+    if (!mediaToEdit.value) return;
+
+    try {
+        // Validar
+        const errors = {};
+        if (!mediaForm.value.alt.trim()) {
+            errors.alt = 'Alt text is required';
+        }
+
+        if (Object.keys(errors).length > 0) {
+            formErrors.value = errors;
+            return;
+        }
+
+        // Limpar erros
+        formErrors.value = {};
+
+        // Chamar a API para atualizar a mídia
+        await adminClient.medias.update(mediaToEdit.value.id, {
+            alt: mediaForm.value.alt.trim(),
+            caption: mediaForm.value.caption.trim()
+        });
+
+        // Atualizar mídia na lista
+        const index = medias.value.findIndex(m => m.id === mediaToEdit.value.id);
+        if (index !== -1) {
+            medias.value[index] = {
+                ...medias.value[index],
+                alt: mediaForm.value.alt.trim(),
+                caption: mediaForm.value.caption.trim()
+            };
+        }
+
+        // Mostrar notificação de sucesso
+        showNotification('success', 'Media updated successfully');
+
+        // Fechar diálogo
+        showDialog.value = false;
+    } catch (err) {
+        console.error('Failed to update media:', err);
+        showNotification('error', err.message || 'Failed to update media');
+    }
+};
 
 watch(filters, () => {
     loadMedias()

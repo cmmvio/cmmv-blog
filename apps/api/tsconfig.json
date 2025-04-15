@@ -49,9 +49,14 @@
             "@generated": [".generated"],
             "@generated/*": [".generated/*"],
             "@g": [".generated"],
-            "@g/*": [".generated/*"]
+            "@g/*": [".generated/*"],
+            "@cmmv/blog": ["../../packages/plugin/api"],
+            "@cmmv/blog/*": ["../../packages/plugin/api/*"]
         }
     },
     "include": ["src/*.ts"],
-    "exclude": ["node_modules", "dist", "src/protos", "**/*.spec.ts"]
+    "exclude": [
+        "node_modules", "dist", "src/protos",
+        "**/*.spec.ts", "packages/plugin"
+    ]
 }

@@ -52,7 +52,7 @@
 
             <!-- Add this right after the top toolbar and before the Editor Area div -->
             <!-- Fixed Editor Toolbar - make it more compact -->
-            <div class="bg-white border-b border-neutral-200 py-1 px-3 flex flex-wrap items-center space-x-0.5 sticky top-0 z-10 shadow-sm">
+            <div class="bg-white border-b border-neutral-200 py-1 px-3 flex flex-wrap items-center justify-center space-x-0.5 sticky top-0 z-10 shadow-sm">
                 <div class="flex items-center mr-1.5 border-r border-neutral-200 pr-1.5">
                     <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
                         :class="{ 'bg-neutral-100': editor.isActive('heading', { level: 1 }) }"
@@ -120,6 +120,38 @@
                         class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="HTML Code">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Adicionando botões de alinhamento de texto -->
+                <div class="flex items-center mr-1.5 border-r border-neutral-200 pr-1.5">
+                    <button @click="editor.chain().focus().setTextAlign('left').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'left' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Align Left">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
+                        </svg>
+                    </button>
+                    <button @click="editor.chain().focus().setTextAlign('center').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'center' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Align Center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M6 18h12" />
+                        </svg>
+                    </button>
+                    <button @click="editor.chain().focus().setTextAlign('right').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'right' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Align Right">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14" />
+                        </svg>
+                    </button>
+                    <button @click="editor.chain().focus().setTextAlign('justify').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'justify' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Justify">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
@@ -223,11 +255,61 @@
 
                         <div>
                             <label class="block text-sm font-medium text-neutral-400 mb-1">Authors</label>
-                            <div class="flex items-center space-x-2">
-                                <div class="flex -space-x-2">
-                                    <div class="h-8 w-8 rounded-full bg-neutral-600 border-2 border-neutral-800"></div>
+                            <div v-if="loadingAuthors" class="text-sm text-neutral-400">Loading authors...</div>
+                            <div v-else class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-neutral-400 mb-1 block">Main Author</label>
+                                    <select v-model="post.author" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                        <option v-for="author in authors" :key="author.user" :value="author.user">
+                                            {{ author.name }}
+                                        </option>
+                                    </select>
                                 </div>
-                                <button class="text-sm text-blue-500 hover:text-blue-400">Add another</button>
+
+                                <div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-xs text-neutral-400 mb-1 block">Co-Authors</label>
+                                        <span class="text-xs text-neutral-500">(includes main author)</span>
+                                    </div>
+                                    <div class="p-2 bg-neutral-700 border border-neutral-600 rounded-md min-h-[100px]">
+                                        <div class="flex flex-wrap gap-2 mb-2">
+                                            <div v-for="userId in postAuthorIds" :key="userId" class="flex items-center bg-neutral-600 rounded-md px-2 py-1">
+                                                <span class="text-sm text-neutral-300">{{ getAuthorName(userId) }}</span>
+                                                <button
+                                                    v-if="userId !== post.author"
+                                                    @click="removeCoAuthor(userId)"
+                                                    class="ml-2 text-neutral-400 hover:text-white"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center">
+                                            <select v-model="selectedCoAuthor" class="w-full bg-neutral-700 border-none outline-none text-sm text-neutral-300">
+                                                <option value="">Add co-author...</option>
+                                                <option
+                                                    v-for="author in availableCoAuthors"
+                                                    :key="author.user"
+                                                    :value="author.user"
+                                                >
+                                                    {{ author.name }}
+                                                </option>
+                                            </select>
+                                            <button
+                                                v-if="selectedCoAuthor"
+                                                @click="addCoAuthor"
+                                                class="ml-2 p-1 bg-blue-600 hover:bg-blue-700 rounded-md"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -687,6 +769,36 @@
                         <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
                     </svg>
                 </button>
+                <!-- Adicionar botões de alinhamento -->
+                <div class="border-l border-neutral-600 mx-1 h-6"></div>
+                <button @click="editor.chain().focus().setTextAlign('left').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'left' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
+                    </svg>
+                </button>
+                <button @click="editor.chain().focus().setTextAlign('center').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'center' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M6 18h12" />
+                    </svg>
+                </button>
+                <button @click="editor.chain().focus().setTextAlign('right').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'right' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14" />
+                    </svg>
+                </button>
+                <button @click="editor.chain().focus().setTextAlign('justify').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'justify' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
         </bubble-menu>
 
@@ -708,16 +820,6 @@
                     <span>{{ block.name }}</span>
                 </button>
             </div>
-        </div>
-
-        <!-- Empty Line Add Button -->
-        <div v-if="showAddButton" ref="addButtonContainer"
-            class="absolute bg-blue-600 rounded-full z-50 w-6 h-6 flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors"
-            :style="{ top: addButtonPos.top + 'px', left: addButtonPos.left + 'px' }" @click="toggleBlocks">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
         </div>
     </template>
 
@@ -859,6 +961,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Overlay de loading bloqueante -->
+    <div v-if="fullPageLoading" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]" style="backdrop-filter: blur(4px);">
+        <div class="bg-neutral-800 rounded-lg p-8 flex flex-col items-center justify-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+            <p class="text-lg text-white">{{ loadingMessage }}</p>
+        </div>
+    </div>
+
+    <!-- Media Library Dialog -->
+    <MediaDialog
+        v-model="showMediaDialog"
+        :type="mediaDialogType"
+        @select="handleMediaSelected"
+    />
 </template>
 
 <script setup>
@@ -870,8 +987,11 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
+import ImageResize from 'tiptap-extension-resize-image';
+import TextAlign from '@tiptap/extension-text-align'
 import { default as TiptapImage } from '@tiptap/extension-image'
 import { useAdminClient } from '@cmmv/blog/admin/client'
+import MediaDialog from '../components/MediaDialog.vue'
 
 const adminClient = useAdminClient()
 const router = useRouter()
@@ -1024,14 +1144,23 @@ const filteredBlocks = computed(() => {
 
 const editor = new Editor({
     extensions: [
-        StarterKit,
+        StarterKit.configure({
+            heading: {
+                levels: [1, 2, 3],
+            },
+        }),
         Placeholder.configure({
             placeholder: 'Click to write or press + for commands...',
         }),
         Link.configure({
             openOnClick: false,
         }),
-        TiptapImage,
+        ImageResize,
+        TextAlign.configure({
+            types: ['heading', 'paragraph'],
+            alignments: ['left', 'center', 'right', 'justify'],
+            defaultAlignment: 'left',
+        }),
         Youtube.configure({
             controls: true,
             nocookie: true,
@@ -1128,10 +1257,17 @@ function insertList() {
 }
 
 function insertImage() {
-    const url = prompt('Enter image URL')
-    if (url) {
-        editor.chain().focus().setImage({ src: url }).run()
-    }
+    mediaDialogType.value = 'all';
+
+    mediaSelectCallback.value = (media) => {
+        editor.chain().focus().setImage({
+            src: media.url,
+            alt: media.alt || '',
+            title: media.caption || ''
+        }).run();
+    };
+
+    showMediaDialog.value = true;
 }
 
 function insertColumns() {
@@ -1162,11 +1298,11 @@ function autoResizeTitle() {
     textarea.style.height = textarea.scrollHeight + 'px'
 }
 
-onMounted(async () => {
+onMounted(() => {
     const postId = route.params.id
 
     if (postId) {
-        const loaded = await loadPost(postId)
+        const loaded = loadPost(postId)
 
         if (!loaded) {
             showNotification('error', 'Could not find the requested post')
@@ -1179,6 +1315,9 @@ onMounted(async () => {
     loadBlogUrl();
     document.addEventListener('click', handleGlobalClick)
 
+    // Adicionar evento para tratar cliques em imagens
+    document.addEventListener('click', handleImageClick)
+
     nextTick(() => {
         autoResizeTitle()
     })
@@ -1186,6 +1325,8 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', handleGlobalClick)
+    // Remover o evento ao desmontar
+    document.removeEventListener('click', handleImageClick)
 })
 
 function handleGlobalClick(event) {
@@ -1266,7 +1407,15 @@ const featureDragStart = ref({ x: 0, y: 0 })
 const featureImagePosition = ref({ x: 0, y: 0 })
 
 function openMediaSelector() {
-    featureImageInput.value.click()
+    mediaDialogType.value = 'all';
+
+    mediaSelectCallback.value = (media) => {
+        post.value.featureImage = media.url;
+        post.value.featureImageAlt = media.alt || '';
+        post.value.featureImageCaption = media.caption || '';
+    };
+
+    showMediaDialog.value = true;
 }
 
 function handleFeatureImageSelect(event) {
@@ -1395,11 +1544,9 @@ function cropFeatureImage() {
     const tempCanvas = document.createElement('canvas')
     const tempCtx = tempCanvas.getContext('2d')
 
-    // Set output dimensions (use reasonable size for web display)
     const outputWidth = 1200
     const outputHeight = 675 // 16:9 aspect ratio
 
-    // Set temp canvas size
     tempCanvas.width = outputWidth
     tempCanvas.height = outputHeight
 
@@ -1441,69 +1588,113 @@ const publishLoading = ref(false)
 
 function confirmPublish() {
     if (post.value.status === 'published') {
+        fullPageLoading.value = true;
+        loadingMessage.value = 'Updating post...';
+
         savePost()
+            .finally(() => {
+                fullPageLoading.value = false;
+            });
     } else {
-        showPublishDialog.value = true
+        showPublishDialog.value = true;
     }
 }
 
 function publishPost() {
-    publishLoading.value = true
-    post.value.status = 'published'
-    post.value.publishedAt = new Date().toISOString()
+    publishLoading.value = true;
+    fullPageLoading.value = true;
+    loadingMessage.value = 'Publishing post...';
+
+    post.value.status = 'published';
+    post.value.publishedAt = new Date().toISOString();
 
     savePost()
         .then(() => {
-            showPublishDialog.value = false
-            publishLoading.value = false
+            showPublishDialog.value = false;
+            publishLoading.value = false;
         })
         .catch(error => {
-            console.error('Failed to publish post:', error)
-            publishLoading.value = false
+            console.error('Failed to publish post:', error);
+            publishLoading.value = false;
         })
+        .finally(() => {
+            fullPageLoading.value = false;
+        });
 }
 
 async function savePost() {
     try {
+        // Create a copy of the post data to avoid modifying the original
         const postData = {
             ...post.value,
             content: editor.getHTML()
+        };
+
+        // Convert the authors array to list of user IDs if it contains objects
+        if (Array.isArray(postData.authors)) {
+            console.log("Original authors array:", postData.authors);
+
+            // Map each author to its user ID
+            postData.authors = postData.authors.map(author => {
+                if (typeof author === 'object' && author !== null) {
+                    console.log("Converting author object to user ID:", author, "->", author.user);
+                    return author.user;
+                } else {
+                    console.log("Author is already an ID:", author);
+                    return author;
+                }
+            }).filter(Boolean); // Remove any null or undefined values
+
+            console.log("Converted authors array (IDs only):", postData.authors);
+        } else {
+            console.warn("Authors is not an array:", postData.authors);
+            // Initialize with at least the main author if available
+            if (postData.author) {
+                postData.authors = [postData.author];
+                console.log("Setting authors to main author only:", postData.authors);
+            }
         }
 
         if (post.value.status === 'scheduled' && scheduleDate.value)
-            postData.autoPublishAt = new Date(scheduleDate.value).toISOString()
+            postData.autoPublishAt = new Date(scheduleDate.value).toISOString();
 
         const payload = {
             post: postData,
             meta: postMeta.value
-        }
+        };
 
-        const response = await adminClient.posts.save(payload)
+        console.log("Submitting post data:", JSON.stringify(payload));
+
+        const response = await adminClient.posts.save(payload);
 
         if (response && response.id) {
-            // Update the post ID with the one returned from the API
-            post.value.id = response.id
-            showNotification('success', 'Post saved successfully')
+            post.value.id = response.id;
+            showNotification('success', 'Post saved successfully');
 
-            if (!route.params.id) {
-                router.push(`/post/${response.id}`)
-            }
+            if (!route.params.id)
+                router.push(`/post/${response.id}`);
 
-            return response
+            return response;
         }
         else if(response.result){
-            showNotification('success', 'Post saved successfully')
+            showNotification('success', 'Post saved successfully');
         }
     } catch (error) {
-        console.error('Failed to save post:', error)
-        showNotification('error', error.message || 'Failed to save post')
-        throw error
+        console.error('Failed to save post:', error);
+        showNotification('error', error.message || 'Failed to save post');
+        throw error;
     }
 }
 
 function saveDraft() {
-    post.value.status = 'draft'
+    fullPageLoading.value = true;
+    loadingMessage.value = 'Saving draft...';
+
+    post.value.status = 'draft';
     savePost()
+        .finally(() => {
+            fullPageLoading.value = false;
+        });
 }
 
 const notification = ref({
@@ -1628,13 +1819,11 @@ function insertYouTubeVideo() {
 
     let videoId = ''
 
-    // Check if it's an embed code
     if (input.includes('iframe')) {
-        // Extract video ID from src attribute in the iframe tag
         const srcMatch = input.match(/src="https:\/\/www\.youtube\.com\/embed\/([^?]+)/)
-        if (srcMatch && srcMatch[1]) {
+
+        if (srcMatch && srcMatch[1])
             videoId = srcMatch[1]
-        }
     } else {
         // Try to extract video ID from various YouTube URL formats
         const regexPatterns = [
@@ -1645,6 +1834,7 @@ function insertYouTubeVideo() {
 
         for (const pattern of regexPatterns) {
             const match = input.match(pattern)
+
             if (match && match[1]) {
                 videoId = match[1]
                 break
@@ -1661,7 +1851,6 @@ function insertYouTubeVideo() {
     }
 }
 
-// You can keep the old insertVideo function or replace it with the above one
 function insertVideo() {
     insertYouTubeVideo()
 }
@@ -1691,6 +1880,173 @@ function insertTable() {
 function viewPost(id) {
     window.open(`${blogUrl.value}/preview/${id}`, '_blank')
 }
+
+const authors = ref([])
+const loadingAuthors = ref(false)
+const selectedCoAuthor = ref('')
+
+const postAuthorIds = computed(() => {
+    if (!post.value.authors) return []
+
+    return Array.isArray(post.value.authors)
+        ? post.value.authors.map(a => typeof a === 'object' ? a.user : a)
+        : []
+})
+
+const availableCoAuthors = computed(() => {
+    const currentAuthorIds = postAuthorIds.value
+    return authors.value.filter(author => !currentAuthorIds.includes(author.user))
+})
+
+// Get author name by user ID
+function getAuthorName(userId) {
+    const author = authors.value.find(a => a.user === userId)
+    return author ? author.name : 'Unknown Author'
+}
+
+// Add a co-author
+function addCoAuthor() {
+    if (!selectedCoAuthor.value) return;
+
+    console.log("Attempting to add co-author with userId:", selectedCoAuthor.value);
+
+    // Check if this user is already a co-author
+    if (postAuthorIds.value.includes(selectedCoAuthor.value)) {
+        console.log("User is already a co-author, not adding again");
+        selectedCoAuthor.value = '';
+        return;
+    }
+
+    // Initialize the authors array if needed
+    if (!post.value.authors) {
+        post.value.authors = [];
+    }
+
+    // Find the author object by user ID
+    const authorToAdd = authors.value.find(a => a.user === selectedCoAuthor.value);
+
+    if (authorToAdd) {
+        console.log("Found author object to add:", authorToAdd);
+
+        // Add the author object
+        post.value.authors.push(authorToAdd);
+        console.log("Authors array after addition:", post.value.authors);
+
+        // Reset the selection
+        selectedCoAuthor.value = '';
+    } else {
+        console.warn("Could not find author object for user ID:", selectedCoAuthor.value);
+    }
+}
+
+// Remove a co-author
+function removeCoAuthor(userId) {
+    if (!post.value.authors || !Array.isArray(post.value.authors)) return
+
+    // Keep items that don't match the userId (either direct strings or objects with user property)
+    post.value.authors = post.value.authors.filter(a =>
+        (typeof a === 'object' ? a.user !== userId : a !== userId)
+    )
+}
+
+// Load authors from API
+async function loadAuthors() {
+    try {
+        loadingAuthors.value = true
+        const response = await adminClient.authors.get({
+            limit: 100,
+            sort: 'asc',
+            sortBy: 'name'
+        })
+        authors.value = response.data || []
+        loadingAuthors.value = false
+    } catch (error) {
+        console.error('Failed to load authors:', error)
+        loadingAuthors.value = false
+    }
+}
+
+// Add this to the onMounted hook
+loadAuthors()
+
+// Add this watcher to ensure the main author is always in the authors array
+watch(() => post.value.author, (newAuthorId) => {
+    if (!newAuthorId) return
+
+    const currentAuthorIds = postAuthorIds.value
+    if (!currentAuthorIds.includes(newAuthorId)) {
+        // Find the full author object for the new author ID
+        const authorToAdd = authors.value.find(a => a.user === newAuthorId)
+
+        // If we found the author object, add it to the authors array
+        if (authorToAdd) {
+            if (!post.value.authors || !Array.isArray(post.value.authors)) {
+                post.value.authors = []
+            }
+            post.value.authors.push(authorToAdd)
+        }
+    }
+})
+
+// Adicionar os novos refs para controle do loading
+const fullPageLoading = ref(false);
+const loadingMessage = ref('Saving changes...');
+
+// Adicionar estado para controlar a exibição do diálogo de mídia
+const showMediaDialog = ref(false);
+const mediaDialogType = ref('all');
+const mediaSelectCallback = ref(null);
+
+// Função para receber o resultado da seleção de mídia no diálogo
+function handleMediaSelected(media) {
+    if (mediaSelectCallback.value) {
+        mediaSelectCallback.value(media);
+    }
+}
+
+// Função para lidar com cliques em imagens
+function handleImageClick(e) {
+    const target = e.target;
+
+    // Verificar se clicou em uma imagem
+    if (target.nodeName === 'IMG' && target.closest('.ProseMirror')) {
+        const img = target;
+
+        // Verificar a posição do clique para determinar se foi no botão de excluir
+        const rect = img.getBoundingClientRect();
+        const deleteButtonArea = {
+            top: rect.top - 22,
+            left: rect.right - 22,
+            bottom: rect.top,
+            right: rect.right
+        };
+
+        if (e.clientX >= deleteButtonArea.left && e.clientX <= deleteButtonArea.right &&
+            e.clientY >= deleteButtonArea.top && e.clientY <= deleteButtonArea.bottom) {
+            // Se clicou no botão de excluir
+            editor.chain().focus().deleteSelection().run();
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // Selecionar a imagem para destacá-la
+            const { state } = editor;
+            let foundPos = -1;
+
+            state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
+                if (foundPos > -1) return false;
+                if (node.type.name === 'image' && node.attrs.src === img.src) {
+                    foundPos = pos;
+                    return false;
+                }
+                return true;
+            });
+
+            if (foundPos > -1) {
+                editor.commands.setNodeSelection(foundPos);
+            }
+        }
+    }
+}
 </script>
 
 <style>
@@ -1706,6 +2062,56 @@ function viewPost(id) {
     color: #9ca3af;
     pointer-events: none;
     height: 0;
+}
+
+/* Estilos para imagens */
+.ProseMirror img {
+    max-width: 100%;
+    height: auto;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+    outline: 3px solid #4f46e5;
+    border-radius: 2px;
+}
+
+/* Classe para controle de redimensionamento */
+.resizable-image {
+    display: inline-block;
+    position: relative;
+    margin: 1rem 0;
+}
+
+.ProseMirror-selectednode.resizable-image::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+/* Botões de controle que aparecem quando a imagem é selecionada */
+.ProseMirror-selectednode.resizable-image::before {
+    content: "⨯";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    background: #ff4444;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
 }
 
 /* Light theme styles for editor content */

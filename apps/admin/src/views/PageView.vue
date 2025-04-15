@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="bg-white border-b border-neutral-200 py-1 px-3 flex flex-wrap items-center space-x-0.5 sticky top-0 z-10 shadow-sm">
+            <div class="bg-white border-b border-neutral-200 py-1 px-3 flex flex-wrap items-center justify-center space-x-0.5 sticky top-0 z-10 shadow-sm">
                 <div class="flex items-center mr-1.5 border-r border-neutral-200 pr-1.5">
                     <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
                         :class="{ 'bg-neutral-100': editor.isActive('heading', { level: 1 }) }"
@@ -118,6 +118,38 @@
                         class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="HTML Code">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Adicionando botões de alinhamento de texto -->
+                <div class="flex items-center mr-1.5 border-r border-neutral-200 pr-1.5">
+                    <button @click="editor.chain().focus().setTextAlign('left').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'left' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Align Left">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
+                        </svg>
+                    </button>
+                    <button @click="editor.chain().focus().setTextAlign('center').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'center' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Align Center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M6 18h12" />
+                        </svg>
+                    </button>
+                    <button @click="editor.chain().focus().setTextAlign('right').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'right' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Align Right">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14" />
+                        </svg>
+                    </button>
+                    <button @click="editor.chain().focus().setTextAlign('justify').run()"
+                        :class="{ 'bg-neutral-100': editor.isActive({ textAlign: 'justify' }) }"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Justify">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
@@ -514,6 +546,36 @@
                         <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
                     </svg>
                 </button>
+                <!-- Adicionar botões de alinhamento -->
+                <div class="border-l border-neutral-600 mx-1 h-6"></div>
+                <button @click="editor.chain().focus().setTextAlign('left').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'left' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14" />
+                    </svg>
+                </button>
+                <button @click="editor.chain().focus().setTextAlign('center').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'center' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M6 18h12" />
+                    </svg>
+                </button>
+                <button @click="editor.chain().focus().setTextAlign('right').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'right' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14" />
+                    </svg>
+                </button>
+                <button @click="editor.chain().focus().setTextAlign('justify').run()"
+                    :class="{ 'bg-neutral-700': editor.isActive({ textAlign: 'justify' }) }"
+                    class="p-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
         </bubble-menu>
 
@@ -676,6 +738,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Overlay de loading bloqueante -->
+    <div v-if="fullPageLoading" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]" style="backdrop-filter: blur(4px);">
+        <div class="bg-neutral-800 rounded-lg p-8 flex flex-col items-center justify-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+            <p class="text-lg text-white">{{ loadingMessage }}</p>
+        </div>
+    </div>
+
+    <!-- Media Library Dialog -->
+    <MediaDialog
+        v-model="showMediaDialog"
+        :type="mediaDialogType"
+        @select="handleMediaSelected"
+    />
 </template>
 
 <script setup>
@@ -687,8 +764,11 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
+import ImageResize from 'tiptap-extension-resize-image';
 import { default as TiptapImage } from '@tiptap/extension-image'
 import { useAdminClient } from '@cmmv/blog/admin/client'
+import MediaDialog from '../components/MediaDialog.vue'
+import TextAlign from '@tiptap/extension-text-align'
 
 const adminClient = useAdminClient()
 const router = useRouter()
@@ -782,10 +862,18 @@ const editor = new Editor({
         Link.configure({
             openOnClick: false,
         }),
-        TiptapImage,
+        ImageResize,
+        TiptapImage.configure({
+            allowBase64: true,
+            inline: false,
+            resizable: false,
+        }),
         Youtube.configure({
             controls: true,
             nocookie: true,
+        }),
+        TextAlign.configure({
+            types: ['paragraph', 'heading', 'listItem', 'codeBlock'],
         }),
     ],
     content: '',
@@ -879,10 +967,17 @@ function insertList() {
 }
 
 function insertImage() {
-    const url = prompt('Enter image URL')
-    if (url) {
-        editor.chain().focus().setImage({ src: url }).run()
-    }
+    mediaDialogType.value = 'all';
+
+    mediaSelectCallback.value = (media) => {
+        editor.chain().focus().setImage({
+            src: media.url,
+            alt: media.alt || '',
+            title: media.caption || ''
+        }).run();
+    };
+
+    showMediaDialog.value = true;
 }
 
 function insertColumns() {
@@ -926,6 +1021,8 @@ onMounted(async () => {
     }
 
     document.addEventListener('click', handleGlobalClick)
+    // Adicionar evento para tratar cliques em imagens
+    document.addEventListener('click', handleImageClick)
     loadBlogUrl();
 
     nextTick(() => {
@@ -935,6 +1032,8 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', handleGlobalClick)
+    // Remover o evento ao desmontar
+    document.removeEventListener('click', handleImageClick)
 })
 
 function handleGlobalClick(event) {
@@ -995,7 +1094,15 @@ const featureDragStart = ref({ x: 0, y: 0 })
 const featureImagePosition = ref({ x: 0, y: 0 })
 
 function openMediaSelector() {
-    featureImageInput.value.click()
+    mediaDialogType.value = 'all';
+
+    mediaSelectCallback.value = (media) => {
+        post.value.featureImage = media.url;
+        post.value.featureImageAlt = media.alt || '';
+        post.value.featureImageCaption = media.caption || '';
+    };
+
+    showMediaDialog.value = true;
 }
 
 function handleFeatureImageSelect(event) {
@@ -1170,26 +1277,38 @@ const publishLoading = ref(false)
 
 function confirmPublish() {
     if (post.value.status === 'published') {
+        fullPageLoading.value = true;
+        loadingMessage.value = 'Updating page...';
+
         savePage()
+            .finally(() => {
+                fullPageLoading.value = false;
+            });
     } else {
-        showPublishDialog.value = true
+        showPublishDialog.value = true;
     }
 }
 
 function publishPost() {
-    publishLoading.value = true
-    post.value.status = 'published'
-    post.value.publishedAt = new Date().toISOString()
+    publishLoading.value = true;
+    fullPageLoading.value = true;
+    loadingMessage.value = 'Publishing page...';
+
+    post.value.status = 'published';
+    post.value.publishedAt = new Date().toISOString();
 
     savePage()
         .then(() => {
-            showPublishDialog.value = false
-            publishLoading.value = false
+            showPublishDialog.value = false;
+            publishLoading.value = false;
         })
         .catch(error => {
-            console.error('Failed to publish page:', error)
-            publishLoading.value = false
+            console.error('Failed to publish page:', error);
+            publishLoading.value = false;
         })
+        .finally(() => {
+            fullPageLoading.value = false;
+        });
 }
 
 async function savePage() {
@@ -1229,8 +1348,14 @@ async function savePage() {
 }
 
 function saveDraft() {
-    post.value.status = 'draft'
+    fullPageLoading.value = true;
+    loadingMessage.value = 'Saving draft...';
+
+    post.value.status = 'draft';
     savePage()
+        .finally(() => {
+            fullPageLoading.value = false;
+        });
 }
 
 const notification = ref({
@@ -1394,143 +1519,207 @@ const loadBlogUrl = async () => {
 function viewPost(id) {
     window.open(`${blogUrl.value}/preview-page/${id}`, '_blank')
 }
+
+// Adicionar os novos refs para controle do loading
+const fullPageLoading = ref(false);
+const loadingMessage = ref('Saving changes...');
+
+// Adicionar variáveis de estado para MediaDialog
+const showMediaDialog = ref(false);
+const mediaDialogType = ref('all');
+const mediaSelectCallback = ref(null);
+
+// Adicionar função para lidar com a seleção de mídia
+function handleMediaSelected(media) {
+    if (mediaSelectCallback.value) {
+        mediaSelectCallback.value(media);
+    }
+}
+
+// Adicionar nova função para lidar com cliques em imagens
+function handleImageClick(e) {
+    const target = e.target;
+
+    // Verificar se clicou em uma imagem
+    if (target.nodeName === 'IMG' && target.closest('.ProseMirror')) {
+        const img = target;
+
+        // Verificar a posição do clique para determinar se foi no botão de excluir
+        const rect = img.getBoundingClientRect();
+        const deleteButtonArea = {
+            top: rect.top - 22,
+            left: rect.right - 22,
+            bottom: rect.top,
+            right: rect.right
+        };
+
+        if (e.clientX >= deleteButtonArea.left && e.clientX <= deleteButtonArea.right &&
+            e.clientY >= deleteButtonArea.top && e.clientY <= deleteButtonArea.bottom) {
+            // Se clicou no botão de excluir
+            editor.chain().focus().deleteSelection().run();
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // Selecionar a imagem para destacá-la
+            const { state } = editor;
+            let foundPos = -1;
+
+            state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
+                if (foundPos > -1) return false;
+                if (node.type.name === 'image' && node.attrs.src === img.src) {
+                    foundPos = pos;
+                    return false;
+                }
+                return true;
+            });
+
+            if (foundPos > -1) {
+                editor.commands.setNodeSelection(foundPos);
+
+                // Adicionar os controles de redimensionamento após a seleção
+                setTimeout(() => {
+                    const selectedImg = document.querySelector('.ProseMirror-selectednode');
+                    if (selectedImg && !selectedImg.querySelector('.image-resizer')) {
+                        // Remover quaisquer controles anteriores para evitar duplicação
+                        const oldResizers = document.querySelectorAll('.image-resizer');
+                        oldResizers.forEach(r => r.remove());
+
+                        // Adicionar novos controles nos 4 cantos
+                        const corners = ['se', 'sw', 'ne', 'nw'];
+                        corners.forEach(corner => {
+                            const handle = document.createElement('div');
+                            handle.className = `image-resizer resize-handle-${corner}`;
+                            handle.dataset.corner = corner;
+                            selectedImg.appendChild(handle);
+
+                            // Adicionar evento para redimensionar
+                            handle.addEventListener('mousedown', startResize);
+                        });
+                    }
+                }, 10);
+            }
+        }
+    }
+}
+
+// Adicionar funções para redimensionamento de imagens
+const isResizing = ref(false);
+const resizeStartSize = ref({ width: 0, height: 0 });
+const resizeStartPos = ref({ x: 0, y: 0 });
+const resizeTarget = ref(null);
+const resizeCorner = ref(null);
+
+function startResize(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const handle = e.target;
+    const image = handle.closest('.ProseMirror-selectednode').querySelector('img');
+
+    if (!image) return;
+
+    isResizing.value = true;
+    resizeTarget.value = image;
+    resizeCorner.value = handle.dataset.corner;
+
+    // Guardar tamanho inicial
+    resizeStartSize.value = {
+        width: image.offsetWidth,
+        height: image.offsetHeight
+    };
+
+    resizeStartPos.value = {
+        x: e.clientX,
+        y: e.clientY
+    };
+
+    // Adicionar eventos temporários para o movimento e fim do redimensionamento
+    document.addEventListener('mousemove', handleResize);
+    document.addEventListener('mouseup', stopResize);
+}
+
+function handleResize(e) {
+    if (!isResizing.value || !resizeTarget.value) return;
+
+    e.preventDefault();
+
+    const deltaX = e.clientX - resizeStartPos.value.x;
+    const deltaY = e.clientY - resizeStartPos.value.y;
+
+    let newWidth = resizeStartSize.value.width;
+    let newHeight = resizeStartSize.value.height;
+
+    // Ajustar dimensões baseado no canto que está sendo arrastado
+    switch (resizeCorner.value) {
+        case 'se':
+            newWidth += deltaX;
+            newHeight += deltaY;
+            break;
+        case 'sw':
+            newWidth -= deltaX;
+            newHeight += deltaY;
+            break;
+        case 'ne':
+            newWidth += deltaX;
+            newHeight -= deltaY;
+            break;
+        case 'nw':
+            newWidth -= deltaX;
+            newHeight -= deltaY;
+            break;
+    }
+
+    // Garantir dimensões mínimas
+    newWidth = Math.max(50, newWidth);
+    newHeight = Math.max(50, newHeight);
+
+    // Atualizar tamanho da imagem
+    resizeTarget.value.style.width = `${newWidth}px`;
+    resizeTarget.value.style.height = `${newHeight}px`;
+
+    // Atualizar atributos width e height
+    resizeTarget.value.setAttribute('width', newWidth);
+    resizeTarget.value.setAttribute('height', newHeight);
+}
+
+function stopResize() {
+    if (!isResizing.value) return;
+
+    // Atualizar o editor com as novas dimensões
+    if (resizeTarget.value) {
+        const newWidth = resizeTarget.value.offsetWidth;
+        const newHeight = resizeTarget.value.offsetHeight;
+
+        // Encontrar a posição do nó da imagem
+        const { state } = editor;
+        let foundPos = -1;
+
+        state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
+            if (foundPos > -1) return false;
+            if (node.type.name === 'image' && node.attrs.src === resizeTarget.value.src) {
+                foundPos = pos;
+                return false;
+            }
+            return true;
+        });
+
+        if (foundPos > -1) {
+            editor.chain().focus().setNodeSelection(foundPos).run();
+
+            // Atualizar os atributos da imagem no editor
+            editor.chain().updateAttributes('image', {
+                width: newWidth,
+                height: newHeight
+            }).run();
+        }
+    }
+
+    // Limpar
+    isResizing.value = false;
+    resizeTarget.value = null;
+
+    // Remover os event listeners temporários
+    document.removeEventListener('mousemove', handleResize);
+    document.removeEventListener('mouseup', stopResize);
+}
 </script>
-
-<style>
-.ProseMirror {
-    min-height: 300px;
-    outline: none;
-    color: #333;
-}
-
-.ProseMirror p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);
-    float: left;
-    color: #9ca3af;
-    pointer-events: none;
-    height: 0;
-}
-
-.prose :where(h1):not(:where([class~="not-prose"] *)) {
-    font-size: 2.25em;
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-    line-height: 1.1;
-    color: #111827;
-}
-
-.prose :where(h2):not(:where([class~="not-prose"] *)) {
-    font-size: 1.5em;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-    line-height: 1.3;
-    color: #111827;
-}
-
-.prose :where(p):not(:where([class~="not-prose"] *)) {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
-    line-height: 1.7;
-    color: #374151;
-}
-
-.prose :where(a):not(:where([class~="not-prose"] *)) {
-    color: #2563eb;
-    text-decoration: underline;
-    font-weight: 500;
-}
-
-.prose :where(blockquote):not(:where([class~="not-prose"] *)) {
-    font-weight: 500;
-    font-style: italic;
-    color: #4b5563;
-    border-left-width: 0.25rem;
-    border-left-color: #e5e7eb;
-    padding-left: 1em;
-    background-color: #f9fafb;
-    border-radius: 0.25rem;
-}
-
-.prose :where(ul):not(:where([class~="not-prose"] *)) {
-    list-style-type: disc;
-    padding-left: 1.625em;
-}
-
-.prose :where(ol):not(:where([class~="not-prose"] *)) {
-    list-style-type: decimal;
-    padding-left: 1.625em;
-}
-
-.prose :where(code):not(:where([class~="not-prose"] *)) {
-    color: #111827;
-    background-color: #f3f4f6;
-    padding: 0.2em 0.4em;
-    border-radius: 0.25rem;
-    font-size: 0.875em;
-}
-
-.prose :where(pre):not(:where([class~="not-prose"] *)) {
-    background-color: #1e293b;
-    color: #e2e8f0;
-    overflow-x: auto;
-    border-radius: 0.375rem;
-    padding: 1em;
-}
-
-/* Add these styles for the editor content */
-.video-embed {
-    position: relative;
-    padding-bottom: 56.25%;  /* 16:9 aspect ratio */
-    height: 0;
-    margin: 1.5em 0;
-    overflow: hidden;
-}
-
-.video-embed iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 0.375rem;
-}
-
-/* Make sure the editor properly renders the iframe */
-.ProseMirror iframe {
-    pointer-events: none; /* Prevents iframe interaction while editing */
-    border: 1px solid #e5e7eb;
-}
-
-.columns-container {
-    display: flex;
-    gap: 1rem;
-    margin: 1.5em 0;
-}
-
-.column {
-    flex: 1;
-    min-width: 0;
-}
-
-/* Rest of your existing styles */
-
-/* Add this to the bottom of your style section */
-.fixed-toolbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 8px 16px !important;
-  border-bottom: 1px solid #e5e7eb;
-  width: 100%;
-  max-width: 100vw;
-}
-
-/* Placeholder to prevent content jump */
-.fixed-toolbar + * {
-  padding-top: 47px; /* Match the height of your toolbar */
-}
-</style>

@@ -2,7 +2,7 @@ import {
     Controller, Get, Param,
     Response, Queries,
     ContentType, Raw, Post,
-    Body
+    Body, Delete, Put
 } from "@cmmv/http";
 
 import {
@@ -71,5 +71,17 @@ export class MediasController {
     async processImage(@Body() body: ProcessImageInterface) {
         const url = await this.mediasService.getImageUrl(body.image, body.format, body.maxWidth, body.alt, body.caption);
         return { url };
+    }
+
+    @Put("medias/:id", { exclude: true })
+    @Auth("media:update")
+    async updateMedia(@Param("id") id: number, @Body() body: any) {
+        return await this.mediasService.updateMedia(id, body);
+    }
+
+    @Delete("medias/:id", { exclude: true })
+    @Auth("media:delete")
+    async deleteMedia(@Param("id") id: number) {
+        return await this.mediasService.deleteMedia(id);
     }
 }
