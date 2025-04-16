@@ -44,10 +44,10 @@ export class PostsPublicService {
         if(queries.sortBy && !sortFields.includes(queries.sortBy))
             throw new Error("The sortBy must be one of the following: " + sortFields.join(", "));
 
-        if(queries.sort && !["ASC", "DESC"].includes(queries.sort.toUpperCase()))
+        if(queries.sort && !["ASC", "DESC"].includes(queries.sort.toUpperCase()) && queries.status !== undefined)
             throw new Error("The sort must be one of the following: ASC, DESC");
 
-        if(queries.status !== "published" && queries.status !== "")
+        if(queries.status !== "published" && queries.status !== "" && queries.status !== undefined)
             throw new Error("The status must be one of the following: published");
 
         const posts = await Repository.findAll(PostsEntity, {
@@ -642,6 +642,9 @@ export class PostsPublicService {
 
         if(queries.limit > 100)
             throw new Error("The limit must be less than 100");
+
+        if(categoryId === undefined || categoryId === null)
+            throw new Error("The categoryId is required");
 
         const posts = await Repository.findAll(PostsEntity, {
             searchField: 'categories',
