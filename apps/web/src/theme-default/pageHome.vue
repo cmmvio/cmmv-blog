@@ -98,6 +98,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useHead } from '@unhead/vue'
 import { vue3 } from '@cmmv/blog/client';
 
 import {
@@ -106,6 +107,7 @@ import {
 
 const blogAPI = vue3.useBlog();
 
+const settings = ref<any>({})
 const posts = ref<any[]>([]);
 const loading = ref(true);
 const loadingMore = ref(false);
@@ -114,6 +116,22 @@ const currentPage = ref(0);
 const hasMorePosts = ref(true);
 const observerTarget = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
+
+settings.value = await blogAPI.settings.getAll()
+
+const headData = ref({
+    title: settings.value['blog.title'],
+    meta: [
+        { name: 'description', content: settings.value['blog.description'] },
+        { name: 'keywords', content: settings.value['blog.keywords'] },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: settings.value['blog.title'] },
+        { property: 'og:description', content: settings.value['blog.description'] },
+        { property: 'og:image', content: settings.value['blog.logo'] }
+    ]
+})
+
+useHead(headData);
 
 const pagination = ref({
     total: 0,
@@ -208,4 +226,6 @@ const getAuthor = (post: any) => {
     if (!post.authors || !post.authors.length) return null;
     return post.authors.find((author: any) => author.id === post.author);
 };
+
+await loadPosts();
 </script>

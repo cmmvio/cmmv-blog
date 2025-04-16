@@ -18,25 +18,29 @@ export async function render(url: string) {
         await router.isReady()
 
         const route = router.currentRoute.value
-
         const match = matchLegacyRedirect(route)
-
-        if (match)
-            return { redirect: match }
+        if (match) return { redirect: match }
 
         app.component('ClientOnly', ClientOnly)
         app.use(router)
         app.use(head)
 
-        await new Promise(resolve => setTimeout(resolve, 100))
-        const resolvedData = await resolveSSRData(globalThis.__SSR_DATA__)
-        app.provide('preloaded', resolvedData)
+        await renderToString(app)
 
-        const html = await renderToString(app)
+        const resolvedData = await resolveSSRData(globalThis.__SSR_DATA__)
+
+        const appFinal = createSSRApp(App)
+        const headFinal = createHead()
+        appFinal.component('ClientOnly', ClientOnly)
+        appFinal.use(router)
+        appFinal.use(headFinal)
+        appFinal.provide('preloaded', resolvedData)
+
+        const html = await renderToString(appFinal)
 
         return {
             html,
-            head,
+            head: headFinal,
             preloadedData: resolvedData,
             metadata: globalThis.__SSR_METADATA__
         }

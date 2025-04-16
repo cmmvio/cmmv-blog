@@ -331,7 +331,6 @@ const headData = computed(() => ({
         { name: 'twitter:description', content: description },
         { name: 'twitter:image', content: post.value?.featureImage || settings.value?.['blog.image'] },
         { name: 'twitter:url', content: pageUrl.value },
-        { name: 'twitter:label1', content: 'Written by' },
         ...metadata.value
     ],
     script: isSSR ? [

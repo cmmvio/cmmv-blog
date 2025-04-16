@@ -84,8 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useHead } from '@unhead/vue';
 import { vue3 } from '@cmmv/blog/client';
 
 import {
@@ -96,4 +97,24 @@ const blogAPI = vue3.useBlog();
 const route = useRoute();
 const data = ref<any>(await blogAPI.tags.getPostsBySlug(route.params.slug as string));
 const posts = ref<any[]>(data.value.posts || []);
+const settings = ref<any>(await blogAPI.settings.getAll());
+
+const pageUrl = computed(() => {
+    return `${import.meta.env.VITE_WEBSITE_URL}/tag/${data.value?.tag?.slug || ''}`
+})
+
+const headData = ref({
+    title: data.value?.tag?.name + ' - ' + settings.value['blog.title'],
+    meta: [
+        { name: 'description', content: data.value?.tag?.description },
+        { name: 'keywords', content: settings.value['blog.keywords'] },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: data.value?.tag?.name + ' - ' + settings.value['blog.title'] },
+        { property: 'og:description', content: data.value?.tag?.description },
+        { property: 'og:image', content: settings.value['blog.logo'] },
+        { property: 'og:url', content: pageUrl.value }
+    ]
+})
+
+useHead(headData);
 </script>

@@ -123,6 +123,7 @@ const route = useRoute();
 
 const isSSR = import.meta.env.SSR
 const posts = ref<any[]>([]);
+const settings = ref<any>({});
 const category = ref<any>(null);
 const pagination = ref<any>(null);
 const loading = ref(true);
@@ -134,6 +135,7 @@ const observer = ref<IntersectionObserver | null>(null);
 
 loading.value = true;
 
+settings.value = await blogAPI.settings.getAll()
 const data = ref<any>(route.params.id ?
     await blogAPI.categories.getById(route.params.id as string) :
     await blogAPI.categories.getBySlug(route.params.slug as string));
@@ -143,6 +145,25 @@ posts.value = data.value.posts?.data || [];
 pagination.value = data.value.posts?.pagination;
 
 hasMorePosts.value = posts.value.length < (data.value.posts?.count || 0);
+
+const pageUrl = computed(() => {
+    return `${import.meta.env.VITE_WEBSITE_URL}/category/${category.value?.slug || ''}`
+})
+
+const headData = ref({
+    title: category.value.name + ' - ' + settings.value['blog.title'],
+    meta: [
+        { name: 'description', content: category.value.description },
+        { name: 'keywords', content: settings.value['blog.keywords'] },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: category.value.name + ' - ' + settings.value['blog.title'] },
+        { property: 'og:description', content: category.value.description },
+        { property: 'og:image', content: settings.value['blog.logo'] },
+        { property: 'og:url', content: pageUrl.value }
+    ]
+})
+
+useHead(headData);
 
 const loadMorePosts = async () => {
     if (loadingMore.value || !hasMorePosts.value) return;
@@ -190,12 +211,12 @@ onMounted(async () => {
     setupIntersectionObserver();
 });
 
-onUnmounted(() => {
+/*onUnmounted(() => {
     if (observer.value && observerTarget.value) {
         observer.value.unobserve(observerTarget.value);
         observer.value.disconnect();
     }
-});
+});*/
 </script>
 
 <style scoped>
