@@ -44,7 +44,7 @@ export class PostsPublicService {
         if(queries.sortBy && !sortFields.includes(queries.sortBy))
             throw new Error("The sortBy must be one of the following: " + sortFields.join(", "));
 
-        if(queries.sort && !["ASC", "DESC"].includes(queries.sort))
+        if(queries.sort && !["ASC", "DESC"].includes(queries.sort.toUpperCase()))
             throw new Error("The sort must be one of the following: ASC, DESC");
 
         if(queries.status !== "published" && queries.status !== "")
