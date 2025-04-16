@@ -128,6 +128,10 @@ const headData = ref({
         { property: 'og:title', content: settings.value['blog.title'] },
         { property: 'og:description', content: settings.value['blog.description'] },
         { property: 'og:image', content: settings.value['blog.logo'] }
+
+    ],
+    link: [
+        { rel: 'canonical', href: settings.value['blog.url'] }
     ]
 })
 

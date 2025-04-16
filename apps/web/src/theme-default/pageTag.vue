@@ -100,6 +100,7 @@ const posts = ref<any[]>(data.value.posts || []);
 const settings = ref<any>(await blogAPI.settings.getAll());
 
 const pageUrl = computed(() => {
+    //@ts-ignore
     return `${import.meta.env.VITE_WEBSITE_URL}/tag/${data.value?.tag?.slug || ''}`
 })
 
@@ -113,6 +114,9 @@ const headData = ref({
         { property: 'og:description', content: data.value?.tag?.description },
         { property: 'og:image', content: settings.value['blog.logo'] },
         { property: 'og:url', content: pageUrl.value }
+    ],
+    link: [
+        { rel: 'canonical', href: pageUrl.value }
     ]
 })
 

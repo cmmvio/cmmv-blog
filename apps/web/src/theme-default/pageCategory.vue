@@ -160,6 +160,9 @@ const headData = ref({
         { property: 'og:description', content: category.value.description },
         { property: 'og:image', content: settings.value['blog.logo'] },
         { property: 'og:url', content: pageUrl.value }
+    ],
+    link: [
+        { rel: 'canonical', href: pageUrl.value }
     ]
 })
 

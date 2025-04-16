@@ -230,6 +230,10 @@ const headData = computed(() => ({
         { property: 'og:description', content: author.value.bio || settings.value['blog.description'] },
         // @ts-ignore
         { property: 'og:url', content: `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value.slug}` },
+    ],
+    link: [
+        // @ts-ignore
+        { rel: 'canonical', href: `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value.slug}` }
     ]
 }))
 

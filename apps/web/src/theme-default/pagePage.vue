@@ -118,8 +118,6 @@ page.value = route.params.id ?
     await blogAPI.pages.getById(route.params.id as string) :
     await blogAPI.pages.getBySlug(route.params.slug as string);
 
-console.log(page.value);
-
 const author = ref(page.value.authors.find(
     (author: any) => author.user === page.value.author
 ));

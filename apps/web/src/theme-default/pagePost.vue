@@ -333,6 +333,9 @@ const headData = computed(() => ({
         { name: 'twitter:url', content: pageUrl.value },
         ...metadata.value
     ],
+    link: [
+        { rel: 'canonical', href: pageUrl.value }
+    ],
     script: isSSR ? [
         {
             type: 'application/ld+json',

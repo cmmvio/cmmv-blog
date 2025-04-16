@@ -412,7 +412,6 @@ const searchInput = ref<HTMLInputElement | null>(null)
 const recentPosts = ref<any[]>([])
 const isLoadingRecentPosts = ref(false)
 
-// Member authentication state
 const isLoggedIn = ref(false)
 const currentMember = ref<any>({})
 const loginModalOpen = ref(false)
@@ -432,7 +431,6 @@ blogAPI.settings.getAll().then((res) => {
     settings.value = res
 })
 
-// Computed properties
 const memberInitials = computed(() => {
     if (!currentMember.value?.name) return '';
     return currentMember.value.name
@@ -449,7 +447,6 @@ const toggle = () => {
 
 const openSearchModal = () => {
     searchModalOpen.value = true
-    // Load recent posts when opening the modal
     loadRecentPosts()
     setTimeout(() => {
         searchInput.value?.focus()
