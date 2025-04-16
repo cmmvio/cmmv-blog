@@ -62,18 +62,6 @@ export class RedirectsController {
         response.res.end();
     }
 
-    // https://blog.cmmv.io/2025/04/13/post-sample
-    /*@Get(":year/:month/:day/:slug", {
-        summary: "Wordpress permalink format Day name",
-        exposeFilters: true,
-        exclude: true
-    })
-    async handlerDayNameLink(@Param("slug") slug: string, @Res() response: any){
-        const redirect = await this.redirectsService.getRedirect(slug);
-        response.res.writeHead(redirect.codeStatus, { Location: redirect.redirectUrl });
-        response.res.end();
-    }*/
-
     //https://blog.cmmv.io/2025/04/post-sample/
     @Get(":year/:month/:day/:slug/", {
         summary: "Wordpress permalink format Day name",
@@ -85,18 +73,6 @@ export class RedirectsController {
         response.res.writeHead(redirect.codeStatus, { Location: redirect.redirectUrl });
         response.res.end();
     }
-
-    // https://blog.cmmv.io/2025/04/post-sample
-    /*@Get(":year/:month/:slug", {
-        summary: "Wordpress permalink format Month name",
-        exposeFilters: true,
-        exclude: true
-    })
-    async handlerMonthNameLink(@Param("slug") slug: string, @Res() response: any){
-        const redirect = await this.redirectsService.getRedirect(slug);
-        response.res.writeHead(redirect.codeStatus, { Location: redirect.redirectUrl });
-        response.res.end();
-    }*/
 
     // https://blog.cmmv.io/2025/04/post-sample/
     @Get(":year/:month/:slug/", {

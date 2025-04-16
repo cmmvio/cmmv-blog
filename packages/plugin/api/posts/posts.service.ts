@@ -36,9 +36,24 @@ export class PostsPublicService {
 
         delete queries.t;
 
+        if(queries.limit > 100)
+            throw new Error("The limit must be less than 100");
+
+        const sortFields = ["publishedAt", "createdAt", "updatedAt", "comments", "views"];
+
+        if(queries.sortBy && !sortFields.includes(queries.sortBy))
+            throw new Error("The sortBy must be one of the following: " + sortFields.join(", "));
+
+        if(queries.sort && !["ASC", "DESC"].includes(queries.sort))
+            throw new Error("The sort must be one of the following: ASC, DESC");
+
+        if(queries.status !== "published" && queries.status !== "")
+            throw new Error("The status must be one of the following: published");
+
         const posts = await Repository.findAll(PostsEntity, {
             ...queries,
             type: "post",
+            status: "published",
             sortBy: "publishedAt",
             sort: "DESC"
         }, [], {
@@ -155,6 +170,12 @@ export class PostsPublicService {
 
         delete queries.t;
 
+        if(queries.limit > 100)
+            throw new Error("The limit must be less than 100");
+
+        if(queries.status !== "published" && queries.status !== "")
+            throw new Error("The status must be one of the following: published");
+
         const posts = await Repository.findAll(PostsEntity, {
             ...queries,
             type: "page"
@@ -206,6 +227,9 @@ export class PostsPublicService {
      */
     async getTags(queries: any) {
         const TagsEntity = Repository.getEntity("TagsEntity");
+
+        if(queries.limit > 100)
+            throw new Error("The limit must be less than 100");
 
         const tags = await Repository.findAll(TagsEntity, {
             ...queries,
@@ -616,6 +640,9 @@ export class PostsPublicService {
         const PostsEntity = Repository.getEntity("PostsEntity");
         const TagsEntity = Repository.getEntity("TagsEntity");
 
+        if(queries.limit > 100)
+            throw new Error("The limit must be less than 100");
+
         const posts = await Repository.findAll(PostsEntity, {
             searchField: 'categories',
             search: categoryId,
@@ -687,6 +714,9 @@ export class PostsPublicService {
         const tag = await Repository.findOne(TagsEntity, { name: tagName }, {
             select: [ "id", "name", "slug", "description", "postCount" ]
         });
+
+        if(!tag)
+            throw new Error("Tag not found");
 
         const posts = await Repository.findAll(PostsEntity, {
             searchField: 'tags',
