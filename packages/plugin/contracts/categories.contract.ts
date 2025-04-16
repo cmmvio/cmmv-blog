@@ -28,19 +28,22 @@ export class CategoriesContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
         nullable: false,
+        index: true
     })
     slug!: string;
 
     @ContractField({
         protoType: 'string',
-        nullable: true
+        nullable: true,
+        index: true
     })
     parentCategory!: string;
 
     @ContractField({
         protoType: 'boolean',
         nullable: false,
-        defaultValue: true
+        defaultValue: true,
+        index: true
     })
     active!: boolean;
 
@@ -59,7 +62,8 @@ export class CategoriesContract extends AbstractContract {
     @ContractField({
         protoType: 'int32',
         nullable: true,
-        defaultValue: 0
+        defaultValue: 0,
+        index: true
     })
     postCount!: number;
 

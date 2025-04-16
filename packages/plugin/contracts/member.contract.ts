@@ -22,13 +22,15 @@ import {
 export class MemberContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
-        nullable: false
+        nullable: false,
+        index: true
     })
     email!: string;
 
     @ContractField({
         protoType: 'string',
         nullable: false,
+        index: true,
         customDecorator: {
             IsStrongPassword: {
                 import: '@cmmv/core',

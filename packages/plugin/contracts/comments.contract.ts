@@ -67,7 +67,8 @@ export class CommentsContract extends AbstractContract {
 
     @ContractField({
         protoType: 'string',
-        nullable: true
+        nullable: true,
+        index: true
     })
     parentId?: string;
 
@@ -80,7 +81,8 @@ export class CommentsContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
         nullable: false,
-        defaultValue: 'published'
+        defaultValue: 'published',
+        index: true
     })
     status: string;
 
@@ -99,14 +101,16 @@ export class CommentsContract extends AbstractContract {
     @ContractField({
         protoType: 'int64',
         nullable: true,
-        defaultValue: 0
+        defaultValue: 0,
+        index: true
     })
     likes?: number;
 
     @ContractField({
         protoType: 'int64',
         nullable: true,
-        defaultValue: 0
+        defaultValue: 0,
+        index: true
     })
     replies?: number;
 }

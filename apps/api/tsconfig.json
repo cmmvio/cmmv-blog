@@ -51,7 +51,9 @@
             "@g": [".generated"],
             "@g/*": [".generated/*"],
             "@cmmv/blog": ["../../packages/plugin/api"],
-            "@cmmv/blog/*": ["../../packages/plugin/api/*"]
+            "@cmmv/blog/*": ["../../packages/plugin/api/*"],
+            "@cmmv/rss-aggregation": ["../../packages/rss-aggregation/api"],
+            "@cmmv/rss-aggregation/*": ["../../packages/rss-aggregation/api/*"]
         }
     },
     "include": ["src/*.ts"],

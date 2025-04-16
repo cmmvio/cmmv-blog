@@ -1,19 +1,15 @@
-export * from "./api";
 export * from "./admin";
-export * from "./client";
 export * from "./contracts";
 
-import { BlogModule } from "./api";
+import { RSSAggregationModule } from "./api/rss-aggregation.module";
 import * as admin from "./admin/index";
-import * as clients from "./client/index";
 import * as contracts from "./contracts/index";
 
 export default {
-    name: '@cmmv/blog',
+    name: '@cmmv/rss-aggregation',
     version: '0.0.1',
-    description: 'Blog package for CMMV',
-    api: BlogModule,
-    clients,
+    description: 'RSS Aggregation package for CMMV',
+    api: RSSAggregationModule,
     contracts,
     admin,
     dependencies: [
@@ -21,6 +17,6 @@ export default {
         "@cmmv/repository",
         "@cmmv/admin",
         "@cmmv/auth",
-        "@cmmv/cache"
+        "@cmmv/blog"
     ]
 }

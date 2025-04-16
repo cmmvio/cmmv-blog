@@ -5,51 +5,42 @@ import {
 } from "@cmmv/core";
 
 @Contract({
-    namespace: 'Blog',
-    controllerName: 'Tags',
-    protoPackage: 'blog',
-    subPath: '/blog',
+    namespace: 'RSSAggregation',
+    controllerName: 'FeedChannels',
+    protoPackage: 'rss-aggregation',
+    subPath: '/rss-aggregation',
     generateController: true,
     generateBoilerplates: false,
     auth: true,
     options: {
         moduleContract: true,
-        databaseSchemaName: "blog_posts_tags",
+        databaseSchemaName: "rss_aggregation_feed_channels",
         databaseTimestamps: true
     }
 })
-export class PostsTagsContract extends AbstractContract {
+export class FeedChannelsContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
         nullable: false,
-        unique: true
     })
     name!: string;
 
     @ContractField({
         protoType: 'string',
         nullable: false,
-        index: true
     })
-    slug!: string;
+    url!: string;
 
     @ContractField({
         protoType: 'string',
-        nullable: true
+        nullable: false,
     })
-    navigationLabel?: string;
-
-    @ContractField({
-        protoType: 'string',
-        nullable: true
-    })
-    description?: string;
+    rss!: string;
 
     @ContractField({
         protoType: 'int32',
-        nullable: true,
-        defaultValue: 0,
-        index: true
+        nullable: false,
+        defaultValue: 1000 * 60 * 60 * 24 // 1 day
     })
-    postCount!: number;
+    intervalUpdate!: number;
 }

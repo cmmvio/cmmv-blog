@@ -138,6 +138,7 @@ export class PostsContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
         nullable: false,
+        index: true,
         validations: [
             {
                 type: 'IsString',
@@ -167,7 +168,8 @@ export class PostsContract extends AbstractContract {
 
     @ContractField({
         protoType: 'datetime',
-        nullable: true
+        nullable: true,
+        index: true
     })
     publishedAt?: Date;
 
@@ -227,14 +229,16 @@ export class PostsContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
         nullable: false,
-        defaultValue: 'draft'
+        defaultValue: 'draft',
+        index: true
     })
     status: string;
 
     @ContractField({
         protoType: 'string',
         nullable: false,
-        defaultValue: 'public'
+        defaultValue: 'public',
+        index: true
     })
     visibility: string;
 
@@ -259,14 +263,16 @@ export class PostsContract extends AbstractContract {
     @ContractField({
         protoType: 'int64',
         nullable: false,
-        defaultValue: 0
+        defaultValue: 0,
+        index: true
     })
     views: number;
 
     @ContractField({
         protoType: 'int64',
         nullable: false,
-        defaultValue: 0
+        defaultValue: 0,
+        index: true
     })
     comments: number;
 }

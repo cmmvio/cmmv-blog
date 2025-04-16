@@ -424,6 +424,14 @@ const loginForm = ref({
 const isLoggingIn = ref(false)
 const loginError = ref('')
 
+blogAPI.categories.getAll().then((res) => {
+    categories.value = res
+})
+
+blogAPI.settings.getAll().then((res) => {
+    settings.value = res
+})
+
 // Computed properties
 const memberInitials = computed(() => {
     if (!currentMember.value?.name) return '';
@@ -684,12 +692,4 @@ const formatDate = (dateString: string) => {
         day: 'numeric'
     }).format(date)
 }
-
-blogAPI.categories.getAll().then((res) => {
-    categories.value = res
-})
-
-blogAPI.settings.getAll().then((res) => {
-    settings.value = res
-})
 </script>
