@@ -448,7 +448,7 @@ const error = ref(null);
 const totalItems = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
-const sortField = ref('lastSeenAt');
+const sortField = ref('name');
 const sortOrder = ref('desc');
 const filters = ref({
     search: '',

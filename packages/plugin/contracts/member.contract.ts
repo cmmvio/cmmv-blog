@@ -52,7 +52,8 @@ export class MemberContract extends AbstractContract {
 
     @ContractField({
         protoType: 'string',
-        nullable: false
+        nullable: false,
+        index: true
     })
     name!: string;
 
@@ -95,7 +96,8 @@ export class MemberContract extends AbstractContract {
 
     @ContractField({
         protoType: 'date',
-        nullable: true
+        nullable: true,
+        index: true
     })
     lastSeenAt?: Date;
 

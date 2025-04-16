@@ -234,11 +234,9 @@ const adminAPI = useAdminClient();
 const analytics = adminAPI.analytics;
 const comments = adminAPI.comments;
 
-// Reference for the chart canvas
 const trafficChart = ref(null);
 let chart = null;
 
-// State for analytics data
 const summary = ref({
     posts: 0,
     postsGrowth: 0,
@@ -259,25 +257,19 @@ const summary = ref({
 const popularPosts = ref([]);
 const pendingComments = ref([]);
 
-// Create traffic chart
 const createTrafficChart = () => {
     if (!trafficChart.value) return;
 
     const ctx = trafficChart.value.getContext('2d');
 
-    // Destroy existing chart if it exists
-    if (chart) {
+    if (chart)
         chart.destroy();
-    }
 
-    // Use the traffic data directly from the summary object
     const trafficData = summary.value.trafficData || [];
 
     if (trafficData.length > 0) {
-        // Sort data by date
         trafficData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        // Extract the dates, total access and unique access
         const labels = trafficData.map(item => {
             const date = new Date(item.date);
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -411,7 +403,6 @@ const createTrafficChart = () => {
             }
         });
     } else {
-        // No data available, show empty chart with a message
         chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -480,7 +471,7 @@ onMounted(async () => {
         const summaryData = await analytics.getSummary();
 
         try {
-            const pendingCommentsData = await comments.getPendingComments();
+            const pendingCommentsData = await comments.getPending();
             pendingComments.value = pendingCommentsData.data || [];
         } catch (error) {
             console.error('Error fetching pending comments:', error);

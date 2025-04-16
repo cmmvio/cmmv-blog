@@ -45,13 +45,15 @@ export class AuthorProfileContract extends AbstractContract {
 
     @ContractField({
         protoType: 'string',
-        nullable: false
+        nullable: false,
+        index: true
     })
     name!: string;
 
     @ContractField({
         protoType: 'string',
-        nullable: false
+        nullable: false,
+        index: true
     })
     slug!: string;
 

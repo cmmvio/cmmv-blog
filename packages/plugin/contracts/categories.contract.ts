@@ -22,6 +22,7 @@ export class CategoriesContract extends AbstractContract {
     @ContractField({
         protoType: 'string',
         nullable: false,
+        index: true
     })
     name!: string;
 

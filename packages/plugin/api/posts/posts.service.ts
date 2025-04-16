@@ -173,7 +173,7 @@ export class PostsPublicService {
         if(queries.limit > 100)
             throw new Error("The limit must be less than 100");
 
-        if(queries.status !== "published" && queries.status !== "")
+        if(queries.status !== "published" && queries.status !== "" && queries.status !== undefined)
             throw new Error("The status must be one of the following: published");
 
         const posts = await Repository.findAll(PostsEntity, {

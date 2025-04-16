@@ -122,6 +122,7 @@ export const useAdminClient = () => {
             const query = new URLSearchParams(filters).toString();
             return api.authRequest(`comments-with-details?${query}`, 'GET');
         },
+        getPending: () => api.authRequest('comments/pending', 'GET'),
         getById: (id: string) => api.authRequest(`comments/${id}`, 'GET'),
         save: (data: any) => api.authRequest('comments', 'POST', data),
         update: (id: string, data: any) => api.authRequest(`comments/${id}`, 'PUT', data),
