@@ -14,7 +14,7 @@
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
     >
         <div class="h-full flex flex-col">
-            <div class="p-6 border-b border-neutral-100 dark:border-neutral-800" v-if="settings">
+            <div class="p-2 border-b border-neutral-100 dark:border-neutral-800" v-if="settings">
                 <a href="/" class="flex flex-col items-center">
                     <img
                         v-if="settings['blog.logo']"
@@ -24,11 +24,9 @@
                         width="140"
                         height="79"
                     />
-                    <span v-else class="text-2xl font-bold text-neutral-800 dark:text-white">{{ settings['blog.title'] }}</span>
-                    <label class="text-sm text-neutral-400 dark:text-neutral-400">{{ settings['blog.description'] }}</label>
                 </a>
 
-                <div class="mt-4 flex items-center justify-center gap-4">
+                <div class="mt-1 flex items-center justify-center gap-4">
                     <a v-if="settings['blog.facebook']" :href="`https://facebook.com/${settings['blog.facebook']}`" target="_blank" rel="noopener noreferrer" title="Facebook"
                         class="flex items-center justify-center py-2 text-neutral-600 hover:text-neutral-800 dark:hover:text-neutral-400 rounded-md transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -64,6 +62,25 @@
                         </svg>
                     </a>
                 </div>
+
+                <div class="p-2 m-auto items-center justify-center flex">
+                    <div v-if="isLoggedIn" class="flex items-center space-x-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center mt-1">
+                                <a href="/member/profile" class="text-sm text-blue-400 hover:underline">Profile</a>
+                                <span class="text-neutral-300 dark:text-neutral-400 mx-2">|</span>
+                                <button @click="logout" class="text-sm text-blue-400 hover:underline">Sign Out</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="flex items-center justify-center">
+                        <div class="flex space-x-2">
+                            <a href="/member/login" class="text-sm text-blue-400 hover:underline">Sign In</a>
+                            <span class="text-neutral-300 dark:text-neutral-600">|</span>
+                            <a href="/member/register" class="text-sm text-neutral-600 dark:text-neutral-400 hover:underline">Register</a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="flex-1 overflow-y-auto p-6">
@@ -92,37 +109,6 @@
                 </ul>
             </div>
 
-            <!-- Member section inside the sidebar -->
-            <div class="p-4 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-                <div v-if="isLoggedIn" class="flex items-center space-x-3">
-                    <div class="h-10 w-10 rounded-full bg-blue-600 dark:bg-blue-700 flex items-center justify-center overflow-hidden">
-                        <img
-                            v-if="currentMember.avatar"
-                            :src="currentMember.avatar"
-                            :alt="currentMember.name"
-                            class="h-full w-full object-cover"
-                        />
-                        <span v-else class="text-sm font-bold text-white">{{ memberInitials }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-neutral-800 dark:text-white truncate">{{ currentMember.name }}</p>
-                        <div class="flex items-center mt-1">
-                            <a href="/member/profile" class="text-xs text-blue-600 hover:underline">Profile</a>
-                            <span class="text-neutral-300 dark:text-neutral-600 mx-2">|</span>
-                            <button @click="logout" class="text-xs text-blue-600 hover:underline">Sign Out</button>
-                        </div>
-                    </div>
-                </div>
-                <div v-else class="flex items-center justify-between">
-                    <span class="text-sm text-neutral-500 dark:text-neutral-400">Member Area</span>
-                    <div class="flex space-x-2">
-                        <a href="/member/login" class="text-sm text-blue-400 hover:underline">Sign In</a>
-                        <span class="text-neutral-300 dark:text-neutral-600">|</span>
-                        <a href="/member/register" class="text-sm text-neutral-600 dark:text-neutral-400 hover:underline">Register</a>
-                    </div>
-                </div>
-            </div>
-
             <div class="p-4 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex justify-center">
                 <a href="/terms-of-service" class="px-2 py-1 text-xs text-neutral-600 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400 transition-colors">
                     Terms of Service
@@ -132,6 +118,7 @@
                     Privacy Policy
                 </a>
             </div>
+
         </div>
     </aside>
 

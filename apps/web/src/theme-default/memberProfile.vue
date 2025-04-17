@@ -1,6 +1,6 @@
 <template>
-    <div class="lg:ml-64">
-        <div class="container mx-auto max-w-4xl px-4 py-10">
+    <div class="lg:ml-64 w-full relative">
+        <div class="container mx-auto max-w-4xl px-4 py-4">
             <div v-if="!isAuthenticated" class="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-8 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-neutral-500 dark:text-neutral-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
