@@ -44,7 +44,7 @@ export const useAdminClient = () => {
     const posts = {
         get: (filters: Record<string, any>) => {
             const query = new URLSearchParams(filters).toString();
-            return api.authRequest(`blog/posts?${query}&t=${new Date().getTime()}`, 'GET');
+            return api.authRequest(`blog/posts/admin?${query}&t=${new Date().getTime()}`, 'GET');
         },
         getById: (id: string) => api.authRequest(`blog/posts/${id}?t=${new Date().getTime()}`, 'GET'),
         save: (data: any) => api.authRequest('blog/posts', 'POST', data),

@@ -29,7 +29,7 @@ export class PostsPublicService {
      * @param {any} req - The request
      * @returns {Promise<any>}
      */
-    async getAllPosts(queries: any, req: any) {
+    async getAllPosts(queries: any, req: any, admin: boolean = false) {
         const PostsEntity = Repository.getEntity("PostsEntity");
         const ProfilesEntity = Repository.getEntity("ProfilesEntity");
         const CategoriesEntity = Repository.getEntity("CategoriesEntity");
@@ -47,7 +47,7 @@ export class PostsPublicService {
         if(queries.sort && !["ASC", "DESC"].includes(queries.sort.toUpperCase()) && queries.status !== undefined)
             throw new Error("The sort must be one of the following: ASC, DESC");
 
-        if(queries.status !== "published" && queries.status !== "" && queries.status !== undefined)
+        if(queries.status !== "published" && queries.status !== "" && queries.status !== undefined && !admin)
             throw new Error("The status must be one of the following: published");
 
         const posts = await Repository.findAll(PostsEntity, {

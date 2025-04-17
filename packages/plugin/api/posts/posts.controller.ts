@@ -20,6 +20,18 @@ import {
 export class PostsController {
     constructor(private readonly postsPublicService: PostsPublicService) {}
 
+    /**
+     * Get all posts for admin
+     * @param {any} queries - The queries
+     * @param {any} req - The request
+     * @returns {Promise<any>}
+     */
+    @Get("posts/admin", { exclude: true })
+    @Auth("posts:get")
+    async getPostsAdmin(@Queries() queries: any, @Req() req: any) {
+        return this.postsPublicService.getAllPosts(queries, req, true);
+    }
+
     @Get("posts", {
         contract: Application.getContract("PostsContract"),
         schema: RouterSchema.GetAll,
