@@ -35,7 +35,11 @@ export class AnalyticsController {
             req.headers['X-Forwarded-For'] ||
             req.connection.remoteAddress;
 
-        console.log("ip", ip);
+        console.log("ip", req.ip);
+        console.log("cf-connecting-ip", req.headers['cf-connecting-ip']);
+        console.log("X-Real-IP", req.headers['X-Real-IP']);
+        console.log("X-Forwarded-For", req.headers['X-Forwarded-For']);
+        console.log("remoteAddress", req.connection.remoteAddress);
 
         const parsed = await this.parseForm(req.req);
 
