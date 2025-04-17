@@ -34,8 +34,6 @@ export class AnalyticsController {
             req.headers['X-Forwarded-For'] ||
             req.connection.remoteAddress;
 
-        console.log(ip);
-
         const parsed = await this.parseForm(req.req);
 
         await this.analyticsService.registryAccess({
