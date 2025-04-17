@@ -53,7 +53,7 @@ export class PostsPublicService {
         const posts = await Repository.findAll(PostsEntity, {
             ...queries,
             type: "post",
-            status: "published",
+            status: queries.status,
             sortBy: "publishedAt",
             sort: "DESC"
         }, [], {
