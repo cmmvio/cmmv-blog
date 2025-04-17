@@ -27,7 +27,16 @@ export class AnalyticsController {
     @Post("access")
     @ContentType("text/plain")
     @Raw()
-    async getAnalyticsAccess(@Ip() ip: string, @Req() req: any){
+    async getAnalyticsAccess(@Req() req: any){
+
+        const ip = req.ip ||
+            req.headers['cf-connecting-ip'] ||
+            req.headers['X-Real-IP'] ||
+            req.headers['X-Forwarded-For'] ||
+            req.connection.remoteAddress;
+
+        console.log("ip", ip);
+
         const parsed = await this.parseForm(req.req);
 
         await this.analyticsService.registryAccess({
@@ -45,7 +54,13 @@ export class AnalyticsController {
     @Post("unload")
     @ContentType("text/plain")
     @Raw()
-    async getAnalyticsUnload(@Ip() ip: string, @Req() req: any){
+    async getAnalyticsUnload(@Req() req: any){
+        const ip = req.ip ||
+            req.headers['cf-connecting-ip'] ||
+            req.headers['X-Real-IP'] ||
+            req.headers['X-Forwarded-For'] ||
+            req.connection.remoteAddress;
+
         const parsed = await this.parseForm(req.req);
         await this.analyticsService.registryUnload(parsed.path, ip);
         return Buffer.from([0x00]);
