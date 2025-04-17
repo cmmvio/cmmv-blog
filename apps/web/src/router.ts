@@ -14,6 +14,8 @@ import PageTag from './theme-default/pageTag.vue';
 import PageLogin from './theme-default/memberLogin.vue';
 import PageRegister from './theme-default/memberRegister.vue';
 import PageProfile from './theme-default/memberProfile.vue';
+import PageTermsOfService from './theme-default/termsOfService.vue';
+import PageTermsOfPrivacy from './theme-default/termsOfPrivacy.vue';
 
 export function createRouter() {
     return _createRouter({
@@ -30,7 +32,9 @@ export function createRouter() {
                     { path: '/post/:slug', component: PagePost },
                     { path: '/tag/:slug', component: PageTag },
                     { path: '/author/:slug', component: PageAuthor },
-                    { path: '/member/profile', component: PageProfile }
+                    { path: '/member/profile', component: PageProfile },
+                    { path: '/terms-of-service', component: PageTermsOfService },
+                    { path: '/terms-of-privacy', component: PageTermsOfPrivacy }
                 ]
             },
             {

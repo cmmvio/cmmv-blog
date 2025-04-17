@@ -1,87 +1,87 @@
 <template>
-  <div class="space-y-6">
-    <!-- Dashboard Header -->
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-white">Dashboard</h1>
-      <div>
+    <div class="space-y-6">
+        <!-- Dashboard Header -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-white">Dashboard</h1>
+            <div>
                 <button
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200">
-          New Post
-        </button>
-      </div>
-    </div>
+                    New Post
+                </button>
+            </div>
+        </div>
 
-    <!-- Stats Overview Cards - 2 per row on medium screens -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-neutral-800 rounded-lg shadow-md p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-neutral-400 text-sm">Total Posts</p>
+        <!-- Stats Overview Cards - 2 per row on medium screens -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-neutral-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-neutral-400 text-sm">Total Posts</p>
                         <h2 class="text-2xl font-bold text-white mt-1">{{ summary.posts || 0 }}</h2>
-          </div>
-          <div class="bg-blue-600/20 p-3 rounded-full">
+                    </div>
+                    <div class="bg-blue-600/20 p-3 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-        </div>
-      </div>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-      <div class="bg-neutral-800 rounded-lg shadow-md p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-neutral-400 text-sm">Comments</p>
+            <div class="bg-neutral-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-neutral-400 text-sm">Comments</p>
                         <h2 class="text-2xl font-bold text-white mt-1">{{ summary.comments || 0 }}</h2>
-          </div>
-          <div class="bg-purple-600/20 p-3 rounded-full">
+                    </div>
+                    <div class="bg-purple-600/20 p-3 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-          </div>
-        </div>
-      </div>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-      <div class="bg-neutral-800 rounded-lg shadow-md p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-neutral-400 text-sm">Total Views</p>
+            <div class="bg-neutral-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-neutral-400 text-sm">Total Views</p>
                         <h2 class="text-2xl font-bold text-white mt-1">{{ formatNumber(summary.views || 0) }}</h2>
-          </div>
-          <div class="bg-green-600/20 p-3 rounded-full">
+                    </div>
+                    <div class="bg-green-600/20 p-3 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          </div>
-        </div>
-      </div>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-      <div class="bg-neutral-800 rounded-lg shadow-md p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-neutral-400 text-sm">New Subscribers</p>
+            <div class="bg-neutral-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-neutral-400 text-sm">New Subscribers</p>
                         <h2 class="text-2xl font-bold text-white mt-1">{{ summary.subscribers || 0 }}</h2>
-          </div>
-          <div class="bg-amber-600/20 p-3 rounded-full">
+                    </div>
+                    <div class="bg-amber-600/20 p-3 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-          </div>
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Full-width content sections -->
-    <div class="space-y-6">
+        <!-- Full-width content sections -->
+        <div class="space-y-6">
             <!-- Traffic Overview Chart - now full width -->
             <div class="bg-neutral-800 rounded-lg shadow-md">
                 <div class="p-6 border-b border-neutral-700">
@@ -114,113 +114,117 @@
                 </div>
             </div>
 
-      <!-- Popular Posts - now full width -->
-      <div class="bg-neutral-800 rounded-lg shadow-md">
-        <div class="p-6 border-b border-neutral-700">
-          <h3 class="text-lg font-medium text-white">Most Popular Posts This Week</h3>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div v-for="post in popularPosts" :key="post.id" class="flex items-start gap-4">
-              <div class="flex-shrink-0 h-16 w-24 bg-neutral-700 rounded-md overflow-hidden">
-                                <img v-if="post.image" :src="post.image"
-                                    class="h-full w-full object-cover" :alt="post.title">
-                                <div v-else class="h-full w-full bg-gradient-to-br from-neutral-600 to-neutral-700">
-              </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                                <h4 class="text-base font-medium text-white truncate">{{ post.title }}</h4>
-                <div class="flex items-center mt-1">
-                                    <span class="text-neutral-400 text-sm">Published on {{ formatDate(post.publishedAt)
-                                        }}</span>
+            <!-- Popular Posts - now full width -->
+            <div class="bg-neutral-800 rounded-lg shadow-md">
+                <div class="p-6 border-b border-neutral-700">
+                    <h3 class="text-lg font-medium text-white">Most Popular Posts This Week</h3>
                 </div>
-                <div class="flex items-center mt-2 text-sm">
-                  <div class="flex items-center text-neutral-400 mr-4">
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div v-for="post in popularPosts" :key="post.id" class="flex items-start gap-4">
+                            <div class="flex-shrink-0 h-16 w-24 bg-neutral-700 rounded-md overflow-hidden">
+                                <img v-if="post.image" :src="post.image" class="h-full w-full object-cover"
+                                    :alt="post.title">
+                                <div v-else class="h-full w-full bg-gradient-to-br from-neutral-600 to-neutral-700">
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-base font-medium text-white truncate">{{ post.title }}</h4>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-neutral-400 text-sm">Published on {{ formatDate(post.publishedAt)
+                                    }}</span>
+                                </div>
+                                <div class="flex items-center mt-2 text-sm">
+                                    <div class="flex items-center text-neutral-400 mr-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                                        </svg>
                                         {{ formatNumber(post.views || 0) }}
-                  </div>
-                  <div class="flex items-center text-neutral-400">
+                                    </div>
+                                    <div class="flex items-center text-neutral-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
+                                        </svg>
                                         {{ post.comments || 0 }}
-                  </div>
-                </div>
-              </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="flex-shrink-0 self-center" v-if="post.mainTag">
                                 <span
                                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     {{ post.mainTag }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="px-6 py-4 border-t border-neutral-700">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-neutral-700">
                     <a href="/posts" class="text-blue-500 hover:text-blue-400 text-sm font-medium">View all posts →</a>
-        </div>
-      </div>
+                </div>
+            </div>
 
-      <!-- Comments Needing Approval - moved below Most Popular Posts -->
-      <div class="bg-neutral-800 rounded-lg shadow-md">
-        <div class="p-6 border-b border-neutral-700 flex justify-between items-center">
-          <h3 class="text-lg font-medium text-white">Comments Needing Approval</h3>
+            <!-- Comments Needing Approval - moved below Most Popular Posts -->
+            <div class="bg-neutral-800 rounded-lg shadow-md">
+                <div class="p-6 border-b border-neutral-700 flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-white">Comments Needing Approval</h3>
                     <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">{{
                         pendingComments.length || 0 }} New</span>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div v-for="comment in pendingComments.slice(0, 3)" :key="comment.id" class="p-4 bg-neutral-700/50 rounded-lg">
-              <div class="flex items-start gap-3">
-                <div class="flex-shrink-0">
-                  <div v-if="comment.memberInfo?.avatar" class="w-8 h-8 rounded-full overflow-hidden">
-                    <img :src="comment.memberInfo.avatar" alt="Avatar" class="w-full h-full object-cover">
-                  </div>
-                  <div v-else class="w-8 h-8 rounded-full bg-neutral-600 flex items-center justify-center text-white text-sm">
-                    {{ comment.memberInfo?.name?.charAt(0) || '?' }}
-                  </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between mb-1">
-                    <p class="text-sm font-medium text-white">{{ comment.memberInfo?.name || 'Anonymous' }}</p>
-                  </div>
-                  <p class="text-sm text-neutral-300 line-clamp-2">{{ comment.content }}</p>
-                  <div class="mt-1 text-xs text-neutral-400">On: {{ comment.postInfo?.title || 'Unknown Post' }}</div>
-                  <div class="flex gap-1 mt-2">
-                    <button
-                      @click="approveComment(comment.id)"
-                      class="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded">
-                      Approve
-                    </button>
-                    <button
-                      @click="rejectComment(comment.id)"
-                      class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded">
-                      Reject
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div v-for="comment in pendingComments.slice(0, 3)" :key="comment.id"
+                            class="p-4 bg-neutral-700/50 rounded-lg">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0">
+                                    <div v-if="comment.memberInfo?.avatar" class="w-8 h-8 rounded-full overflow-hidden">
+                                        <img :src="comment.memberInfo.avatar" alt="Avatar"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                    <div v-else
+                                        class="w-8 h-8 rounded-full bg-neutral-600 flex items-center justify-center text-white text-sm">
+                                        {{ comment.memberInfo?.name?.charAt(0) || '?' }}
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-sm font-medium text-white">{{ comment.memberInfo?.name ||
+                                            'Anonymous' }}</p>
+                                    </div>
+                                    <p class="text-sm text-neutral-300 line-clamp-2">{{ comment.content }}</p>
+                                    <div class="mt-1 text-xs text-neutral-400">On: {{ comment.postInfo?.title ||
+                                        'Unknown Post' }}</div>
+                                    <div class="flex gap-1 mt-2">
+                                        <button @click="approveComment(comment.id)"
+                                            class="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded">
+                                            Approve
+                                        </button>
+                                        <button @click="rejectComment(comment.id)"
+                                            class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            <div v-if="pendingComments.length === 0" class="col-span-3 p-4 bg-neutral-700/20 rounded-lg">
-              <p class="text-sm text-neutral-400 text-center">No pending comments to approve.</p>
+                        <div v-if="pendingComments.length === 0" class="col-span-3 p-4 bg-neutral-700/20 rounded-lg">
+                            <p class="text-sm text-neutral-400 text-center">No pending comments to approve.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-neutral-700">
+                    <a href="/comments" class="text-blue-500 hover:text-blue-400 text-sm font-medium">View all pending
+                        comments →</a>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="px-6 py-4 border-t border-neutral-700">
-          <a href="/comments" class="text-blue-500 hover:text-blue-400 text-sm font-medium">View all pending comments →</a>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -349,7 +353,7 @@ const createTrafficChart = () => {
                             size: 12
                         },
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 let label = context.dataset.label || '';
                                 if (label) {
                                     label += ': ';
@@ -386,7 +390,7 @@ const createTrafficChart = () => {
                                 family: 'system-ui',
                                 size: 11
                             },
-                            callback: function(value) {
+                            callback: function (value) {
                                 return formatNumber(value);
                             }
                         }

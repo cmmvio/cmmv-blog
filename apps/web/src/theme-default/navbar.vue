@@ -122,6 +122,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="p-4 border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex justify-center">
+                <a href="/terms-of-service" class="px-2 py-1 text-xs text-neutral-600 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400 transition-colors">
+                    Terms of Service
+                </a>
+                <span class="text-neutral-400 dark:text-neutral-600 self-center mx-1">|</span>
+                <a href="/terms-of-privacy" class="px-2 py-1 text-xs text-neutral-600 hover:text-blue-600 dark:text-neutral-400 dark:hover:text-blue-400 transition-colors">
+                    Privacy Policy
+                </a>
+            </div>
         </div>
     </aside>
 

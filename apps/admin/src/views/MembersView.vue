@@ -201,40 +201,11 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between">
-            <div class="text-sm text-neutral-400">
-                Showing <span class="font-medium text-white">{{ paginationStart }}</span> to
-                <span class="font-medium text-white">{{ paginationEnd }}</span> of
-                <span class="font-medium text-white">{{ totalItems }}</span> members
-            </div>
-            <div class="flex items-center space-x-2">
-                <button
-                    @click="changePage(currentPage - 1)"
-                    :disabled="currentPage === 1"
-                    :class="{'opacity-50 cursor-not-allowed': currentPage === 1}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Previous
-                </button>
-                <div class="flex items-center">
-                    <div v-for="page in paginationPages" :key="page"
-                        @click="changePage(page)"
-                        class="w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition-colors duration-200"
-                        :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-white hover:bg-neutral-700'"
-                    >
-                        {{ page }}
-                    </div>
-                </div>
-                <button
-                    @click="changePage(currentPage + 1)"
-                    :disabled="currentPage === totalPages"
-                    :class="{'opacity-50 cursor-not-allowed': currentPage === totalPages}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
+        <Pagination
+            :pagination="pagination"
+            itemName="members"
+            @pageChange="handlePageChange"
+        />
 
         <!-- Add/Edit Member Modal -->
         <div v-if="showMemberModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
@@ -410,36 +381,27 @@
         </div>
 
         <!-- Toast notifications -->
-        <div v-if="notification.show"
-            class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
-            :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
-        >
-            <span v-if="notification.type === 'success'" class="mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-            </span>
-            <span v-else class="mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-            </span>
-            <span>{{ notification.message }}</span>
-            <button @click="notification.show = false" class="ml-4 text-white hover:text-neutral-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </div>
+        <ToastNotification
+            :show="notification.show"
+            :message="notification.message"
+            :type="notification.type"
+            :duration="notification.duration"
+            @close="notification.show = false"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useAdminClient } from '@cmmv/blog/admin';
+import Pagination from '../components/Pagination.vue';
+import ToastNotification from '../components/ToastNotification.vue';
+import { useRouter, useRoute } from 'vue-router';
 
 const adminAPI = useAdminClient();
 const { members: membersAPI } = adminAPI;
+const router = useRouter();
+const route = useRoute();
 
 // Data
 const members = ref([]);
@@ -453,7 +415,8 @@ const sortOrder = ref('desc');
 const filters = ref({
     search: '',
     searchField: 'name,email',
-    emailStatus: ''
+    emailStatus: '',
+    page: 1
 });
 
 // Member modal state
@@ -523,6 +486,16 @@ const paginationPages = computed(() => {
     return pages;
 });
 
+// Create a pagination object to match the component's expected format
+const pagination = computed(() => ({
+    current: currentPage.value,
+    lastPage: totalPages.value,
+    perPage: itemsPerPage.value,
+    total: totalItems.value,
+    from: paginationStart.value,
+    to: paginationEnd.value
+}));
+
 // Methods
 const loadMembers = async () => {
     loading.value = true;
@@ -562,13 +535,61 @@ const loadMembers = async () => {
     }
 };
 
+// Update to use URL params for pagination
+const handlePageChange = (newPage) => {
+    currentPage.value = newPage;
+    filters.value.page = newPage;
+    updateUrlParams();
+    loadMembers();
+}
+
+const updateUrlParams = () => {
+    const query = {};
+    if (currentPage.value !== 1) query.page = currentPage.value.toString();
+    if (filters.value.search) query.search = filters.value.search;
+    if (filters.value.searchField !== 'name,email') query.searchField = filters.value.searchField;
+    if (filters.value.emailStatus) query.emailStatus = filters.value.emailStatus;
+    if (sortField.value !== 'name') query.sortBy = sortField.value;
+    if (sortOrder.value !== 'desc') query.sortOrder = sortOrder.value;
+
+    router.replace({ query });
+}
+
+const initializeFromUrl = () => {
+    const { query } = route;
+
+    if (query.page) {
+        const page = parseInt(query.page) || 1;
+        currentPage.value = page;
+        filters.value.page = page;
+    }
+    if (query.search) filters.value.search = query.search;
+    if (query.searchField) filters.value.searchField = query.searchField;
+    if (query.emailStatus) filters.value.emailStatus = query.emailStatus;
+    if (query.sortBy) sortField.value = query.sortBy;
+    if (query.sortOrder) sortOrder.value = query.sortOrder;
+}
+
 const changePage = (page) => {
     if (page === '...') return;
     if (page >= 1 && page <= totalPages.value) {
         currentPage.value = page;
+        filters.value.page = page;
+        updateUrlParams();
         loadMembers();
     }
 };
+
+// Add watchers to reset page when search/filters change
+watch(() => [filters.value.search, filters.value.searchField, filters.value.emailStatus], () => {
+    currentPage.value = 1;
+    filters.value.page = 1;
+});
+
+watch(() => [sortField.value, sortOrder.value], () => {
+    currentPage.value = 1;
+    filters.value.page = 1;
+});
 
 const sortBy = (field) => {
     if (sortField.value === field) {
@@ -580,8 +601,35 @@ const sortBy = (field) => {
         sortOrder.value = 'asc';
     }
 
+    currentPage.value = 1;
+    filters.value.page = 1;
+    updateUrlParams();
     loadMembers();
 };
+
+// Update filter watcher to also update URL params
+watch(filters, () => {
+    loadMembers();
+    updateUrlParams();
+}, { deep: true });
+
+// Add watcher for URL changes
+watch(() => route.query, (newQuery) => {
+    // Only update if there's an actual change to prevent loops
+    const urlPage = newQuery.page ? parseInt(newQuery.page) : 1;
+
+    if (
+        currentPage.value !== urlPage ||
+        filters.value.search !== (newQuery.search || '') ||
+        filters.value.searchField !== (newQuery.searchField || 'name,email') ||
+        filters.value.emailStatus !== (newQuery.emailStatus || '') ||
+        sortField.value !== (newQuery.sortBy || 'name') ||
+        sortOrder.value !== (newQuery.sortOrder || 'desc')
+    ) {
+        initializeFromUrl();
+        loadMembers();
+    }
+}, { deep: true });
 
 const getInitials = (name) => {
     if (!name) return '';
@@ -778,13 +826,9 @@ const showNotification = (type, message) => {
     }, notification.value.duration);
 };
 
-// Watch for filter changes
-watch(filters, () => {
-    loadMembers();
-}, { deep: true });
-
 // Load members on component mount
 onMounted(() => {
+    initializeFromUrl();
     loadMembers();
 });
 </script>

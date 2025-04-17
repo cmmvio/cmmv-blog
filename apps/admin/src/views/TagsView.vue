@@ -158,40 +158,11 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between">
-            <div class="text-sm text-neutral-400">
-                Showing <span class="font-medium text-white">{{ pagination.from }}</span> to
-                <span class="font-medium text-white">{{ pagination.to }}</span> of
-                <span class="font-medium text-white">{{ pagination.total }}</span> tags
-            </div>
-            <div class="flex items-center space-x-2">
-                <button
-                    @click="prevPage"
-                    :disabled="pagination.current === 1"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === 1}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Previous
-                </button>
-                <div class="flex items-center">
-                    <div v-for="page in paginationPages" :key="page"
-                        @click="goToPage(page)"
-                        class="w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition-colors duration-200"
-                        :class="page === pagination.current ? 'bg-blue-600 text-white' : 'text-white hover:bg-neutral-700'"
-                    >
-                        {{ page }}
-                    </div>
-                </div>
-                <button
-                    @click="nextPage"
-                    :disabled="pagination.current === pagination.lastPage"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === pagination.lastPage}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
+        <Pagination
+            :pagination="pagination"
+            itemName="tags"
+            @pageChange="handlePageChange"
+        />
 
         <!-- Add/Edit Tag Dialog -->
         <div v-if="showDialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
@@ -305,35 +276,26 @@
         </div>
 
         <!-- Toast notifications -->
-        <div v-if="notification.show"
-            class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
-            :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
-        >
-            <span v-if="notification.type === 'success'" class="mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-            </span>
-            <span v-else class="mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-            </span>
-            <span>{{ notification.message }}</span>
-            <button @click="notification.show = false" class="ml-4 text-white hover:text-neutral-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </div>
+        <ToastNotification
+            :show="notification.show"
+            :message="notification.message"
+            :type="notification.type"
+            :duration="notification.duration"
+            @close="notification.show = false"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminClient } from '@cmmv/blog/admin/client'
+import Pagination from '../components/Pagination.vue'
+import ToastNotification from '../components/ToastNotification.vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const adminClient = useAdminClient()
+const router = useRouter()
+const route = useRoute()
 
 const tags = ref([])
 const loading = ref(true)
@@ -471,25 +433,56 @@ const refreshData = () => {
     loadTags()
 }
 
-const goToPage = (page) => {
-    if (page === '...') return
-    filters.value.page = page
+const handlePageChange = (newPage) => {
+    filters.value.page = newPage
+    updateUrlParams()
 }
 
-const prevPage = () => {
-    if (pagination.value.current > 1) {
-        filters.value.page = pagination.value.current - 1
-    }
+const updateUrlParams = () => {
+    const query = {}
+    if (filters.value.page !== 1) query.page = filters.value.page.toString()
+    if (filters.value.search) query.search = filters.value.search
+    if (filters.value.sortBy !== 'name') query.sortBy = filters.value.sortBy
+    if (filters.value.sortOrder !== 'asc') query.sortOrder = filters.value.sortOrder
+
+    router.replace({ query })
 }
 
-const nextPage = () => {
-    if (pagination.value.current < pagination.value.lastPage) {
-        filters.value.page = pagination.value.current + 1
-    }
+const initializeFromUrl = () => {
+    const { query } = route
+
+    if (query.page) filters.value.page = parseInt(query.page) || 1
+    if (query.search) filters.value.search = query.search
+    if (query.sortBy) filters.value.sortBy = query.sortBy
+    if (query.sortOrder) filters.value.sortOrder = query.sortOrder
 }
 
 watch(filters, () => {
     loadTags()
+    updateUrlParams()
+}, { deep: true })
+
+watch(() => [filters.value.search, filters.value.searchField], () => {
+    filters.value.page = 1
+})
+
+watch(() => [filters.value.sortBy, filters.value.sortOrder], () => {
+    filters.value.page = 1
+})
+
+watch(() => route.query, (newQuery) => {
+    const currentPage = filters.value.page
+    const urlPage = newQuery.page ? parseInt(newQuery.page) : 1
+
+    if (
+        currentPage !== urlPage ||
+        filters.value.search !== (newQuery.search || '') ||
+        filters.value.sortBy !== (newQuery.sortBy || 'name') ||
+        filters.value.sortOrder !== (newQuery.sortOrder || 'asc')
+    ) {
+        initializeFromUrl()
+        loadTags()
+    }
 }, { deep: true })
 
 const openAddDialog = () => {
@@ -640,6 +633,7 @@ const loadBlogUrl = async () => {
 };
 
 onMounted(() => {
+    initializeFromUrl()
     loadTags()
     loadBlogUrl()
 })

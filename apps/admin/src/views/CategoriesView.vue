@@ -177,40 +177,11 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between">
-            <div class="text-sm text-neutral-400">
-                Showing <span class="font-medium text-white">{{ pagination.from }}</span> to
-                <span class="font-medium text-white">{{ pagination.to }}</span> of
-                <span class="font-medium text-white">{{ pagination.total }}</span> categories
-            </div>
-            <div class="flex items-center space-x-2">
-                <button
-                    @click="prevPage"
-                    :disabled="pagination.current === 1"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === 1}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Previous
-                </button>
-                <div class="flex items-center">
-                    <div v-for="page in paginationPages" :key="page"
-                        @click="goToPage(page)"
-                        class="w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition-colors duration-200"
-                        :class="page === pagination.current ? 'bg-blue-600 text-white' : 'text-white hover:bg-neutral-700'"
-                    >
-                        {{ page }}
-                    </div>
-                </div>
-                <button
-                    @click="nextPage"
-                    :disabled="pagination.current === pagination.lastPage"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === pagination.lastPage}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
+        <Pagination
+            :pagination="pagination"
+            itemName="categories"
+            @pageChange="handlePageChange"
+        />
 
         <!-- Add/Edit Category Dialog -->
         <div v-if="showDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
@@ -388,8 +359,12 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminClient } from '@cmmv/blog/admin/client'
+import Pagination from '../components/Pagination.vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const adminClient = useAdminClient()
+const router = useRouter()
+const route = useRoute()
 
 const categories = ref([])
 const loading = ref(true)
@@ -537,27 +512,61 @@ const refreshData = () => {
     loadCategories()
 }
 
-// Pagination methods
-const goToPage = (page) => {
-    if (page === '...') return
-    filters.value.page = page
+// Update the pagination handling to use URL params
+const handlePageChange = (newPage) => {
+    filters.value.page = newPage
+    updateUrlParams()
 }
 
-const prevPage = () => {
-    if (pagination.value.current > 1) {
-        filters.value.page = pagination.value.current - 1
-    }
+const updateUrlParams = () => {
+    const query = {}
+    if (filters.value.page !== 1) query.page = filters.value.page.toString()
+    if (filters.value.search) query.search = filters.value.search
+    if (filters.value.sortBy !== 'name') query.sortBy = filters.value.sortBy
+    if (filters.value.sortOrder !== 'asc') query.sortOrder = filters.value.sortOrder
+
+    router.replace({ query })
 }
 
-const nextPage = () => {
-    if (pagination.value.current < pagination.value.lastPage) {
-        filters.value.page = pagination.value.current + 1
-    }
+const initializeFromUrl = () => {
+    const { query } = route
+
+    if (query.page) filters.value.page = parseInt(query.page) || 1
+    if (query.search) filters.value.search = query.search
+    if (query.sortBy) filters.value.sortBy = query.sortBy
+    if (query.sortOrder) filters.value.sortOrder = query.sortOrder
 }
 
-// Watch for filter changes
+// Replace the simple filter watcher with one that also updates URL params
 watch(filters, () => {
     loadCategories()
+    updateUrlParams()
+}, { deep: true })
+
+// Add specific watchers for search and sort changes to reset page to 1
+watch(() => [filters.value.search, filters.value.searchField], () => {
+    filters.value.page = 1
+})
+
+watch(() => [filters.value.sortBy, filters.value.sortOrder], () => {
+    filters.value.page = 1
+})
+
+// Add a watcher for URL changes
+watch(() => route.query, (newQuery) => {
+    // Only update from URL if there's actually a change to prevent loops
+    const currentPage = filters.value.page
+    const urlPage = newQuery.page ? parseInt(newQuery.page) : 1
+
+    if (
+        currentPage !== urlPage ||
+        filters.value.search !== (newQuery.search || '') ||
+        filters.value.sortBy !== (newQuery.sortBy || 'name') ||
+        filters.value.sortOrder !== (newQuery.sortOrder || 'asc')
+    ) {
+        initializeFromUrl()
+        loadCategories()
+    }
 }, { deep: true })
 
 // Dialog methods
@@ -702,6 +711,7 @@ const toggleSort = (column) => {
 }
 
 onMounted(() => {
+    initializeFromUrl()
     loadCategories()
     loadBlogUrl()
 })

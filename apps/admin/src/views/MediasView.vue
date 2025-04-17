@@ -91,7 +91,7 @@
                                 Preview
                             </th>
                             <th
-                                @click="toggleSort('format')"
+                                @click="handleSort('format')"
                                 scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-neutral-300 uppercase tracking-wider cursor-pointer hover:text-white"
                             >
@@ -105,9 +105,6 @@
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-300 uppercase tracking-wider">
                                 Size
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-300 uppercase tracking-wider">
-                                Created
                             </th>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-neutral-300 uppercase tracking-wider w-24">
                                 Actions
@@ -132,9 +129,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-400">
                                 {{ formatFileSize(media.size) }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-400">
-                                {{ formatDate(media.createdAt) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
@@ -181,40 +175,10 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between">
-            <div class="text-sm text-neutral-400">
-                Showing <span class="font-medium text-white">{{ pagination.from }}</span> to
-                <span class="font-medium text-white">{{ pagination.to }}</span> of
-                <span class="font-medium text-white">{{ pagination.total }}</span> medias
-            </div>
-            <div class="flex items-center space-x-2">
-                <button
-                    @click="prevPage"
-                    :disabled="pagination.current === 1"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === 1}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Previous
-                </button>
-                <div class="flex items-center">
-                    <div v-for="page in paginationPages" :key="page"
-                        @click="goToPage(page)"
-                        class="w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition-colors duration-200"
-                        :class="page === pagination.current ? 'bg-blue-600 text-white' : 'text-white hover:bg-neutral-700'"
-                    >
-                        {{ page }}
-                    </div>
-                </div>
-                <button
-                    @click="nextPage"
-                    :disabled="pagination.current === pagination.lastPage"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === pagination.lastPage}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
+        <Pagination
+            :pagination="pagination"
+            @pageChange="handlePageChange"
+        />
 
         <!-- Toast notifications -->
         <div v-if="notification.show"
@@ -329,8 +293,12 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 import MediaDialog from '../components/MediaDialog.vue'
+import Pagination from '../components/Pagination.vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const adminClient = useAdminClient()
+const router = useRouter()
+const route = useRoute()
 
 const medias = ref([])
 const loading = ref(true)
@@ -388,26 +356,6 @@ const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
 }
-
-const paginationPages = computed(() => {
-    const totalPages = pagination.value.lastPage
-
-    if (totalPages <= 5)
-        return Array.from({ length: totalPages }, (_, i) => i + 1)
-
-    const current = pagination.value.current
-    const pages = [1]
-
-    if (current > 2) pages.push('...')
-
-    if (current > 1 && current < totalPages) pages.push(current)
-
-    if (current < totalPages - 1) pages.push('...')
-
-    if (totalPages > 1) pages.push(totalPages)
-
-    return pages
-})
 
 const loadMedias = async () => {
     try {
@@ -473,23 +421,6 @@ const refreshData = () => {
     loadMedias()
 }
 
-const goToPage = (page) => {
-    if (page === '...') return
-    filters.value.page = page
-}
-
-const prevPage = () => {
-    if (pagination.value.current > 1) {
-        filters.value.page = pagination.value.current - 1
-    }
-}
-
-const nextPage = () => {
-    if (pagination.value.current < pagination.value.lastPage) {
-        filters.value.page = pagination.value.current + 1
-    }
-}
-
 const openAddDialog = () => {
     mediaDialogType.value = 'all'
     showMediaDialog.value = true
@@ -512,13 +443,14 @@ const confirmDelete = (media) => {
     showDeleteDialog.value = true
 }
 
-const toggleSort = (column) => {
-    if (filters.value.sortBy === column) {
-        filters.value.sortOrder = filters.value.sortOrder === 'asc' ? 'desc' : 'asc'
+const handleSort = (field) => {
+    if (filters.value.sortBy === field) {
+        filters.value.sortOrder = filters.value.sortOrder === 'asc' ? 'desc' : 'asc';
     } else {
-        filters.value.sortBy = column
-        filters.value.sortOrder = 'asc'
+        filters.value.sortBy = field;
+        filters.value.sortOrder = 'desc';
     }
+    filters.value.page = 1; // Reset to first page when sorting changes
 }
 
 const showNotification = (type, message, duration = 3000) => {
@@ -627,11 +559,53 @@ const saveMedia = async () => {
     }
 };
 
+const handlePageChange = (newPage) => {
+    filters.value.page = newPage
+    updateUrlParams()
+}
+
+const updateUrlParams = () => {
+    const query = {}
+    if (filters.value.page !== 1) query.page = filters.value.page.toString()
+    if (filters.value.search) query.search = filters.value.search
+    if (filters.value.sortBy !== 'createdAt') query.sortBy = filters.value.sortBy
+    if (filters.value.sortOrder !== 'desc') query.sortOrder = filters.value.sortOrder
+
+    router.replace({ query })
+}
+
+const initializeFromUrl = () => {
+    const { query } = route
+
+    if (query.page) filters.value.page = parseInt(query.page) || 1
+    if (query.search) filters.value.search = query.search
+    if (query.sortBy) filters.value.sortBy = query.sortBy
+    if (query.sortOrder) filters.value.sortOrder = query.sortOrder
+}
+
 watch(filters, () => {
     loadMedias()
+    updateUrlParams()
+}, { deep: true })
+
+watch(() => route.query, (newQuery) => {
+    // Only update from URL if there's actually a change to prevent loops
+    const currentPage = filters.value.page
+    const urlPage = newQuery.page ? parseInt(newQuery.page) : 1
+
+    if (
+        currentPage !== urlPage ||
+        filters.value.search !== (newQuery.search || '') ||
+        filters.value.sortBy !== (newQuery.sortBy || 'createdAt') ||
+        filters.value.sortOrder !== (newQuery.sortOrder || 'desc')
+    ) {
+        initializeFromUrl()
+        loadMedias()
+    }
 }, { deep: true })
 
 onMounted(() => {
+    initializeFromUrl()
     loadMedias()
 })
 </script>

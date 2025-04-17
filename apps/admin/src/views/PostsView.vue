@@ -254,65 +254,33 @@
             </div>
 
             <!-- Pagination -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                <div class="text-sm text-neutral-400">
-                    Showing <span class="font-medium text-white">{{ posts.length > 0 ? startIndex + 1 : 0 }}</span> to
-                    <span class="font-medium text-white">{{ Math.min(endIndex, totalPosts) }}</span> of
-                    <span class="font-medium text-white">{{ totalPosts }}</span> posts
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button @click="prevPage" :disabled="currentPage === 1"
-                        :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }"
-                        class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200">
-                        Previous
-                    </button>
-                    <div class="flex items-center">
-                        <div v-for="page in displayedPages" :key="page" @click="goToPage(page)"
-                            class="w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition-colors duration-200"
-                            :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-white hover:bg-neutral-700'">
-                            {{ page }}
-                        </div>
-                    </div>
-                    <button @click="nextPage" :disabled="currentPage === totalPages"
-                        :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }"
-                        class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200">
-                        Next
-                    </button>
-                </div>
-            </div>
+            <Pagination
+                :pagination="pagination"
+                itemName="posts"
+                @pageChange="handlePageChange"
+            />
         </template>
     </div>
 
     <!-- Add Toast notification component -->
-    <div v-if="notification.show"
-        class="fixed bottom-4 right-4 px-6 py-3 rounded-md shadow-lg flex items-center z-50"
-        :class="notification.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
-    >
-        <span v-if="notification.type === 'success'" class="mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-        </span>
-        <span v-else class="mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-        </span>
-        <span>{{ notification.message }}</span>
-        <button @click="notification.show = false" class="ml-4 text-white hover:text-neutral-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
+    <ToastNotification
+        :show="notification.show"
+        :message="notification.message"
+        :type="notification.type"
+        :duration="notification.duration"
+        @close="notification.show = false"
+    />
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAdminClient } from '@cmmv/blog/admin/client'
+import Pagination from '../components/Pagination.vue'
+import ToastNotification from '../components/ToastNotification.vue'
 
 const router = useRouter()
+const route = useRoute()
 const adminClient = useAdminClient()
 const loading = ref(false)
 const posts = ref([])
@@ -323,6 +291,16 @@ const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
 const endIndex = computed(() => startIndex.value + itemsPerPage)
 const totalPosts = ref(0)
 const blogUrl = ref('');
+
+// Create a pagination object to match the component's expected format
+const pagination = computed(() => ({
+    current: currentPage.value,
+    lastPage: totalPages.value,
+    perPage: itemsPerPage,
+    total: totalPosts.value,
+    from: posts.length > 0 ? startIndex.value + 1 : 0,
+    to: Math.min(endIndex.value, totalPosts.value)
+}));
 
 const loadBlogUrl = async () => {
     try {
@@ -423,14 +401,84 @@ const filters = ref({
     category: ''
 })
 
-watch([searchQuery, filters], () => {
-    currentPage.value = 1
-    loadPosts()
-}, { deep: true })
+// Add URL parameter handling for pagination
+const handlePageChange = (newPage) => {
+    currentPage.value = newPage;
+    updateUrlParams();
+    loadPosts();
+}
 
+const updateUrlParams = () => {
+    const query = { ...route.query };
+
+    // Update page parameter
+    if (currentPage.value === 1) {
+        delete query.page;
+    } else {
+        query.page = currentPage.value.toString();
+    }
+
+    // Update search parameter
+    if (!searchQuery.value) {
+        delete query.search;
+    } else {
+        query.search = searchQuery.value;
+    }
+
+    // Update status parameter
+    if (!filters.value.status) {
+        delete query.status;
+    } else {
+        query.status = filters.value.status;
+    }
+
+    // Replace URL without navigating
+    router.replace({ query });
+}
+
+const initializeFromUrl = () => {
+    const { query } = route;
+
+    // Set page from URL
+    if (query.page) {
+        currentPage.value = parseInt(query.page) || 1;
+    }
+
+    // Set search query from URL
+    if (query.search) {
+        searchQuery.value = query.search;
+    }
+
+    // Set status filter from URL
+    if (query.status) {
+        filters.value.status = query.status;
+    }
+}
+
+// Add watchers to reset page when search/filters change
+watch(() => [searchQuery.value, filters.value.status], () => {
+    currentPage.value = 1;
+    updateUrlParams();
+}, { deep: true });
+
+// Replace existing watch for searchQuery and filters
+watch([searchQuery, filters], () => {
+    loadPosts();
+}, { deep: true });
+
+// Replace existing watch for currentPage
 watch(currentPage, () => {
-    loadPosts()
-})
+    loadPosts();
+});
+
+// Add watcher for URL changes
+watch(() => route.query, (newQuery, oldQuery) => {
+    // Only update if there's an actual change to prevent loops
+    if (JSON.stringify(newQuery) !== JSON.stringify(oldQuery)) {
+        initializeFromUrl();
+        loadPosts();
+    }
+}, { deep: true });
 
 const categoryOptions = ref([])
 
@@ -452,9 +500,10 @@ const loadCategories = async () => {
 }
 
 onMounted(() => {
-    loadBlogUrl()
-    loadCategories()
-    loadPosts()
+    initializeFromUrl();
+    loadBlogUrl();
+    loadCategories();
+    loadPosts();
 })
 
 const paginatedPosts = computed(() => {
@@ -467,22 +516,6 @@ const totalPages = computed(() => {
     }
     return Math.max(1, Math.ceil(posts.value.length / itemsPerPage))
 })
-
-function prevPage() {
-    if (currentPage.value > 1) {
-        currentPage.value--
-    }
-}
-
-function nextPage() {
-    if (currentPage.value < totalPages.value) {
-        currentPage.value++
-    }
-}
-
-function goToPage(page) {
-    currentPage.value = page
-}
 
 const selectedPosts = ref([])
 const bulkAction = ref('')
@@ -571,30 +604,6 @@ function getStatusClass(status) {
     }
 }
 
-const displayedPages = computed(() => {
-    if (totalPages.value <= 5) return Array.from({ length: totalPages.value }, (_, i) => i + 1);
-
-    let pages = [];
-    pages.push(1);
-
-    if (currentPage.value <= 3)
-        pages.push(2, 3, 4);
-    else if (currentPage.value >= totalPages.value - 2)
-        pages.push(totalPages.value - 3, totalPages.value - 2, totalPages.value - 1);
-    else
-        pages.push(currentPage.value - 1, currentPage.value, currentPage.value + 1);
-
-    if (totalPages.value > 1)
-        pages.push(totalPages.value);
-
-    return [...new Set(pages)].sort((a, b) => a - b);
-});
-
-// Add a refresh function
-function refreshData() {
-    loadPosts()
-}
-
 function formatNumber(num) {
     if (!num && num !== 0) return '0';
 
@@ -604,5 +613,10 @@ function formatNumber(num) {
         return (num / 1000).toFixed(1) + 'k';
     }
     return num.toString();
+}
+
+// Add a refresh function
+function refreshData() {
+    loadPosts();
 }
 </script>

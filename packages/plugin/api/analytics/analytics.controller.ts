@@ -32,7 +32,7 @@ export class AnalyticsController {
         const ip = req.headers['cf-connecting-ip'] ||
             req.headers['X-Real-IP'] ||
             req.headers['X-Forwarded-For'] ||
-            req.connection.remoteAddress;
+            req.ip;
 
         const parsed = await this.parseForm(req.req);
 
@@ -55,7 +55,7 @@ export class AnalyticsController {
         const ip = req.headers['cf-connecting-ip'] ||
             req.headers['X-Real-IP'] ||
             req.headers['X-Forwarded-For'] ||
-            req.connection.remoteAddress;
+            req.ip;
 
         const parsed = await this.parseForm(req.req);
         await this.analyticsService.registryUnload(parsed.path, ip);
