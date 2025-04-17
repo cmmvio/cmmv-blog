@@ -29,17 +29,12 @@ export class AnalyticsController {
     @Raw()
     async getAnalyticsAccess(@Req() req: any){
 
-        const ip = req.ip ||
-            req.headers['cf-connecting-ip'] ||
+        const ip = req.headers['cf-connecting-ip'] ||
             req.headers['X-Real-IP'] ||
             req.headers['X-Forwarded-For'] ||
             req.connection.remoteAddress;
 
-        console.log("ip", req.ip);
-        console.log("cf-connecting-ip", req.headers['cf-connecting-ip']);
-        console.log("X-Real-IP", req.headers['X-Real-IP']);
-        console.log("X-Forwarded-For", req.headers['X-Forwarded-For']);
-        console.log("remoteAddress", req.connection.remoteAddress);
+        console.log(ip);
 
         const parsed = await this.parseForm(req.req);
 
@@ -59,8 +54,7 @@ export class AnalyticsController {
     @ContentType("text/plain")
     @Raw()
     async getAnalyticsUnload(@Req() req: any){
-        const ip = req.ip ||
-            req.headers['cf-connecting-ip'] ||
+        const ip = req.headers['cf-connecting-ip'] ||
             req.headers['X-Real-IP'] ||
             req.headers['X-Forwarded-For'] ||
             req.connection.remoteAddress;
