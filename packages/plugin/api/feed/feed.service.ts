@@ -33,7 +33,7 @@ export class FeedService {
         feed.push(`<title>${title}</title>`);
         feed.push(`<link>${url}</link>`);
         feed.push(`<description>${description}</description>`);
-        feed.push(`<language>${language}</language>`);
+        feed.push(`<language>${language.replace('_', '-')}</language>`);
 
         if(copyright)
             feed.push(`<copyright>© Copyright ${copyright}</copyright>`);
