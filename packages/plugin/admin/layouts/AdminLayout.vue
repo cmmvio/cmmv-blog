@@ -247,7 +247,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAdminClient } from '@cmmv/blog/admin/client'
+import { useAdminClient } from '../client';
 
 const api = useAdminClient()
 api.session.check();

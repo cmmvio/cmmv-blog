@@ -227,83 +227,28 @@
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between">
-            <div class="text-sm text-neutral-400">
-                Showing <span class="font-medium text-white">{{ pagination.from }}</span> to
-                <span class="font-medium text-white">{{ pagination.to }}</span> of
-                <span class="font-medium text-white">{{ pagination.total }}</span> comments
-            </div>
-            <div class="flex items-center space-x-2">
-                <button
-                    @click="prevPage"
-                    :disabled="pagination.current === 1"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === 1}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Previous
-                </button>
-                <div class="flex items-center">
-                    <div v-for="page in paginationPages" :key="page"
-                        @click="goToPage(page)"
-                        class="w-8 h-8 flex items-center justify-center rounded-md text-sm cursor-pointer transition-colors duration-200"
-                        :class="page === pagination.current ? 'bg-blue-600 text-white' : 'text-white hover:bg-neutral-700'"
-                    >
-                        {{ page }}
-                    </div>
-                </div>
-                <button
-                    @click="nextPage"
-                    :disabled="pagination.current === pagination.lastPage"
-                    :class="{'opacity-50 cursor-not-allowed': pagination.current === pagination.lastPage}"
-                    class="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
+        <Pagination
+            :pagination="pagination"
+            itemName="comments"
+            @pageChange="handlePageChange"
+        />
 
         <!-- Delete Confirmation Dialog -->
-        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
-            <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
-                <div class="p-6 border-b border-neutral-700">
-                    <h3 class="text-lg font-medium text-white">Confirm Deletion</h3>
+        <DeleteDialog
+            :show="showDeleteDialog"
+            :loading="deleteLoading"
+            message="Are you sure you want to delete this comment?"
+            warning-text="This action cannot be undone."
+            loading-text="Deleting..."
+            @confirm="deleteComment"
+            @cancel="closeDeleteDialog"
+        >
+            <template #content>
+                <div class="bg-neutral-700 p-3 rounded mb-4 text-sm text-neutral-300">
+                    {{ commentToDelete?.content }}
                 </div>
-                <div class="p-6">
-                    <p class="text-neutral-300 mb-4">
-                        Are you sure you want to delete this comment?
-                    </p>
-                    <div class="bg-neutral-700 p-3 rounded mb-4 text-sm text-neutral-300">
-                        {{ commentToDelete?.content }}
-                    </div>
-                    <p class="text-sm text-neutral-400 mb-6">
-                        This action cannot be undone.
-                    </p>
-
-                    <div class="flex justify-end space-x-3">
-                        <button
-                            @click="closeDeleteDialog"
-                            class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            @click="deleteComment"
-                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
-                            :disabled="deleteLoading"
-                        >
-                            <span v-if="deleteLoading" class="flex items-center">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Deleting...
-                            </span>
-                            <span v-else>Delete</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </template>
+        </DeleteDialog>
 
         <!-- View Comment Detail Dialog -->
         <div v-if="showDetailDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
@@ -407,6 +352,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 import ToastNotification from '../components/ToastNotification.vue'
+import Pagination from '../components/Pagination.vue'
+import DeleteDialog from '../components/DeleteDialog.vue'
 
 const adminClient = useAdminClient()
 
@@ -552,21 +499,8 @@ const refreshData = () => {
 }
 
 // Pagination methods
-const goToPage = (page) => {
-    if (page === '...') return
-    filters.value.page = page
-}
-
-const prevPage = () => {
-    if (pagination.value.current > 1) {
-        filters.value.page = pagination.value.current - 1
-    }
-}
-
-const nextPage = () => {
-    if (pagination.value.current < pagination.value.lastPage) {
-        filters.value.page = pagination.value.current + 1
-    }
+const handlePageChange = (newPage) => {
+    filters.value.page = newPage;
 }
 
 // Watch for filter changes

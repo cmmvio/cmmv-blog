@@ -220,6 +220,11 @@ const authorInitials = computed(() => {
         .toUpperCase();
 });
 
+const pageUrl = computed(() => {
+    //@ts-ignore
+    return `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value?.slug || ''}`
+})
+
 const headData = computed(() => ({
     title: author.value.name,
     meta: [
@@ -228,12 +233,11 @@ const headData = computed(() => ({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: author.value.name },
         { property: 'og:description', content: author.value.bio || settings.value['blog.description'] },
-        // @ts-ignore
-        { property: 'og:url', content: `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value.slug}` },
+        { property: 'og:url', content: pageUrl.value },
     ],
     link: [
-        // @ts-ignore
-        { rel: 'canonical', href: `${import.meta.env.VITE_WEBSITE_URL}/author/${author.value.slug}` }
+        { rel: 'canonical', href: pageUrl.value },
+        { rel: 'alternate', href: `${settings.value['blog.url']}/feed`, type: 'application/rss+xml', title: settings.value['blog.title'] }
     ]
 }))
 

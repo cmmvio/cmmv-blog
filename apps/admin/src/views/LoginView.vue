@@ -181,26 +181,26 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 
-const adminClient = useAdminClient()
-const router = useRouter()
+const adminClient = useAdminClient();
+const router = useRouter();
 
-const loading = ref(false)
+const loading = ref(false);
 const errors = ref({
     username: '',
     password: ''
-})
+});
 
 const notification = ref({
     show: false,
     title: '',
     content: '',
     duration: 3000
-})
+});
 
 const data = ref({
     username: '',
     password: '',
-})
+});
 
 const showNotification = (title, content) => {
     notification.value = {
@@ -208,41 +208,41 @@ const showNotification = (title, content) => {
         title,
         content,
         duration: 3000
-    }
+    };
 
     setTimeout(() => {
         notification.value.show = false
-    }, notification.value.duration)
+    }, notification.value.duration);
 }
 
 const validateForm = () => {
-    let isValid = true
-    errors.value = {}
+    let isValid = true;
+    errors.value = {};
 
     if (!data.value.username) {
-        errors.value.username = 'Email is required'
-        isValid = false
+        errors.value.username = 'Email is required';
+        isValid = false;
     }
 
     if (!data.value.password) {
-        errors.value.password = 'Password is required'
-        isValid = false
+        errors.value.password = 'Password is required';
+        isValid = false;
     }
 
-    return isValid
+    return isValid;
 }
 
 const handleSubmit = async () => {
-    if (!validateForm()) return
+    if (!validateForm())
+        return;
 
     try {
-        loading.value = true
-        const result = await adminClient.session.login(data.value)
-        console.log(result)
-        loading.value = false
+        loading.value = true;
+        const result = await adminClient.session.login(data.value);
+        loading.value = false;
 
         if (result.token)
-            router.push('/')
+            router.push('/');
     } catch (err) {
         loading.value = false
         showNotification('Error!', 'Unable to login')
@@ -253,6 +253,6 @@ onMounted(async () => {
     const settings = await adminClient.settings.get();
 
     if(!settings.setupFinish)
-        router.push('/setup')
+        router.push('/setup');
 })
 </script>

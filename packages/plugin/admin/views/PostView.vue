@@ -6,7 +6,7 @@
             <!-- Top Toolbar -->
             <div class="bg-neutral-900 border-b border-neutral-900 p-2 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <a href="/pages" class="text-neutral-400 hover:text-white">
+                    <a href="/posts" class="text-neutral-400 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="flex items-center space-x-3">
-                    <button @click="saveDraft"
+                    <button v-if="postStatus !== 'published'" @click="saveDraft"
                         class="px-3 py-1.5 rounded-md text-sm font-medium border border-neutral-600 hover:border-neutral-500 transition-colors cursor-pointer">
                         Save Draft
                     </button>
@@ -50,6 +50,8 @@
                 </div>
             </div>
 
+            <!-- Add this right after the top toolbar and before the Editor Area div -->
+            <!-- Fixed Editor Toolbar - make it more compact -->
             <div class="bg-white border-b border-neutral-200 py-1 px-3 flex flex-wrap items-center justify-center space-x-0.5 sticky top-0 z-10 shadow-sm">
                 <div class="flex items-center mr-1.5 border-r border-neutral-200 pr-1.5">
                     <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
@@ -182,10 +184,10 @@
                     <!-- Paper-like editor container -->
                     <div class="bg-white text-neutral-900 rounded-lg shadow-xs overflow-hidden pb-40 mb-10">
                         <!-- Title input - now part of the paper -->
-                        <div class="px-8 pt-4 pb-2">
+                        <div class="px-8 pt-4 pb-4">
                             <textarea
                                 v-model="post.title"
-                                placeholder="Page title"
+                                placeholder="Post title"
                                 @input="autoResizeTitle"
                                 ref="titleTextarea"
                                 rows="1"
@@ -249,6 +251,130 @@
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 placeholder="Brief description of your post"></textarea>
                             <p class="mt-1 text-xs text-neutral-500">Max 140 characters</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-400 mb-1">Authors</label>
+                            <div v-if="loadingAuthors" class="text-sm text-neutral-400">Loading authors...</div>
+                            <div v-else class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-neutral-400 mb-1 block">Main Author</label>
+                                    <select v-model="post.author" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                        <option v-for="author in authors" :key="author.user" :value="author.user">
+                                            {{ author.name }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-xs text-neutral-400 mb-1 block">Co-Authors</label>
+                                        <span class="text-xs text-neutral-500">(includes main author)</span>
+                                    </div>
+                                    <div class="p-2 bg-neutral-700 border border-neutral-600 rounded-md min-h-[100px]">
+                                        <div class="flex flex-wrap gap-2 mb-2">
+                                            <div v-for="userId in postAuthorIds" :key="userId" class="flex items-center bg-neutral-600 rounded-md px-2 py-1">
+                                                <span class="text-sm text-neutral-300">{{ getAuthorName(userId) }}</span>
+                                                <button
+                                                    v-if="userId !== post.author"
+                                                    @click="removeCoAuthor(userId)"
+                                                    class="ml-2 text-neutral-400 hover:text-white"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center">
+                                            <select v-model="selectedCoAuthor" class="w-full bg-neutral-700 border-none outline-none text-sm text-neutral-300">
+                                                <option value="">Add co-author...</option>
+                                                <option
+                                                    v-for="author in availableCoAuthors"
+                                                    :key="author.user"
+                                                    :value="author.user"
+                                                >
+                                                    {{ author.name }}
+                                                </option>
+                                            </select>
+                                            <button
+                                                v-if="selectedCoAuthor"
+                                                @click="addCoAuthor"
+                                                class="ml-2 p-1 bg-blue-600 hover:bg-blue-700 rounded-md"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tags & Categories Accordion -->
+                <div class="border-b border-neutral-700">
+                    <button @click="expandedSections.tags = !expandedSections.tags"
+                        class="flex items-center justify-between w-full p-4 text-left text-neutral-200 font-medium">
+                        <span>Tags & Categories</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200"
+                            :class="expandedSections.tags ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div v-show="expandedSections.tags" class="p-4 pt-0 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-400 mb-1">Categories</label>
+                            <div v-if="loadingCategories" class="text-sm text-neutral-400">Loading categories...</div>
+                            <div v-else>
+                                <input
+                                    v-model="categoryFilter"
+                                    type="text"
+                                    placeholder="Filter categories..."
+                                    class="w-full px-3 py-2 mb-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                                />
+                                <div class="space-y-2 max-h-48 overflow-y-auto p-2 bg-neutral-700 border border-neutral-600 rounded-md">
+                                    <div v-for="category in filteredCategories" :key="category.id" class="flex items-center">
+                                        <input :id="'category-' + category.id" type="checkbox" :value="category.id"
+                                            v-model="post.categories"
+                                            class="h-4 w-4 rounded border-neutral-600 text-blue-600 focus:ring-blue-500 bg-neutral-700" />
+                                        <label :for="'category-' + category.id" class="ml-2 text-sm text-neutral-300">
+                                            {{ category.name }}
+                                        </label>
+                                    </div>
+                                    <div v-if="filteredCategories.length === 0" class="text-sm text-neutral-400 p-1">
+                                        No categories found
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-400 mb-1">Tags</label>
+                            <div
+                                class="flex flex-wrap items-center gap-2 p-2 bg-neutral-700 border border-neutral-600 rounded-md">
+                                <div v-for="(tag, index) in post.tags" :key="index"
+                                    class="flex items-center bg-blue-500/20 text-blue-400 px-2 py-1 text-sm rounded-md">
+                                    {{ tag }}
+                                    <button @click="removeTag(index)" class="ml-1.5 text-blue-400 hover:text-white">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <input v-model="newTag" @keydown.enter.prevent="addTag" @change="handleTagSelect"
+                                    type="text" list="available-tags" placeholder="Add tag..."
+                                    class="flex-1 min-w-[100px] bg-transparent border-none outline-none text-sm" />
+                                <datalist id="available-tags" v-if="availableTags.length > 0">
+                                    <option v-for="tag in availableTags" :key="tag.id" :value="tag.name"></option>
+                                </datalist>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -449,6 +575,103 @@
                                 class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono text-sm"
                                 placeholder=""></textarea>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blocks Sidebar (only this one) -->
+        <div class="fixed z-30 left-0 bottom-0 top-13 w-60 bg-neutral-800 border-r border-neutral-700 overflow-y-auto flex flex-col transition-transform duration-300"
+            :class="{ 'translate-x-0': blocksOpen, '-translate-x-full': !blocksOpen }">
+            <div class="p-4 border-b border-neutral-700 flex justify-between items-center">
+                <h3 class="font-medium">Blocks</h3>
+                <button @click="toggleBlocks" class="text-neutral-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-2 flex-1 overflow-y-auto">
+                <div class="space-y-2">
+                    <div class="text-xs font-semibold text-neutral-400 px-2 py-1">Basic</div>
+                    <div @click="insertParagraph"
+                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                        <span>Paragraph</span>
+                    </div>
+                    <div @click="insertHeading"
+                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 5h14M5 12h14M5 19h14" />
+                        </svg>
+                        <span>Heading</span>
+                    </div>
+                    <div @click="insertList" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                        </svg>
+                        <span>List</span>
+                    </div>
+
+                    <div class="text-xs font-semibold text-neutral-400 px-2 py-1 mt-4">Media</div>
+                    <div @click="insertImage" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Image</span>
+                    </div>
+                    <div @click="insertVideo" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>Video</span>
+                    </div>
+
+                    <div class="text-xs font-semibold text-neutral-400 px-2 py-1 mt-4">Layout</div>
+                    <div @click="insertColumns"
+                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                        <span>Columns</span>
+                    </div>
+                    <div @click="insertQuote" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                        <span>Quote</span>
+                    </div>
+                    <div @click="insertDivider"
+                        class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
+                        </svg>
+                        <span>Divider</span>
+                    </div>
+                    <div @click="insertYouTubeVideo" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-neutral-400 mr-3" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+                        </svg>
+                        <span>YouTube Video</span>
                     </div>
                 </div>
             </div>
@@ -743,7 +966,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watchEffect, nextTick, watch } from 'vue'
-import { useUtils } from "../composables/useUtils";
+import { useUtils } from "../../../../apps/admin/src/composables/useUtils";
 import { useRouter, useRoute } from 'vue-router'
 import { Editor, EditorContent, FloatingMenu, BubbleMenu } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
@@ -751,10 +974,10 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
 import ImageResize from 'tiptap-extension-resize-image';
+import TextAlign from '@tiptap/extension-text-align'
 import { default as TiptapImage } from '@tiptap/extension-image'
 import { useAdminClient } from '@cmmv/blog/admin/client'
 import MediaDialog from '../components/MediaDialog.vue'
-import TextAlign from '@tiptap/extension-text-align'
 import ToastNotification from '../components/ToastNotification.vue'
 
 const adminClient = useAdminClient()
@@ -764,10 +987,62 @@ const { slugify } = useUtils();
 
 const sidebarOpen = ref(JSON.parse(localStorage.getItem('postEditor_sidebarOpen') || 'true'))
 const blocksOpen = ref(JSON.parse(localStorage.getItem('postEditor_blocksOpen') || 'false'))
+const activeTab = ref('basic')
 const newTag = ref('')
 const scheduleDate = ref('')
 const websiteUrl = ref('https://yourblog.com')
 const slugManuallyEdited = ref(false)
+
+const categories = ref([])
+const allTags = ref([])
+const loadingCategories = ref(false)
+const loadingTags = ref(false)
+const blogUrl = ref('');
+
+const loadBlogUrl = async () => {
+    try {
+        const settings = await adminClient.settings.getRoot();
+        const urlSetting = settings.find(s => s.key === 'blog.url');
+
+        if (urlSetting)
+            blogUrl.value = urlSetting.value.replace(/\/$/, '');
+    } catch (err) {
+        console.error('Failed to load blog URL:', err);
+        blogUrl.value = '';
+    }
+};
+
+async function loadCategories() {
+    try {
+        loadingCategories.value = true
+        const response = await adminClient.categories.get({
+            limit: 100,
+            sort: 'asc',
+            sortBy: 'name'
+        })
+        categories.value = response.data || []
+        loadingCategories.value = false
+    } catch (error) {
+        console.error('Failed to load categories:', error)
+        loadingCategories.value = false
+    }
+}
+
+async function loadTags() {
+    try {
+        loadingTags.value = true
+        const response = await adminClient.tags.get({
+            limit: 100,
+            sort: 'asc',
+            sortBy: 'name'
+        })
+        allTags.value = response.data || []
+        loadingTags.value = false
+    } catch (error) {
+        console.error('Failed to load tags:', error)
+        loadingTags.value = false
+    }
+}
 
 const expandedSections = ref({
     basic: JSON.parse(localStorage.getItem('postEditor_expandedBasic') || 'true'),
@@ -778,11 +1053,24 @@ const expandedSections = ref({
     advanced: JSON.parse(localStorage.getItem('postEditor_expandedAdvanced') || 'false')
 })
 
+const tabs = [
+    { id: 'basic', name: 'Basic' },
+    { id: 'tags', name: 'Tags' },
+    { id: 'image', name: 'Image' },
+    { id: 'seo', name: 'SEO' },
+    { id: 'social', name: 'Social' },
+    { id: 'advanced', name: 'Advanced' }
+]
+
 const post = ref({
     author: 'current-user-id',
+    authors: ['current-user-id'],
     title: '',
     excerpt: '',
     content: '',
+    lexicalContent: '',
+    mobileDocument: '',
+    categories: [],
     slug: '',
     metaTitle: '',
     metaDescription: '',
@@ -794,6 +1082,7 @@ const post = ref({
     featureImage: '',
     featureImageAlt: '',
     featureImageCaption: '',
+    tags: [],
     type: 'post',
     status: 'draft',
     visibility: 'public',
@@ -842,7 +1131,11 @@ const filteredBlocks = computed(() => {
 
 const editor = new Editor({
     extensions: [
-        StarterKit,
+        StarterKit.configure({
+            heading: {
+                levels: [1, 2, 3],
+            },
+        }),
         Placeholder.configure({
             placeholder: 'Click to write or press + for commands...',
         }),
@@ -850,17 +1143,14 @@ const editor = new Editor({
             openOnClick: false,
         }),
         ImageResize,
-        TiptapImage.configure({
-            allowBase64: true,
-            inline: false,
-            resizable: false,
+        TextAlign.configure({
+            types: ['heading', 'paragraph'],
+            alignments: ['left', 'center', 'right', 'justify'],
+            defaultAlignment: 'left',
         }),
         Youtube.configure({
             controls: true,
             nocookie: true,
-        }),
-        TextAlign.configure({
-            types: ['paragraph', 'heading', 'listItem', 'codeBlock'],
         }),
     ],
     content: '',
@@ -992,14 +1282,14 @@ function autoResizeTitle() {
 
     textarea.style.height = 'auto'
 
-    textarea.style.height = Math.max(textarea.scrollHeight, 32) + 'px'
+    textarea.style.height = textarea.scrollHeight + 'px'
 }
 
-onMounted(async () => {
+onMounted(() => {
     const postId = route.params.id
 
     if (postId) {
-        const loaded = await loadPage(postId)
+        const loaded = loadPost(postId)
 
         if (!loaded) {
             showNotification('error', 'Could not find the requested post')
@@ -1007,10 +1297,13 @@ onMounted(async () => {
         }
     }
 
+    loadCategories()
+    loadTags()
+    loadBlogUrl();
     document.addEventListener('click', handleGlobalClick)
+
     // Adicionar evento para tratar cliques em imagens
     document.addEventListener('click', handleImageClick)
-    loadBlogUrl();
 
     nextTick(() => {
         autoResizeTitle()
@@ -1070,6 +1363,26 @@ const availableTags = computed(() => {
     return allTags.value.filter(tag => !post.value.tags.includes(tag.name));
 });
 
+function addTag() {
+    if (newTag.value.trim() && !post.value.tags.includes(newTag.value.trim())) {
+        post.value.tags.push(newTag.value.trim());
+        newTag.value = '';
+    }
+}
+
+function handleTagSelect(event) {
+    const selectedValue = event.target.value.trim();
+    if (selectedValue && !post.value.tags.includes(selectedValue)) {
+        post.value.tags.push(selectedValue);
+        newTag.value = '';
+    }
+}
+
+function removeTag(index) {
+    post.value.tags.splice(index, 1)
+}
+
+// Feature image crop state
 const featureCropModalOpen = ref(false)
 const featureZoomLevel = ref(1)
 const featureCropCanvas = ref(null)
@@ -1218,11 +1531,9 @@ function cropFeatureImage() {
     const tempCanvas = document.createElement('canvas')
     const tempCtx = tempCanvas.getContext('2d')
 
-    // Set output dimensions (use reasonable size for web display)
     const outputWidth = 1200
     const outputHeight = 675 // 16:9 aspect ratio
 
-    // Set temp canvas size
     tempCanvas.width = outputWidth
     tempCanvas.height = outputHeight
 
@@ -1265,9 +1576,9 @@ const publishLoading = ref(false)
 function confirmPublish() {
     if (post.value.status === 'published') {
         fullPageLoading.value = true;
-        loadingMessage.value = 'Updating page...';
+        loadingMessage.value = 'Updating post...';
 
-        savePage()
+        savePost()
             .finally(() => {
                 fullPageLoading.value = false;
             });
@@ -1279,18 +1590,18 @@ function confirmPublish() {
 function publishPost() {
     publishLoading.value = true;
     fullPageLoading.value = true;
-    loadingMessage.value = 'Publishing page...';
+    loadingMessage.value = 'Publishing post...';
 
     post.value.status = 'published';
     post.value.publishedAt = new Date().toISOString();
 
-    savePage()
+    savePost()
         .then(() => {
             showPublishDialog.value = false;
             publishLoading.value = false;
         })
         .catch(error => {
-            console.error('Failed to publish page:', error);
+            console.error('Failed to publish post:', error);
             publishLoading.value = false;
         })
         .finally(() => {
@@ -1298,39 +1609,67 @@ function publishPost() {
         });
 }
 
-async function savePage() {
+async function savePost() {
     try {
+        // Create a copy of the post data to avoid modifying the original
         const postData = {
             ...post.value,
             content: editor.getHTML()
+        };
+
+        // Convert the authors array to list of user IDs if it contains objects
+        if (Array.isArray(postData.authors)) {
+            console.log("Original authors array:", postData.authors);
+
+            // Map each author to its user ID
+            postData.authors = postData.authors.map(author => {
+                if (typeof author === 'object' && author !== null) {
+                    console.log("Converting author object to user ID:", author, "->", author.user);
+                    return author.user;
+                } else {
+                    console.log("Author is already an ID:", author);
+                    return author;
+                }
+            }).filter(Boolean); // Remove any null or undefined values
+
+            console.log("Converted authors array (IDs only):", postData.authors);
+        } else {
+            console.warn("Authors is not an array:", postData.authors);
+            // Initialize with at least the main author if available
+            if (postData.author) {
+                postData.authors = [postData.author];
+                console.log("Setting authors to main author only:", postData.authors);
+            }
         }
 
         if (post.value.status === 'scheduled' && scheduleDate.value)
-            postData.autoPublishAt = new Date(scheduleDate.value).toISOString()
+            postData.autoPublishAt = new Date(scheduleDate.value).toISOString();
 
         const payload = {
             post: postData,
             meta: postMeta.value
-        }
+        };
 
-        const response = await adminClient.pages.save(payload)
+        console.log("Submitting post data:", JSON.stringify(payload));
+
+        const response = await adminClient.posts.save(payload);
 
         if (response && response.id) {
-            post.value.id = response.id
-            showNotification('success', 'Page saved successfully')
+            post.value.id = response.id;
+            showNotification('success', 'Post saved successfully');
 
             if (!route.params.id)
-                router.push(`/page/${response.id}`)
+                router.push(`/post/${response.id}`);
 
-            return response
+            return response;
         }
         else if(response.result){
-            showNotification('success', 'Page saved successfully')
+            showNotification('success', 'Post saved successfully');
         }
     } catch (error) {
-        console.error('Failed to save page:', error)
-        showNotification('error', error.message || 'Failed to save page')
-        throw error
+        console.error('Failed to save post:', error);
+        showNotification('error', error.message || 'Failed to save post');
+        throw error;
     }
 }
 
@@ -1339,7 +1678,7 @@ function saveDraft() {
     loadingMessage.value = 'Saving draft...';
 
     post.value.status = 'draft';
-    savePage()
+    savePost()
         .finally(() => {
             fullPageLoading.value = false;
         });
@@ -1365,14 +1704,38 @@ function showNotification(type, message) {
     }, notification.value.duration)
 }
 
-async function loadPage(pageId) {
+async function loadPost(postId) {
     try {
-        const response = await adminClient.pages.getById(pageId)
+        const response = await adminClient.posts.getById(postId)
 
         if (response) {
+            let formattedCategories = response.categories || []
+
+            if (Array.isArray(formattedCategories)) {
+                if (formattedCategories.length > 0 && typeof formattedCategories[0] === 'object')
+                    formattedCategories = formattedCategories.map(cat => cat.id || cat._id || cat)
+            } else if (typeof formattedCategories === 'string') {
+                formattedCategories = [formattedCategories]
+            } else {
+                formattedCategories = []
+            }
+
+            let formattedTags = response.tags || [];
+
+            if (Array.isArray(formattedTags)) {
+                if (formattedTags.length > 0)
+                    formattedTags = response.tags.map(tag => tag.name)
+            } else if (typeof formattedTags === 'string') {
+                formattedTags = [formattedTags]
+            } else {
+                formattedTags = []
+            }
+
             post.value = {
                 ...post.value,
-                ...response
+                ...response,
+                tags: formattedTags,
+                categories: formattedCategories
             }
 
             if (response.meta) {
@@ -1449,6 +1812,7 @@ function insertYouTubeVideo() {
         if (srcMatch && srcMatch[1])
             videoId = srcMatch[1]
     } else {
+        // Try to extract video ID from various YouTube URL formats
         const regexPatterns = [
             /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/,
             /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^?]+)/,
@@ -1465,21 +1829,33 @@ function insertYouTubeVideo() {
         }
     }
 
-    if (videoId)
-        editor.commands.setYoutubeVideo({ src: input })
-    else
+    if (videoId) {
+        editor.commands.setYoutubeVideo({
+            src: input
+        })
+    } else {
         alert('Could not identify a valid YouTube video URL or embed code.')
+    }
 }
 
 function insertVideo() {
     insertYouTubeVideo()
 }
 
+const categoryFilter = ref('')
+const filteredCategories = computed(() => {
+    if (!categoryFilter.value.trim()) return categories.value
+
+    return categories.value.filter(category =>
+        category.name.toLowerCase().includes(categoryFilter.value.toLowerCase())
+    )
+})
+
 function insertHtmlCode() {
     const code = prompt('Enter HTML code:')
-
-    if (code)
+    if (code) {
         editor.chain().focus().insertContent(code).run()
+    }
 }
 
 function insertTable() {
@@ -1488,42 +1864,134 @@ function insertTable() {
         .run()
 }
 
-const blogUrl = ref('');
-
-const loadBlogUrl = async () => {
-    try {
-        const settings = await adminClient.settings.getRoot();
-        const urlSetting = settings.find(s => s.key === 'blog.url');
-
-        if (urlSetting)
-            blogUrl.value = urlSetting.value.replace(/\/$/, '');
-    } catch (err) {
-        console.error('Failed to load blog URL:', err);
-        blogUrl.value = '';
-    }
-};
-
 function viewPost(id) {
-    window.open(`${blogUrl.value}/preview-page/${id}`, '_blank')
+    window.open(`${blogUrl.value}/preview/${id}`, '_blank')
 }
+
+const authors = ref([])
+const loadingAuthors = ref(false)
+const selectedCoAuthor = ref('')
+
+const postAuthorIds = computed(() => {
+    if (!post.value.authors) return []
+
+    return Array.isArray(post.value.authors)
+        ? post.value.authors.map(a => typeof a === 'object' ? a.user : a)
+        : []
+})
+
+const availableCoAuthors = computed(() => {
+    const currentAuthorIds = postAuthorIds.value
+    return authors.value.filter(author => !currentAuthorIds.includes(author.user))
+})
+
+// Get author name by user ID
+function getAuthorName(userId) {
+    const author = authors.value.find(a => a.user === userId)
+    return author ? author.name : 'Unknown Author'
+}
+
+// Add a co-author
+function addCoAuthor() {
+    if (!selectedCoAuthor.value) return;
+
+    console.log("Attempting to add co-author with userId:", selectedCoAuthor.value);
+
+    // Check if this user is already a co-author
+    if (postAuthorIds.value.includes(selectedCoAuthor.value)) {
+        console.log("User is already a co-author, not adding again");
+        selectedCoAuthor.value = '';
+        return;
+    }
+
+    // Initialize the authors array if needed
+    if (!post.value.authors) {
+        post.value.authors = [];
+    }
+
+    // Find the author object by user ID
+    const authorToAdd = authors.value.find(a => a.user === selectedCoAuthor.value);
+
+    if (authorToAdd) {
+        console.log("Found author object to add:", authorToAdd);
+
+        // Add the author object
+        post.value.authors.push(authorToAdd);
+        console.log("Authors array after addition:", post.value.authors);
+
+        // Reset the selection
+        selectedCoAuthor.value = '';
+    } else {
+        console.warn("Could not find author object for user ID:", selectedCoAuthor.value);
+    }
+}
+
+// Remove a co-author
+function removeCoAuthor(userId) {
+    if (!post.value.authors || !Array.isArray(post.value.authors)) return
+
+    // Keep items that don't match the userId (either direct strings or objects with user property)
+    post.value.authors = post.value.authors.filter(a =>
+        (typeof a === 'object' ? a.user !== userId : a !== userId)
+    )
+}
+
+// Load authors from API
+async function loadAuthors() {
+    try {
+        loadingAuthors.value = true
+        const response = await adminClient.authors.get({
+            limit: 100,
+            sort: 'asc',
+            sortBy: 'name'
+        })
+        authors.value = response.data || []
+        loadingAuthors.value = false
+    } catch (error) {
+        console.error('Failed to load authors:', error)
+        loadingAuthors.value = false
+    }
+}
+
+// Add this to the onMounted hook
+loadAuthors()
+
+// Add this watcher to ensure the main author is always in the authors array
+watch(() => post.value.author, (newAuthorId) => {
+    if (!newAuthorId) return
+
+    const currentAuthorIds = postAuthorIds.value
+    if (!currentAuthorIds.includes(newAuthorId)) {
+        // Find the full author object for the new author ID
+        const authorToAdd = authors.value.find(a => a.user === newAuthorId)
+
+        // If we found the author object, add it to the authors array
+        if (authorToAdd) {
+            if (!post.value.authors || !Array.isArray(post.value.authors)) {
+                post.value.authors = []
+            }
+            post.value.authors.push(authorToAdd)
+        }
+    }
+})
 
 // Adicionar os novos refs para controle do loading
 const fullPageLoading = ref(false);
 const loadingMessage = ref('Saving changes...');
 
-// Adicionar variáveis de estado para MediaDialog
+// Adicionar estado para controlar a exibição do diálogo de mídia
 const showMediaDialog = ref(false);
 const mediaDialogType = ref('all');
 const mediaSelectCallback = ref(null);
 
-// Adicionar função para lidar com a seleção de mídia
+// Função para receber o resultado da seleção de mídia no diálogo
 function handleMediaSelected(media) {
     if (mediaSelectCallback.value) {
         mediaSelectCallback.value(media);
     }
 }
 
-// Adicionar nova função para lidar com cliques em imagens
+// Função para lidar com cliques em imagens
 function handleImageClick(e) {
     const target = e.target;
 
@@ -1562,151 +2030,198 @@ function handleImageClick(e) {
 
             if (foundPos > -1) {
                 editor.commands.setNodeSelection(foundPos);
-
-                // Adicionar os controles de redimensionamento após a seleção
-                setTimeout(() => {
-                    const selectedImg = document.querySelector('.ProseMirror-selectednode');
-                    if (selectedImg && !selectedImg.querySelector('.image-resizer')) {
-                        // Remover quaisquer controles anteriores para evitar duplicação
-                        const oldResizers = document.querySelectorAll('.image-resizer');
-                        oldResizers.forEach(r => r.remove());
-
-                        // Adicionar novos controles nos 4 cantos
-                        const corners = ['se', 'sw', 'ne', 'nw'];
-                        corners.forEach(corner => {
-                            const handle = document.createElement('div');
-                            handle.className = `image-resizer resize-handle-${corner}`;
-                            handle.dataset.corner = corner;
-                            selectedImg.appendChild(handle);
-
-                            // Adicionar evento para redimensionar
-                            handle.addEventListener('mousedown', startResize);
-                        });
-                    }
-                }, 10);
             }
         }
     }
-}
-
-// Adicionar funções para redimensionamento de imagens
-const isResizing = ref(false);
-const resizeStartSize = ref({ width: 0, height: 0 });
-const resizeStartPos = ref({ x: 0, y: 0 });
-const resizeTarget = ref(null);
-const resizeCorner = ref(null);
-
-function startResize(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const handle = e.target;
-    const image = handle.closest('.ProseMirror-selectednode').querySelector('img');
-
-    if (!image) return;
-
-    isResizing.value = true;
-    resizeTarget.value = image;
-    resizeCorner.value = handle.dataset.corner;
-
-    // Guardar tamanho inicial
-    resizeStartSize.value = {
-        width: image.offsetWidth,
-        height: image.offsetHeight
-    };
-
-    resizeStartPos.value = {
-        x: e.clientX,
-        y: e.clientY
-    };
-
-    // Adicionar eventos temporários para o movimento e fim do redimensionamento
-    document.addEventListener('mousemove', handleResize);
-    document.addEventListener('mouseup', stopResize);
-}
-
-function handleResize(e) {
-    if (!isResizing.value || !resizeTarget.value) return;
-
-    e.preventDefault();
-
-    const deltaX = e.clientX - resizeStartPos.value.x;
-    const deltaY = e.clientY - resizeStartPos.value.y;
-
-    let newWidth = resizeStartSize.value.width;
-    let newHeight = resizeStartSize.value.height;
-
-    // Ajustar dimensões baseado no canto que está sendo arrastado
-    switch (resizeCorner.value) {
-        case 'se':
-            newWidth += deltaX;
-            newHeight += deltaY;
-            break;
-        case 'sw':
-            newWidth -= deltaX;
-            newHeight += deltaY;
-            break;
-        case 'ne':
-            newWidth += deltaX;
-            newHeight -= deltaY;
-            break;
-        case 'nw':
-            newWidth -= deltaX;
-            newHeight -= deltaY;
-            break;
-    }
-
-    // Garantir dimensões mínimas
-    newWidth = Math.max(50, newWidth);
-    newHeight = Math.max(50, newHeight);
-
-    // Atualizar tamanho da imagem
-    resizeTarget.value.style.width = `${newWidth}px`;
-    resizeTarget.value.style.height = `${newHeight}px`;
-
-    // Atualizar atributos width e height
-    resizeTarget.value.setAttribute('width', newWidth);
-    resizeTarget.value.setAttribute('height', newHeight);
-}
-
-function stopResize() {
-    if (!isResizing.value) return;
-
-    // Atualizar o editor com as novas dimensões
-    if (resizeTarget.value) {
-        const newWidth = resizeTarget.value.offsetWidth;
-        const newHeight = resizeTarget.value.offsetHeight;
-
-        // Encontrar a posição do nó da imagem
-        const { state } = editor;
-        let foundPos = -1;
-
-        state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
-            if (foundPos > -1) return false;
-            if (node.type.name === 'image' && node.attrs.src === resizeTarget.value.src) {
-                foundPos = pos;
-                return false;
-            }
-            return true;
-        });
-
-        if (foundPos > -1) {
-            editor.chain().focus().setNodeSelection(foundPos).run();
-
-            // Atualizar os atributos da imagem no editor
-            editor.chain().updateAttributes('image', {
-                width: newWidth,
-                height: newHeight
-            }).run();
-        }
-    }
-
-    // Limpar
-    isResizing.value = false;
-    resizeTarget.value = null;
-
-    // Remover os event listeners temporários
-    document.removeEventListener('mousemove', handleResize);
-    document.removeEventListener('mouseup', stopResize);
 }
 </script>
+
+<style>
+.ProseMirror {
+    min-height: 300px;
+    outline: none;
+    color: #333;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #9ca3af;
+    pointer-events: none;
+    height: 0;
+}
+
+/* Estilos para imagens */
+.ProseMirror img {
+    max-width: 100%;
+    height: auto;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+    outline: 3px solid #4f46e5;
+    border-radius: 2px;
+}
+
+/* Classe para controle de redimensionamento */
+.resizable-image {
+    display: inline-block;
+    position: relative;
+    margin: 1rem 0;
+}
+
+.ProseMirror-selectednode.resizable-image::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+/* Botões de controle que aparecem quando a imagem é selecionada */
+.ProseMirror-selectednode.resizable-image::before {
+    content: "⨯";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    background: #ff4444;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Light theme styles for editor content */
+.prose :where(h1):not(:where([class~="not-prose"] *)) {
+    font-size: 2.25em;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    line-height: 1.1;
+    color: #111827;
+}
+
+.prose :where(h2):not(:where([class~="not-prose"] *)) {
+    font-size: 1.5em;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+    color: #111827;
+}
+
+.prose :where(p):not(:where([class~="not-prose"] *)) {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    line-height: 1.7;
+    color: #374151;
+}
+
+.prose :where(a):not(:where([class~="not-prose"] *)) {
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.prose :where(blockquote):not(:where([class~="not-prose"] *)) {
+    font-weight: 500;
+    font-style: italic;
+    color: #4b5563;
+    border-left-width: 0.25rem;
+    border-left-color: #e5e7eb;
+    padding-left: 1em;
+    background-color: #f9fafb;
+    border-radius: 0.25rem;
+}
+
+.prose :where(ul):not(:where([class~="not-prose"] *)) {
+    list-style-type: disc;
+    padding-left: 1.625em;
+}
+
+.prose :where(ol):not(:where([class~="not-prose"] *)) {
+    list-style-type: decimal;
+    padding-left: 1.625em;
+}
+
+.prose :where(code):not(:where([class~="not-prose"] *)) {
+    color: #111827;
+    background-color: #f3f4f6;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+}
+
+.prose :where(pre):not(:where([class~="not-prose"] *)) {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    overflow-x: auto;
+    border-radius: 0.375rem;
+    padding: 1em;
+}
+
+/* Add these styles for the editor content */
+.video-embed {
+    position: relative;
+    padding-bottom: 56.25%;  /* 16:9 aspect ratio */
+    height: 0;
+    margin: 1.5em 0;
+    overflow: hidden;
+}
+
+.video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.375rem;
+}
+
+/* Make sure the editor properly renders the iframe */
+.ProseMirror iframe {
+    pointer-events: none; /* Prevents iframe interaction while editing */
+    border: 1px solid #e5e7eb;
+}
+
+.columns-container {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5em 0;
+}
+
+.column {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Rest of your existing styles */
+
+/* Add this to the bottom of your style section */
+.fixed-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px 16px !important;
+  border-bottom: 1px solid #e5e7eb;
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* Placeholder to prevent content jump */
+.fixed-toolbar + * {
+  padding-top: 47px; /* Match the height of your toolbar */
+}
+</style>

@@ -409,23 +409,23 @@ const searchInput = ref<HTMLInputElement | null>(null)
 const recentPosts = ref<any[]>([])
 const isLoadingRecentPosts = ref(false)
 
-const isLoggedIn = ref(false)
-const currentMember = ref<any>({})
-const loginModalOpen = ref(false)
+const isLoggedIn = ref(false);
+const currentMember = ref<any>({});
+const loginModalOpen = ref(false);
 const loginForm = ref({
     email: '',
     password: '',
     rememberMe: false
-})
-const isLoggingIn = ref(false)
-const loginError = ref('')
+});
+const isLoggingIn = ref(false);
+const loginError = ref('');
 
 blogAPI.categories.getAll().then((res) => {
-    categories.value = res
+    categories.value = res;
 })
 
 blogAPI.settings.getAll().then((res) => {
-    settings.value = res
+    settings.value = res;
 })
 
 const memberInitials = computed(() => {
@@ -439,33 +439,34 @@ const memberInitials = computed(() => {
 })
 
 const toggle = () => {
-    sidebarOpen.value = !sidebarOpen.value
+    sidebarOpen.value = !sidebarOpen.value;
 }
 
 const openSearchModal = () => {
-    searchModalOpen.value = true
-    loadRecentPosts()
+    searchModalOpen.value = true;
+    loadRecentPosts();
     setTimeout(() => {
-        searchInput.value?.focus()
+        searchInput.value?.focus();
     }, 100)
 }
 
 const closeSearchModal = () => {
-    searchModalOpen.value = false
-    searchQuery.value = ''
-    searchResults.value = []
+    searchModalOpen.value = false;
+    searchQuery.value = '';
+    searchResults.value = [];
 }
 
 const loadRecentPosts = async () => {
-    if (recentPosts.value.length > 0) return // Don't reload if we already have posts
+    if (recentPosts.value.length > 0) return
 
-    isLoadingRecentPosts.value = true
+    isLoadingRecentPosts.value = true;
+
     try {
-        const response = await blogAPI.posts.getAll(0)
+        const response = await blogAPI.posts.getAll(0);
+
         if (Array.isArray(response)) {
             recentPosts.value = response.slice(0, 5)
         } else if (response && typeof response === 'object') {
-            // Use type assertion to avoid type error
             const typedResponse = response as { posts?: any[] }
             recentPosts.value = typedResponse.posts ? typedResponse.posts.slice(0, 5) : []
         } else {
@@ -480,11 +481,11 @@ const loadRecentPosts = async () => {
 }
 
 const debouncedSearch = () => {
-    if (searchTimeout.value) {
-        clearTimeout(searchTimeout.value)
-    }
+    if (searchTimeout.value)
+        clearTimeout(searchTimeout.value);
+
     searchTimeout.value = setTimeout(() => {
-        performSearch()
+        performSearch();
     }, 300)
 }
 
@@ -495,13 +496,13 @@ const performSearch = async () => {
     }
 
     isSearching.value = true
+
     try {
         const response = await blogAPI.posts.search(searchQuery.value)
-        // Handle both response formats
+
         if (Array.isArray(response)) {
             searchResults.value = response
         } else if (response && typeof response === 'object') {
-            // Use type assertion to avoid type error
             const typedResponse = response as { posts?: any[] }
             searchResults.value = Array.isArray(typedResponse.posts) ? typedResponse.posts : []
         } else {
@@ -513,11 +514,6 @@ const performSearch = async () => {
     } finally {
         isSearching.value = false
     }
-}
-
-const openLoginModal = () => {
-    loginModalOpen.value = true
-    loginError.value = ''
 }
 
 const closeLoginModal = () => {
@@ -535,14 +531,11 @@ const handleLogin = async () => {
     isLoggingIn.value = true
 
     try {
-        // Implementing login logic with the members API
-        // Use direct fetch request instead of blog API method as 'signin' is not available
         const loginData = {
             email: loginForm.value.email,
             password: loginForm.value.password
         }
 
-        // Making the request directly using fetch as a workaround
         const response = await fetch('/api/members/signin', {
             method: 'POST',
             headers: {
@@ -551,9 +544,8 @@ const handleLogin = async () => {
             body: JSON.stringify(loginData)
         })
 
-        if (!response.ok) {
+        if (!response.ok)
             throw new Error('Invalid login credentials')
-        }
 
         const data = await response.json()
 
@@ -562,14 +554,12 @@ const handleLogin = async () => {
             isLoggedIn.value = true
             closeLoginModal()
 
-            // Save token and member info in localStorage if rememberMe is checked
             if (loginForm.value.rememberMe) {
                 localStorage.setItem('member', JSON.stringify({
                     token: data.token,
                     member: data.member
                 }))
             } else {
-                // Use sessionStorage for current session only
                 sessionStorage.setItem('member', JSON.stringify({
                     token: data.token,
                     member: data.member
@@ -600,8 +590,8 @@ const logout = () => {
 }
 
 const checkAuthentication = () => {
-    // Check sessionStorage first
-    const sessionData = sessionStorage.getItem('member')
+    const sessionData = sessionStorage.getItem('member');
+
     if (sessionData) {
         try {
             const parsed = JSON.parse(sessionData)
@@ -615,75 +605,73 @@ const checkAuthentication = () => {
         }
     }
 
-    // Then check localStorage
-    const localData = localStorage.getItem('member')
+    const localData = localStorage.getItem('member');
+
     if (localData) {
         try {
-            const parsed = JSON.parse(localData)
+            const parsed = JSON.parse(localData);
             if (parsed.token && parsed.member) {
-                isLoggedIn.value = true
-                currentMember.value = parsed.member
-                return
+                isLoggedIn.value = true;
+                currentMember.value = parsed.member;
+                return;
             }
         } catch (e) {
-            console.error('Error parsing local data:', e)
+            console.error('Error parsing local data:', e);
         }
     }
 
-    // No valid auth data found
-    isLoggedIn.value = false
-    currentMember.value = {}
+    isLoggedIn.value = false;
+    currentMember.value = {};
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault()
-        openSearchModal()
+        e.preventDefault();
+        openSearchModal();
     }
 
     if (e.key === 'Escape') {
-        if (searchModalOpen.value) {
-            closeSearchModal()
-        }
-        if (loginModalOpen.value) {
-            closeLoginModal()
-        }
+        if (searchModalOpen.value)
+            closeSearchModal();
+
+        if (loginModalOpen.value)
+            closeLoginModal();
     }
 }
 
-const profileDropdownOpen = ref(false)
+const profileDropdownOpen = ref(false);
 
 const toggleProfileDropdown = () => {
-    profileDropdownOpen.value = !profileDropdownOpen.value
+    profileDropdownOpen.value = !profileDropdownOpen.value;
 }
 
 const handleClickOutside = (event: MouseEvent) => {
     if (profileDropdownOpen.value) {
-        const target = event.target as HTMLElement
+        const target = event.target as HTMLElement;
 
         if (!target.closest('.profile-dropdown'))
-            profileDropdownOpen.value = false
+            profileDropdownOpen.value = false;
     }
 }
 
 onMounted(() => {
-    document.addEventListener('keydown', handleKeydown)
-    document.addEventListener('click', handleClickOutside)
-    checkAuthentication()
+    document.addEventListener('keydown', handleKeydown);
+    document.addEventListener('click', handleClickOutside);
+    checkAuthentication();
 })
 
 onBeforeUnmount(() => {
-    document.removeEventListener('keydown', handleKeydown)
-    document.removeEventListener('click', handleClickOutside)
+    document.removeEventListener('keydown', handleKeydown);
+    document.removeEventListener('click', handleClickOutside);
 })
 
 const formatDate = (dateString: string) => {
-    if (!dateString) return ''
-    const date = new Date(dateString)
+    if (!dateString) return '';
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
-    }).format(date)
+    }).format(date);
 }
 </script>

@@ -15,9 +15,7 @@ export default defineConfig(({ mode }) => {
             preserveSymlinks: true,
             alias: {
                 '@cmmv/blog': path.resolve(__dirname, '../../packages/plugin/'),
-                '@cmmv/blog/*': path.resolve(__dirname, '../../packages/plugin/*'),
-                '@cmmv/client': path.resolve(__dirname, '../../packages/plugin/client'),
-                '@cmmv/client/*': path.resolve(__dirname, '../../packages/plugin/client/*')
+                '@cmmv/blog/*': path.resolve(__dirname, '../../packages/plugin/*')
             }
         },
         server: {

@@ -134,6 +134,12 @@ export const useAdminClient = () => {
         ghost: (data: any) => api.authRequest('imports/blogger', 'POST', data),
         progress: () => api.authRequest('imports/progress', 'GET'),
         progressById: (id: string) => api.authRequest(`imports/progress/${id}`, 'GET'),
+        reprocessImages: () => api.authRequest('reprocess-images', 'POST'),
+        getReprocessProgress: () => api.authRequest('reprocess-images-progress', 'GET'),
+        cleanupOrphanedMedia: (forceCleanup: boolean = false) => api.authRequest('cleanup-orphaned-media', 'POST', { forceCleanup }),
+        cleanupDuplicatedImages: () => api.authRequest('cleanup-duplicated-images', 'POST'),
+        getCleanupProgress: () => api.authRequest('cleanup-orphaned-media-progress', 'GET'),
+        initCleanupProgress: () => api.authRequest('init-cleanup-progress', 'POST'),
     };
 
     return {

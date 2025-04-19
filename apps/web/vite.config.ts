@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue';
 import type { IncomingMessage } from 'http';
 import { unheadVueComposablesImports } from '@unhead/vue'
 import AutoImport from 'unplugin-auto-import/vite'
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), 'VITE');
@@ -26,7 +27,8 @@ export default defineConfig(({ mode }) => {
                 imports: [
                   unheadVueComposablesImports,
                 ],
-            })
+            }),
+            ViteImageOptimizer()
         ],
         ssr: {
             noExternal: [],
@@ -41,9 +43,7 @@ export default defineConfig(({ mode }) => {
             preserveSymlinks: true,
             alias: {
                 '@cmmv/blog': path.resolve(__dirname, '../../packages/plugin/'),
-                '@cmmv/blog/*': path.resolve(__dirname, '../../packages/plugin/*'),
-                '@cmmv/client': path.resolve(__dirname, '../../packages/plugin/client'),
-                '@cmmv/client/*': path.resolve(__dirname, '../../packages/plugin/client/*'),
+                '@cmmv/blog/*': path.resolve(__dirname, '../../packages/plugin/*')
             },
         },
         server: {
@@ -64,6 +64,7 @@ export default defineConfig(({ mode }) => {
                     rewrite: (path) => path.replace(/^\/admin/, ''),
                     configure: forwardRefreshToken,
                 },
+                '/feed': { target: apiUrl },
                 '/sitemap': { target: apiUrl },
                 '/sitemap.xml': { target: apiUrl },
                 '/post-sitemap.xml': { target: apiUrl },

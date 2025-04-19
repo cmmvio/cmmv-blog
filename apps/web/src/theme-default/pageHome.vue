@@ -122,7 +122,8 @@ const headData = ref({
 
     ],
     link: [
-        { rel: 'canonical', href: settings.value['blog.url'] }
+        { rel: 'canonical', href: settings.value['blog.url'] },
+        { rel: 'alternate', href: `${settings.value['blog.url']}/feed`, type: 'application/rss+xml', title: settings.value['blog.title'] }
     ]
 })
 

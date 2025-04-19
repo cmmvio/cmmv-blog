@@ -15,6 +15,7 @@
         "declarationMap": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": false,
         "inlineSources": false,
         "isolatedModules": true,
         "moduleResolution": "Bundler",

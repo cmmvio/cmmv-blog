@@ -1,11 +1,9 @@
 <template>
     <div class="space-y-6">
-        <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-white">Imports</h1>
         </div>
 
-        <!-- Active Imports -->
         <div v-if="activeImports.length > 0 || selectedImportId" class="bg-neutral-800 rounded-lg shadow-md mb-6">
             <div class="p-6 border-b border-neutral-700">
                 <h2 class="text-lg font-medium text-white">Active Imports</h2>
@@ -13,7 +11,6 @@
             </div>
 
             <div class="p-6 space-y-6">
-                <!-- Imports List -->
                 <div v-if="!selectedImportId" class="grid grid-cols-1 gap-4">
                     <div v-for="importItem in activeImports" :key="importItem.id"
                          class="bg-neutral-700 rounded-lg p-4 hover:bg-neutral-600 cursor-pointer transition-colors"
@@ -52,7 +49,6 @@
                     </div>
                 </div>
 
-                <!-- Import Details -->
                 <div v-else>
                     <div class="flex justify-between mb-4">
                         <button @click="selectedImportId = null" class="text-blue-400 hover:text-blue-300 flex items-center">
@@ -104,7 +100,6 @@
                         </div>
                     </div>
 
-                    <!-- Import Logs -->
                     <div class="mb-4">
                         <h3 class="text-md font-medium text-white mb-2">Import Logs</h3>
                         <div class="bg-neutral-900 rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm">
@@ -124,7 +119,6 @@
                         </div>
                     </div>
 
-                    <!-- Auto-refresh Toggle -->
                     <div class="flex items-center justify-end">
                         <span class="text-sm text-neutral-400 mr-2">Auto-refresh</span>
                         <label class="relative inline-flex items-center cursor-pointer">
@@ -136,7 +130,6 @@
             </div>
         </div>
 
-        <!-- Import Options -->
         <div class="bg-neutral-800 rounded-lg shadow-md">
             <div class="p-6 border-b border-neutral-700">
                 <h2 class="text-lg font-medium text-white">Import Content</h2>
@@ -144,7 +137,6 @@
             </div>
 
             <div class="p-6 space-y-8">
-                <!-- WordPress Import -->
                 <div class="border-b border-neutral-700 pb-8">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
@@ -287,7 +279,6 @@
         </div>
     </div>
 
-    <!-- Toast notifications -->
     <ToastNotification
         :show="notification.show"
         :message="notification.message"

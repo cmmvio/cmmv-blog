@@ -336,7 +336,8 @@ const headData = computed(() => ({
         ...metadata.value
     ],
     link: [
-        { rel: 'canonical', href: pageUrl.value }
+        { rel: 'canonical', href: pageUrl.value },
+        { rel: 'alternate', href: `${settings.value['blog.url']}/feed`, type: 'application/rss+xml', title: settings.value['blog.title'] }
     ],
     script: isSSR ? [
         {

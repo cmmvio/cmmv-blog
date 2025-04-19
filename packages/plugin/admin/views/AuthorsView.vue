@@ -120,9 +120,6 @@
                                     {{ filters.sortOrder === 'asc' ? '↑' : '↓' }}
                                 </span>
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-300 uppercase tracking-wider">
-                                Last Seen
-                            </th>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-neutral-300 uppercase tracking-wider w-24">
                                 Actions
                             </th>
@@ -149,9 +146,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-400">
                                 {{ author.location || '—' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-400">
-                                {{ formatDate(author.lastSeenAt) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
@@ -188,7 +182,6 @@
             @pageChange="handlePageChange"
         />
 
-        <!-- Add/Edit Author Dialog -->
         <div v-if="showDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
             <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
                 <div class="p-6 border-b border-neutral-700 flex justify-between items-center">
@@ -531,44 +524,16 @@
         </div>
 
         <!-- Delete Confirmation Dialog -->
-        <div v-if="showDeleteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" style="backdrop-filter: blur(4px);">
-            <div class="bg-neutral-800 rounded-lg shadow-lg w-full max-w-md mx-auto">
-                <div class="p-6 border-b border-neutral-700">
-                    <h3 class="text-lg font-medium text-white">Confirm Deletion</h3>
-                </div>
-                <div class="p-6">
-                    <p class="text-neutral-300 mb-4">
-                        Are you sure you want to delete the author <span class="font-medium text-white">{{ authorToDelete?.name }}</span>?
-                    </p>
-                    <p class="text-sm text-neutral-400 mb-6">
-                        This action cannot be undone. All content associated with this author may be affected.
-                    </p>
-
-                    <div class="flex justify-end space-x-3">
-                        <button
-                            @click="closeDeleteDialog"
-                            class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            @click="deleteAuthor"
-                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
-                            :disabled="deleteLoading"
-                        >
-                            <span v-if="deleteLoading" class="flex items-center">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Deleting...
-                            </span>
-                            <span v-else>Delete</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <DeleteDialog
+            :show="showDeleteDialog"
+            :item-name="authorToDelete?.name"
+            :loading="deleteLoading"
+            message="Are you sure you want to delete the author"
+            warning-text="This action cannot be undone. All content associated with this author may be affected."
+            loading-text="Deleting..."
+            @confirm="deleteAuthor"
+            @cancel="closeDeleteDialog"
+        />
 
         <!-- Toast notifications -->
         <ToastNotification
@@ -728,10 +693,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useUtils } from "../composables/useUtils";
+import { useUtils } from "../../../../apps/admin/src/composables/useUtils";
 import { useAdminClient } from '@cmmv/blog/admin/client'
 import Pagination from '../components/Pagination.vue'
 import ToastNotification from '../components/ToastNotification.vue'
+import DeleteDialog from '../components/DeleteDialog.vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const adminClient = useAdminClient()

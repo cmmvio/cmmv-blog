@@ -12,6 +12,7 @@ import { SitemapModule } from './sitemap/sitemap.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ImportsModule } from './imports/imports.module';
 import { RedirectsModule } from './redirects/redirects.module';
+import { FeedModule } from './feed/feed.modules';
 
 export const BlogModule = new Module('blog', {
     submodules: [
@@ -26,6 +27,7 @@ export const BlogModule = new Module('blog', {
         SitemapModule,
         AnalyticsModule,
         ImportsModule,
-        RedirectsModule
+        RedirectsModule,
+        FeedModule
     ]
 });

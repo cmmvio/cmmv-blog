@@ -48,22 +48,6 @@ export class MediasController {
         }
     }
 
-    @Get("thumbnails/:hash", { exclude: true })
-    async getThumbnail(@Param("hash") hash: string, @Response() res: any) {
-        const thumbnail = await this.mediasService.getThumbnail(hash);
-
-        if(!thumbnail){
-            res.code(404).end();
-        }
-        else{
-            res.code(200).set({
-                "Content-Type": "image/webp",
-                "Cache-Control": "public, max-age=31536000, immutable",
-                "Expires": new Date(Date.now() + 31536000).toUTCString()
-            }).contentType("image/webp").send(thumbnail);
-        }
-    }
-
     @Post("images", { exclude: true })
     @Auth("media:process")
     @ContentType("application/json")
@@ -83,5 +67,41 @@ export class MediasController {
     @Auth("media:delete")
     async deleteMedia(@Param("id") id: number) {
         return await this.mediasService.deleteMedia(id);
+    }
+
+    @Get("reprocess-images-progress", { exclude: true })
+    @Auth("media:process")
+    async getReprocessProgress() {
+        return await this.mediasService.getReprocessProgress();
+    }
+
+    @Get("cleanup-orphaned-media-progress", { exclude: true })
+    @Auth("media:process")
+    async getCleanupProgress() {
+        return await this.mediasService.getReprocessProgress();
+    }
+
+    @Post("init-cleanup-progress", { exclude: true })
+    @Auth("media:process")
+    async initCleanupProgress() {
+        return await this.mediasService.initializeProgress("cleanup");
+    }
+
+    @Post("cleanup-duplicated-images", { exclude: true })
+    @Auth("media:process")
+    async cleanupDuplicatedImages() {
+        return await this.mediasService.cleanupDuplicatedImages();
+    }
+
+    @Post("cleanup-orphaned-media", { exclude: true })
+    @Auth("media:process")
+    async cleanupOrphanedMedia(@Body() body: {forceCleanup?: boolean} = {}) {
+        return await this.mediasService.cleanupOrphanedRecords(body.forceCleanup || false);
+    }
+
+    @Post("reprocess-images", { exclude: true })
+    @Auth("media:process")
+    async reprocessImages() {
+        return await this.mediasService.reprocessAllImages();
     }
 }

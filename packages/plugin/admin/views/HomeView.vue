@@ -1,17 +1,9 @@
 <template>
     <div class="space-y-6">
-        <!-- Dashboard Header -->
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-white">Dashboard</h1>
-            <div>
-                <button
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200">
-                    New Post
-                </button>
-            </div>
         </div>
 
-        <!-- Stats Overview Cards - 2 per row on medium screens -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-neutral-800 rounded-lg shadow-md p-6">
                 <div class="flex items-center justify-between">
@@ -80,9 +72,7 @@
             </div>
         </div>
 
-        <!-- Full-width content sections -->
         <div class="space-y-6">
-            <!-- Traffic Overview Chart - now full width -->
             <div class="bg-neutral-800 rounded-lg shadow-md">
                 <div class="p-6 border-b border-neutral-700">
                     <h3 class="text-lg font-medium text-white">Traffic Overview</h3>
@@ -114,7 +104,6 @@
                 </div>
             </div>
 
-            <!-- Popular Posts - now full width -->
             <div class="bg-neutral-800 rounded-lg shadow-md">
                 <div class="p-6 border-b border-neutral-700">
                     <h3 class="text-lg font-medium text-white">Most Popular Posts This Week</h3>
@@ -169,7 +158,6 @@
                 </div>
             </div>
 
-            <!-- Comments Needing Approval - moved below Most Popular Posts -->
             <div class="bg-neutral-800 rounded-lg shadow-md">
                 <div class="p-6 border-b border-neutral-700 flex justify-between items-center">
                     <h3 class="text-lg font-medium text-white">Comments Needing Approval</h3>
@@ -230,9 +218,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
-
-// Import analytics service
-import { useAdminClient } from '@cmmv/blog/admin';
+import { useAdminClient } from '../client';
 
 const adminAPI = useAdminClient();
 const analytics = adminAPI.analytics;
@@ -571,11 +557,11 @@ onMounted(async () => {
 });
 
 const formatNumber = (num) => {
-    if (num >= 1000000) {
+    if (num >= 1000000)
         return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
+    else if (num >= 1000)
         return (num / 1000).toFixed(1) + 'k';
-    }
+
     return num.toString();
 };
 

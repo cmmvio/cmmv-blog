@@ -22,10 +22,18 @@
     },
     "typesVersions": {
         "*": {
-            "client": ["dist/client/index.d.ts"],
-            "admin": ["dist/admin/index.d.ts"],
-            "api": ["dist/api/index.d.ts"],
-            "contracts": ["dist/contracts/index.d.ts"]
+            "client": [
+                "dist/client/index.d.ts"
+            ],
+            "admin": [
+                "dist/admin/index.d.ts"
+            ],
+            "api": [
+                "dist/api/index.d.ts"
+            ],
+            "contracts": [
+                "dist/contracts/index.d.ts"
+            ]
         }
     },
     "files": [
@@ -60,10 +68,10 @@
         "start:admin": "cd apps/admin && pnpm start",
         "start:web": "cd apps/web && pnpm start",
         "clean:packages": "find ./packages -name 'node_modules' -prune -o -type f \\( -name '*.d.ts' -o -name '*.js' -o -name '*.js.map' \\) -exec rm -f {} +",
-		"clean": "pnpm run clean:packages > /dev/null 2>&1"
+        "clean": "pnpm run clean:packages > /dev/null 2>&1"
     },
     "devDependencies": {
-        "eslint": "^9.24.0",
+        "eslint": "^9.25.0",
         "prettier": "^3.5.3",
         "turbo": "^2.5.0"
     }
