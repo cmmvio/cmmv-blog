@@ -47,7 +47,10 @@ export default defineConfig(({ mode }) => {
             },
         },
         server: {
-            allowedHosts: ['blog.cmmv.io'],
+            allowedHosts: [
+                'blog.cmmv.io',
+                'andreferreira.com.br'
+            ],
 
             proxy: {
                 '/api': {
