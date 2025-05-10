@@ -11,7 +11,8 @@
                                 <img src="/TT_VER BRANCO.png" alt="TestaTudo Logo" class="h-auto w-56 max-h-12">
                             </a>
                         </div>
-                        <div class="flex items-center space-x-4">
+                        <!-- Desktop buttons -->
+                        <div class="hidden md:flex items-center space-x-4">
                             <button @click="openSearchModal" class="search-icon bg-transparent text-white border-none text-xl cursor-pointer p-2 hover:text-[#ff0030] transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -20,6 +21,21 @@
                             <a href="#" class="text-gray-300 text-sm hover:text-[#ff0030] transition-colors">Entrar</a>
                             <a href="#" class="text-gray-300 text-sm hover:text-[#ff0030] transition-colors">Cadastrar</a>
                         </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <div class="md:hidden flex items-center space-x-3">
+                            <button @click="openSearchModal" class="text-white hover:text-[#ff0030] transition-colors" title="Search" aria-label="Search">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                            <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-white hover:text-[#ff0030] transition-colors" title="Menu" aria-label="Menu">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path v-if="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -27,18 +43,41 @@
                 <div class="max-w-[1200px] mx-auto px-4">
                     <div class="mx-auto">
                         <div class="nav-container flex justify-between items-center relative">
-                            <!-- Menu para desktop -->
-                            <div class="categories flex flex-wrap overflow-x-auto scrollbar-hide py-1 w-full md:w-auto">
-                                <a href="/" class="text-white px-4 py-2 mr-2 font-medium text-sm md:text-base rounded hover:bg-[#ff0030] bg-[#ff0030] transition-colors whitespace-nowrap">Home</a>
+                            <!-- Desktop Navigation -->
+                            <nav class="hidden md:flex items-center space-x-1">
+                                <a href="/" class="text-white px-4 py-2 mr-1 font-medium text-sm md:text-base rounded hover:bg-[#ff0030] bg-[#ff0030] transition-colors whitespace-nowrap">Home</a>
                                 <template v-for="category in mainNavCategories.rootCategories" :key="category.id">
-                                    <a
+                                    <div v-if="mainNavCategories.childrenMap[category.id]" class="relative">
+                                        <button
+                                            @click="(e) => toggleDropdown(category.id, e)"
+                                            class="dropdown-toggle text-white hover:bg-[#2b2b2b] hover:text-[#ff0030] px-4 py-2 mr-1 rounded text-sm md:text-base flex items-center whitespace-nowrap transition-colors"
+                                            :class="{'bg-[#2b2b2b] text-[#ff0030]': openDropdowns[category.id]}"
+                                        >
+                                            {{ category.name }}
+                                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <div
+                                            v-show="openDropdowns[category.id]"
+                                            class="dropdown-menu absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-[#1a1a1a] ring-1 ring-black ring-opacity-5 z-10"
+                                        >
+                                            <a v-for="child in mainNavCategories.childrenMap[category.id]" :key="child.id"
+                                                :href="`/category/${child.slug}`"
+                                                class="block text-white hover:bg-[#2b2b2b] hover:text-[#ff0030] px-3 py-2 text-sm transition-colors"
+                                            >
+                                                {{ child.name }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <a v-else
                                         :href="`/category/${category.slug}`"
-                                        class="text-white px-4 py-2 mr-2 font-medium text-sm md:text-base rounded hover:bg-[#ff0030] transition-colors whitespace-nowrap"
+                                        class="text-white hover:bg-[#2b2b2b] hover:text-[#ff0030] px-4 py-2 mr-1 rounded text-sm md:text-base whitespace-nowrap transition-colors"
                                     >
                                         {{ category.name }}
                                     </a>
                                 </template>
-                            </div>
+                            </nav>
 
                             <!-- Ícones de redes sociais -->
                             <div class="hidden md:flex items-center space-x-4">
@@ -66,6 +105,51 @@
 
                             <!-- Indicador de rolagem em dispositivos móveis -->
                             <div class="absolute right-0 bottom-0 w-8 h-full bg-gradient-to-r from-transparent to-[#111] pointer-events-none md:hidden"></div>
+                        </div>
+
+                        <!-- Mobile Menu (expandable) -->
+                        <div v-show="mobileMenuOpen" class="md:hidden py-3 border-t border-[#2b2b2b]">
+                            <div class="flex flex-col gap-1">
+                                <a 
+                                    href="/" 
+                                    class="block text-white hover:bg-[#2b2b2b] hover:text-[#ff0030] rounded px-3 py-2 text-sm font-medium"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Home
+                                </a>
+                                <template v-for="category in mainNavCategories.rootCategories" :key="category.id">
+                                    <div v-if="mainNavCategories.childrenMap[category.id]" class="w-full">
+                                        <button
+                                            @click="(e) => toggleDropdown(category.id, e)"
+                                            class="dropdown-toggle flex items-center justify-between w-full text-white hover:bg-[#2b2b2b] hover:text-[#ff0030] rounded px-3 py-2 text-sm"
+                                            :class="{'bg-[#2b2b2b] text-[#ff0030]': openDropdowns[category.id]}"
+                                        >
+                                            {{ category.name }}
+                                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </button>
+                                        <div v-show="openDropdowns[category.id]" class="pl-4 py-1 bg-[#2b2b2b] rounded mt-1">
+                                            <a
+                                                v-for="child in mainNavCategories.childrenMap[category.id]"
+                                                :key="child.id"
+                                                :href="`/category/${child.slug}`"
+                                                class="block px-4 py-2 text-sm text-white hover:bg-[#111] hover:text-[#ff0030] rounded"
+                                            >
+                                                {{ child.name }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <a
+                                        v-else
+                                        :href="`/category/${category.slug}`"
+                                        class="block text-white hover:bg-[#2b2b2b] hover:text-[#ff0030] rounded px-3 py-2 text-sm"
+                                        @click="mobileMenuOpen = false"
+                                    >
+                                        {{ category.name }}
+                                    </a>
+                                </template>
+                            </div>
                         </div>
 
                         <!-- Redes sociais em dispositivos móveis -->
@@ -121,7 +205,7 @@
                     <div>
                         <h3 class="text-lg font-semibold text-white border-b-2 border-[#ff0030] pb-2 mb-4 inline-block">Categorias</h3>
                         <ul class="space-y-2">
-                            <li v-for="category in categoriesColumns[0]" :key="category.id">
+                            <li v-for="category in footerRootCategories" :key="category.id">
                                 <a :href="`/category/${category.slug}`" class="text-gray-400 hover:text-[#ff0030] transition-colors text-sm">
                                     {{ category.name }}
                                 </a>
@@ -357,6 +441,10 @@ const toggleDropdown = (categoryId: string, event: Event) => {
     }
 };
 
+const toggleMobileMenu = () => {
+    mobileMenuOpen.value = !mobileMenuOpen.value;
+};
+
 const openSearchModal = () => {
     searchModalOpen.value = true;
     setTimeout(() => {
@@ -428,6 +516,10 @@ const categoriesColumns = computed(() => {
     ];
 });
 
+const footerRootCategories = computed(() => {
+    return categories.value.filter((category) => !category.parentCategory);
+});
+
 onMounted(async () => {
     await Promise.all([
         (async () => {
@@ -448,10 +540,22 @@ onMounted(async () => {
     document.documentElement.classList.remove('dark');
     localStorage.setItem('theme', 'light');
     document.addEventListener('click', closeDropdownsOnClickOutside);
+    
+    // Close mobile menu on window resize (if screen becomes larger)
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768 && mobileMenuOpen.value) {
+            mobileMenuOpen.value = false;
+        }
+    });
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeDropdownsOnClickOutside);
+    window.removeEventListener('resize', () => {
+        if (window.innerWidth >= 768 && mobileMenuOpen.value) {
+            mobileMenuOpen.value = false;
+        }
+    });
 });
 
 const closeDropdownsOnClickOutside = (event: Event) => {

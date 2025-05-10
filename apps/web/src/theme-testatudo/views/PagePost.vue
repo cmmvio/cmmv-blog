@@ -343,14 +343,14 @@
                     </div>
 
                     <!-- Veja Também (See Also) Section -->
-                    <div class="mt-12 mb-8">
-                        <h3 class="text-xl font-bold mb-6 pb-2 text-[#0a5d28] border-b-2 border-[#ffcc00]">
+                    <section class="mt-12 mb-8">
+                        <h2 class="text-left text-2xl font-bold text-gray-800 border-b-2 border-[#ff0030] pb-2 mb-6 relative">
                             Veja Também
-                        </h3>
+                        </h2>
 
                         <div ref="relatedPostsObserver" class="min-h-[200px]">
                             <div v-if="!relatedPostsLoaded" class="flex justify-center items-center py-6">
-                                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#0a5d28]"></div>
+                                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#ff0030]"></div>
                                 <span class="ml-3 text-gray-600">Carregando posts relacionados...</span>
                             </div>
 
@@ -358,7 +358,7 @@
                                 <div
                                     v-for="relatedPost in relatedPosts"
                                     :key="relatedPost.id"
-                                    class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1 duration-300"
+                                    class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow"
                                 >
                                     <a :href="`/post/${relatedPost.slug}`" class="block">
                                         <div class="h-40 overflow-hidden relative">
@@ -366,7 +366,11 @@
                                                 v-if="relatedPost.featureImage"
                                                 :src="relatedPost.featureImage"
                                                 :alt="relatedPost.title"
-                                                class="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                                                class="w-full h-full object-cover"
+                                                loading="lazy"
+                                                width="890"
+                                                height="606"
+                                                :title="relatedPost.title"
                                             />
                                             <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -374,7 +378,7 @@
                                                 </svg>
                                             </div>
                                             <div v-if="relatedPost.categories && relatedPost.categories.length > 0" class="absolute top-2 left-2">
-                                                <span class="bg-[#ffcc00] text-[#333] px-2 py-1 rounded-md text-xs font-medium">
+                                                <span class="bg-[#ff0030] text-white px-2 py-1 rounded-md text-xs font-medium">
                                                     {{ relatedPost.categories[0].name }}
                                                 </span>
                                             </div>
@@ -382,7 +386,7 @@
                                     </a>
                                     <div class="p-4">
                                         <a :href="`/post/${relatedPost.slug}`" class="block">
-                                            <h4 class="text-lg font-bold text-gray-800 mb-2 hover:text-[#0a5d28] transition-colors line-clamp-2">
+                                            <h4 class="text-lg font-bold text-gray-800 mb-2 hover:text-[#ff0030] transition-colors line-clamp-2">
                                                 {{ relatedPost.title }}
                                             </h4>
                                         </a>
@@ -400,7 +404,7 @@
                                 Nenhum post relacionado encontrado.
                             </div>
                         </div>
-                    </div>
+                    </section>
 
                     <div id="comments-container" ref="commentsObserver" class="mt-10 min-h-[100px]">
                         <div v-if="!commentsLoaded" class="text-center py-4 text-gray-600">
