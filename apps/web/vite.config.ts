@@ -10,8 +10,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), 'VITE');
-    const apiUrl = env.VITE_API_URL || 'http://localhost:5000';
-    const adminUrl = env.VITE_API_URL || 'http://localhost:5002';
+    const apiUrl = env.VITE_API_URL || 'http://localhost:6020';
+    const adminUrl = env.VITE_API_URL || 'http://localhost:6002';
     const allowedHosts = env.VITE_ALLOWED_HOSTS || 'blog.cmmv.io';
 
     const forwardRefreshToken = (proxy: any) => {

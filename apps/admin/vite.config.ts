@@ -6,7 +6,7 @@ import type { ConfigEnv, UserConfig } from 'vite'
 export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => {
     await new Promise((res) => setTimeout(res, 5000));
     const env = loadEnv(mode, process.cwd(), 'VITE')
-    const apiUrl = env.VITE_API_URL || 'http://localhost:5000';
+    const apiUrl = env.VITE_API_URL || 'http://localhost:6020';
     const allowedHosts = env.VITE_ALLOWED_HOSTS || 'blog.cmmv.io';
     const whitelabelApiUrls: Record<string, string> = {};
 
@@ -55,7 +55,7 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
             return false;
         } finally {
             if (retryCount < maxRetries) {
-                const delay = Math.min(2000 * Math.pow(1.5, retryCount), 10000);
+                const delay = Math.min(2000 * Math.pow(1.5, retryCount), 1000);
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return fetchWhitelabelApiUrls(retryCount + 1, maxRetries);
             } else {
@@ -167,7 +167,7 @@ export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => 
         },
         server: {
             allowedHosts: allowedHosts.split(',').map(host => host.trim()),
-            port: Number(env.VITE_PORT) || 5002,
+            port: Number(env.VITE_PORT) || 6002,
             host: "0.0.0.0",
             proxy: generateProxyConfig()
         },
