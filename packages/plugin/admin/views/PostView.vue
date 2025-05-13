@@ -2109,8 +2109,30 @@ function saveDraft() {
             postData.authors = [postData.author];
     }
 
-    if (post.value.status === 'cron' && scheduleDate.value)
-        postData.autoPublishAt = new Date(scheduleDate.value).getTime();
+    if (post.value.status === 'cron' && scheduleDate.value) {
+        // Garantir que o timestamp seja correto para o fuso horário do cliente
+        
+        const scheduleDateComponents = scheduleDate.value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+        
+        if (scheduleDateComponents) {
+            const [_, year, month, day, hours, minutes] = scheduleDateComponents;
+            // Criar a data baseada nos componentes (no fuso horário local)
+            const dt = new Date();
+            dt.setFullYear(parseInt(year));
+            dt.setMonth(parseInt(month) - 1); // Mês é base 0 em JS
+            dt.setDate(parseInt(day));
+            dt.setHours(parseInt(hours));
+            dt.setMinutes(parseInt(minutes));
+            dt.setSeconds(0);
+            dt.setMilliseconds(0);
+            
+            postData.autoPublishAt = dt.getTime();
+        } else {
+            // Fallback para o método anterior se o formato não corresponder
+            const originalDate = new Date(scheduleDate.value);
+            postData.autoPublishAt = originalDate.getTime();
+        }
+    }
 
     const payload = {
         post: postData,
@@ -2204,8 +2226,16 @@ async function loadPost(postId) {
                 editor.commands.setContent(post.value.content)
 
             if (post.value.status === 'cron' && post.value.autoPublishAt) {
+                // Manter a data/hora original do post
                 const date = new Date(post.value.autoPublishAt)
-                scheduleDate.value = date.toISOString().slice(0, 16)
+                // Formato ISO para datetime-local (YYYY-MM-DDTHH:MM)
+                const year = date.getFullYear()
+                const month = String(date.getMonth() + 1).padStart(2, '0')
+                const day = String(date.getDate()).padStart(2, '0')
+                const hours = String(date.getHours()).padStart(2, '0')
+                const minutes = String(date.getMinutes()).padStart(2, '0')
+                
+                scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`
             }
 
             nextTick(() => {

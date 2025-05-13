@@ -1218,14 +1218,6 @@ const loadRelatedPosts = async () => {
 // Load the AdSense script if enabled
 const loadAdScripts = () => {
     if (adSettings.value.enableAds) {
-        console.log('Loading ad scripts in PagePost. Ad settings:', {
-            enableAds: adSettings.value.enableAds,
-            enableAdSense: adSettings.value.enableAdSense,
-            enableAdSenseAutoAds: adSettings.value.enableAdSenseAutoAds,
-            adSenseSidebarLeft: adSettings.value.adSenseSidebarLeft
-        });
-
-        // Load AdSense if enabled
         if (adSettings.value.enableAdSense && adSettings.value.enableAdSenseAutoAds && adSettings.value.adSenseAutoAdsCode) {
             const existingScript = document.getElementById('adsense-script');
             if (!existingScript) {
@@ -1252,26 +1244,19 @@ const loadAdScripts = () => {
             }
         }
 
-        // Insert sidebar left ad code directly into DOM
         if (adSettings.value.adSenseSidebarLeft && sidebarLeftAdContainer.value) {
             try {
-                // Wait a bit for the DOM to be ready
                 setTimeout(() => {
-                    // Create a temporary div to parse the HTML
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = adSettings.value.adSenseSidebarLeft;
-
-                    // Get the ins element
                     const insElement = tempDiv.querySelector('ins');
+
                     if (insElement) {
                         sidebarLeftAdContainer.value.appendChild(insElement);
-                        console.log('Left sidebar ad inserted into DOM');
 
-                        // Initialize AdSense for this specific ad
                         if (window.adsbygoogle) {
                             try {
                                 window.adsbygoogle.push({});
-                                console.log('AdSense push called for left sidebar ad');
                             } catch (e) {
                                 console.error('Error initializing left sidebar ad:', e);
                             }
@@ -1285,14 +1270,11 @@ const loadAdScripts = () => {
             }
         }
 
-        // Initialize other AdSense ad units
         if (adSettings.value.enableAdSense && window.adsbygoogle) {
             setTimeout(() => {
                 try {
-                    console.log('Initializing AdSense ads in PagePost. Found adsbygoogle units:', document.querySelectorAll('.adsbygoogle').length);
                     document.querySelectorAll('.adsbygoogle').forEach((ad) => {
                         if (!ad.hasAttribute('data-adsbygoogle-status')) {
-                            console.log('Pushing ad unit to AdSense:', ad);
                             (window.adsbygoogle = window.adsbygoogle || []).push({});
                         } else {
                             console.log('Ad unit already initialized:', ad.getAttribute('data-adsbygoogle-status'));
@@ -1306,7 +1288,6 @@ const loadAdScripts = () => {
     }
 };
 
-// Elements references
 const sidebarLeftAdContainer = ref(null);
 </script>
 

@@ -47,7 +47,7 @@ export class PostsPublicService {
         private readonly autopostService: AutopostService
     ){}
 
-    @Cron(CronExpression.EVERY_30_MINUTES)
+    @Cron(CronExpression.EVERY_5_MINUTES)
     async handleCronJobs() {
         return await this.processCrons.call(this);
     }
@@ -1431,17 +1431,29 @@ export class PostsPublicService {
      * Process the crons for the posts
      * @returns {Promise<any>}
      */
-    async processCrons(){
-        const PostsEntity = Repository.getEntity("PostsEntity");
-        const posts = await Repository.findAll(PostsEntity, {
-            status: "cron"
-        });
+    async processCrons() {
+        try {
+            const PostsEntity = Repository.getEntity("PostsEntity");
+            const currentTimestamp = new Date().getTime();
+            
+            // Buscar todos os posts agendados
+            const posts = await Repository.findAll(PostsEntity, {
+                status: "cron",
+                limit: 1000 // Garantir que todos os posts sejam retornados
+            });
 
-        if (posts) {
-            for (const post of posts.data) {
-                if (post.autoPublishAt && post.autoPublishAt < new Date().getTime())
-                    await this.publishPost(post.id);
+            if (posts && posts.data.length > 0) {
+                //console.log(`[processCrons] Verificando ${posts.data.length} posts agendados. Timestamp atual: ${currentTimestamp}`);
+                
+                for (const post of posts.data) {
+                    if (post.autoPublishAt && post.autoPublishAt <= currentTimestamp) {
+                        //console.log(`[processCrons] Publicando post ${post.id} (agendado para ${new Date(post.autoPublishAt).toISOString()})`);
+                        await this.publishPost(post.id);
+                    } 
+                }
             }
+        } catch (error) {
+            console.error(`[processCrons] Erro ao processar posts agendados:`, error);
         }
     }
 

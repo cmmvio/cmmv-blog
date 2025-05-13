@@ -64,7 +64,7 @@
             "@cmmv/affiliate/*": ["../../packages/affiliate/api/*"]
         }
     },
-    "include": ["src/*.ts", ".generated/*.ts"],
+    "include": ["src/**/*", ".generated/**/*"],
     "exclude": [
         "node_modules", "dist", "src/protos",
         "**/*.spec.ts", "packages/plugin"

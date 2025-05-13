@@ -3,15 +3,6 @@
     "version": "0.0.1",
     "private": true,
     "description": "Blog API sample",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "exports": {
-        ".": {
-        "import": "./dist/index.js",
-        "require": "./dist/index.js"
-        }
-    },
-    "types": "./dist/index.d.ts",
     "dev": {
         "watch": [
             "src",
@@ -36,8 +27,8 @@
     },
     "scripts": {
         "dev": "cmmv dev --watch --debug",
-        "build": "tsup src/main.ts --out-dir dist --format esm,cjs",
-        "start": "NODE_ENV=production cmmv run ./dist/main.js"
+        "build": "echo 'build'",
+        "start": "cmmv dev"
     },
     "peerDependencies": {
         "cli-cursor": "^5.0.0",
@@ -59,5 +50,8 @@
         "cache-manager-fs-binary": "^1.0.4",
         "sharp": "^0.34.1",
         "tsx": "^4.19.4"
+    },
+    "devDependencies": {
+        "tsconfig-paths": "^4.2.0"
     }
 }

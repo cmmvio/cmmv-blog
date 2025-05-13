@@ -212,7 +212,6 @@
                                 <th class="p-4 min-w-[250px]">Title</th>
                                 <th class="p-4 w-44 lg:w-48">Categories</th>
                                 <th class="p-4 w-32 hidden lg:table-cell">Stats</th>
-                                <th class="p-4 hidden xl:table-cell w-44">Published</th>
                                 <th class="p-4 w-28 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -252,7 +251,7 @@
                                                     </span>
                                                 </template>
                                                 <template v-else>
-                                                    {{ formatDate(post.publishedAt || post.createdAt) }}
+                                                    {{ formatDate(post.publishedAt || post.createdAt) }} {{ formatTime(post.publishedAt || post.createdAt) }}
                                                 </template>
                                             </span>
                                         </div>
@@ -280,20 +279,6 @@
                                         </svg>
                                         {{ formatNumber(post.comments || 0) }}
                                     </div>
-                                </td>
-                                <td class="p-4 hidden xl:table-cell text-xs text-neutral-400">
-                                    <template v-if="post.status === 'cron' && post.scheduledPublishDate">
-                                        <div class="flex items-center bg-blue-900/20 px-2 py-1.5 rounded">
-                                            <i class="far fa-calendar-alt mr-1.5 text-blue-400"></i>
-                                            <div class="flex flex-col">
-                                                <span class="text-blue-300 font-medium">Agendado para:</span>
-                                                <span class="text-white">{{ post.scheduledPublishDate }}</span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template v-else>
-                                        {{ formatDate(post.publishedAt || post.createdAt) }}
-                                    </template>
                                 </td>
                                 <td class="p-4 text-right">
                                     <div class="flex items-center justify-end space-x-2">
@@ -713,7 +698,7 @@ function formatDate(timestamp) {
 function formatTime(timestamp) {
     if (!timestamp) return ''
     const date = new Date(timestamp)
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 function getStatusClass(status) {
