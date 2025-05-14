@@ -433,7 +433,6 @@ const loadGroups = async () => {
         error.value = null;
 
         const response = await client.groups.get();
-        console.log('Groups response:', response);
 
         if (response && Array.isArray(response.data)) {
             groups.value = response.data;
@@ -476,7 +475,6 @@ const loadGroups = async () => {
 
         loading.value = false;
     } catch (err) {
-        console.error('Failed to load groups:', err);
         loading.value = false;
         error.value = err.message || 'Failed to load groups';
         showNotification('error', 'Failed to load groups');
@@ -515,7 +513,6 @@ const loadRoles = async () => {
             });
         } else if (response && response.contracts) {
             const contractsData = response.contracts;
-            console.log('Alternative contracts data:', contractsData);
 
             Object.entries(contractsData).forEach(([contractName, contractData]) => {
                 if (contractData.roles && contractData.roles.length) {
@@ -585,12 +582,7 @@ const loadRoles = async () => {
             extractRoles(response);
         }
 
-        console.log('Processed roles:', availableRoles.value);
-
         if (availableRoles.value.length === 0) {
-            // Last resort: create some mock roles for testing
-            console.warn('No roles found in API response, using fallback mock data');
-
             const mockContracts = ['Posts', 'Users', 'Comments'];
             const mockActions = ['get', 'insert', 'update', 'delete'];
 
@@ -616,7 +608,6 @@ const loadRoles = async () => {
 
         loadingRoles.value = false;
     } catch (err) {
-        console.error('Failed to load roles:', err);
         loadingRoles.value = false;
         showNotification('error', 'Failed to load roles: ' + (err.message || 'Unknown error'));
     }
@@ -702,19 +693,11 @@ const saveGroup = async () => {
             roles: groupForm.value.roles || []
         };
 
-        console.log('Saving group with data:', groupData);
-
         if (isEditing.value) {
-            // Update group with roles included
             const updateResponse = await client.groups.update(groupToEdit.value.id, groupData);
-            console.log('Group update response:', updateResponse);
-
             showNotification('success', 'Group updated successfully');
         } else {
-            // Create group with roles included
             const createResponse = await client.groups.create(groupData);
-            console.log('Group create response:', createResponse);
-
             showNotification('success', 'Group created successfully');
         }
 
@@ -723,7 +706,6 @@ const saveGroup = async () => {
         refreshData();
     } catch (err) {
         formLoading.value = false;
-        console.error('Failed to save group:', err);
 
         if (err.response?.data?.errors) {
             formErrors.value = err.response.data.errors;
@@ -766,7 +748,6 @@ const deleteGroup = async () => {
         refreshData();
     } catch (err) {
         deleteLoading.value = false;
-        console.error('Failed to delete group:', err);
         showNotification('error', err.message || 'Failed to delete group');
     }
 };

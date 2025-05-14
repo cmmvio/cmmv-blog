@@ -1,6 +1,6 @@
 <template>
     <div class="w-full relative bg-neutral-100">
-        <div class="w-full max-w-[1400px] mx-auto px-4">
+        <div class="w-full max-w-[1200px] mx-auto px-4">
             <div v-if="!post" class="bg-white rounded-lg p-6">
                 <div class="text-center">
                     <h1 class="text-2xl font-bold text-neutral-800 mb-4">Post não encontrado</h1>
@@ -23,25 +23,11 @@
 
                 <!-- Main Content Layout -->
                 <div class="flex flex-col lg:flex-row gap-8">
-                    <!-- Left AdSense Sidebar -->
-                    <aside class="xl:w-[160px] shrink-0 hidden xl:block" v-if="adSettings.enableAds">
-                        <div class="sticky top-24">
-                            <div class="ad-container ad-sidebar-left mb-6" v-if="adSettings.adSenseSidebarLeft">
-                                <div ref="sidebarLeftAdContainer"></div>
-                            </div>
-                            <div class="ad-container ad-sidebar-left mb-6" v-else>
-                                <div class="ad-placeholder h-[600px] w-[160px] bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
-                                    <span>Anúncio</span>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
                     <!-- Main Content Area -->
                     <div class="flex-grow">
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                             <!-- Main Post Content (2 columns width) -->
-                            <div class="lg:col-span-2 bg-white rounded-lg p-4 relative">
+                            <div class="lg:col-span-3 bg-white rounded-lg p-4 relative">
                                 <div class="w-full mx-auto overflow-hidden">
                                     <h1 class="post-title text-neutral-900 text-3xl md:text-4xl font-bold break-words mb-4">{{ post.title }}</h1>
 
@@ -307,9 +293,7 @@
 
                                     <!-- Comments Section -->
                                     <div id="comments-container" ref="commentsObserver" class="mt-10 min-h-[100px]">
-                                        <div v-if="!commentsLoaded" class="text-center py-4 text-gray-600">
-                                            Os comentários serão carregados quando você rolar até aqui.
-                                        </div>
+                                        <div v-if="!commentsLoaded" class="text-center py-4 text-gray-600"></div>
                                     </div>
                                 </div>
                             </div>
@@ -317,7 +301,7 @@
                             <!-- Right Column (Widgets + Ads) -->
                             <div class="lg:col-span-1">
                                 <!-- AdSense Rectangle (Top) -->
-                                <div v-if="adSettings.enableAds && adSettings.articlePageSidebarTop" class="bg-gray-100 rounded-lg shadow-md p-2 mb-6 flex justify-center overflow-hidden">
+                                <div v-if="adSettings.enableAds && adSettings.articlePageSidebarTop" class="bg-gray-100 rounded-lg p-2 mb-6 flex justify-center overflow-hidden">
                                     <div class="ad-container ad-sidebar-top" v-if="getAdHtml('sidebarTop')">
                                         <div v-html="getAdHtml('sidebarTop')"></div>
                                     </div>
@@ -329,7 +313,7 @@
                                 </div>
 
                                 <!-- AdSense Rectangle (Middle) -->
-                                <div v-if="adSettings.enableAds && adSettings.articlePageSidebarMid" class="bg-gray-100 rounded-lg shadow-md p-2 mb-6 flex justify-center overflow-hidden">
+                                <div v-if="adSettings.enableAds && adSettings.articlePageSidebarMid" class="bg-gray-100 rounded-lg p-2 mb-6 flex justify-center overflow-hidden">
                                     <div class="ad-container ad-sidebar-mid" v-if="getAdHtml('sidebarMid')">
                                         <div v-html="getAdHtml('sidebarMid')"></div>
                                     </div>
@@ -480,7 +464,7 @@
                                 </div>
 
                                 <!-- AdSense Rectangle (Bottom) -->
-                                <div v-if="adSettings.enableAds && adSettings.articlePageSidebarBottom" class="bg-gray-100 rounded-lg shadow-md p-2 mb-6 flex justify-center">
+                                <div v-if="adSettings.enableAds && adSettings.articlePageSidebarBottom" class="bg-gray-100 rounded-lg p-2 mb-6 flex justify-center">
                                     <div class="ad-container ad-sidebar-bottom" v-if="getAdHtml('sidebarBottom')">
                                         <div v-html="getAdHtml('sidebarBottom')"></div>
                                     </div>
@@ -1080,7 +1064,6 @@ const loadDisqusComments = () => {
         if (!document.body.contains(commentsContainer)) return;
         commentsContainer.appendChild(disqusThread);
 
-        // Usar setTimeout para garantir que o Disqus seja carregado após o DOM ser atualizado
         setTimeout(() => {
             try {
                 if (!isMounted.value || !document.body.contains(disqusThread)) return;

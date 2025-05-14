@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full max-w-[1400px] mx-auto px-4">
+    <div class="w-full max-w-[1200px] mx-auto px-4">
         <div v-if="error" class="text-center py-16 bg-white rounded-lg shadow-md">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -259,19 +259,6 @@
 
             <!-- Main Content Layout -->
             <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Left AdSense Sidebar -->
-                <aside class="xl:w-[160px] shrink-0 hidden xl:block" v-if="adSettings.enableAds">
-                    <div class="sticky top-24">
-                        <div class="ad-container ad-sidebar-left mb-6" v-if="adSettings.adSenseSidebarLeft">
-                            <div ref="sidebarLeftAdContainer"></div>
-                        </div>
-                        <div class="ad-container ad-sidebar-left mb-6" v-else>
-                            <div class="ad-placeholder h-[600px] w-[160px] bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
-                                <span>Anúncio</span>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
 
                 <!-- Main Content Area -->
                 <div class="flex-grow">
@@ -413,7 +400,7 @@
                         <!-- Right Column (Widgets + Ads) -->
                         <div class="lg:col-span-1">
                             <!-- AdSense Rectangle (Top) -->
-                            <div v-if="adSettings.enableAds && adSettings.homePageSidebarTop" class="bg-gray-100 rounded-lg shadow-md p-2 mb-6 flex justify-center">
+                            <div v-if="adSettings.enableAds && adSettings.homePageSidebarTop" class="bg-gray-100 rounded-lg p-2 mb-6 flex justify-center h-[400px]">
                                 <div class="ad-container ad-sidebar-top" v-if="getAdHtml('sidebarTop')">
                                     <div v-html="getAdHtml('sidebarTop')"></div>
                                 </div>
@@ -466,7 +453,7 @@
                             </div>
 
                             <!-- AdSense Rectangle (Middle) -->
-                            <div class="bg-gray-100 rounded-lg shadow-md p-2 mb-6 flex justify-center">
+                            <div class="bg-gray-100 rounded-lg p-2 mb-6 flex justify-center">
                                 <div class="ad-container ad-sidebar-mid" v-if="getAdHtml('sidebarMid')">
                                     <div v-html="getAdHtml('sidebarMid')"></div>
                                 </div>
@@ -499,7 +486,7 @@
                             </div>
 
                             <!-- AdSense Rectangle (Bottom) -->
-                            <div v-if="adSettings.enableAds && adSettings.homePageSidebarBottom" class="bg-gray-100 rounded-lg shadow-md p-2 mb-6 flex justify-center">
+                            <div v-if="adSettings.enableAds && adSettings.homePageSidebarBottom" class="bg-gray-100 rounded-lg p-2 mb-6 flex justify-center">
                                 <div class="ad-container ad-sidebar-bottom" v-if="getAdHtml('sidebarBottom')">
                                     <div v-html="getAdHtml('sidebarBottom')"></div>
                                 </div>

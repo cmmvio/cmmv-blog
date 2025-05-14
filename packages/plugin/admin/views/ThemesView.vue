@@ -359,24 +359,20 @@ const activateTheme = async (theme) => {
     if (theme.active || activatingTheme.value === theme.name) return
 
     try {
-        activatingTheme.value = theme.name
+        activatingTheme.value = theme.namespace
 
-        await adminClient.themes.setActive(theme.name)
+        await adminClient.themes.setActive(theme.namespace)
 
-        // Mark all themes as inactive
         themes.value = themes.value.map(t => ({
             ...t,
-            active: t.name === theme.name
+            active: t.namespace === theme.namespace
         }))
 
-        // Update selected theme if in detail view
-        if (selectedTheme.value && selectedTheme.value.name === theme.name) {
+        if (selectedTheme.value && selectedTheme.value.namespace === theme.namespace)
             selectedTheme.value = { ...selectedTheme.value, active: true }
-        }
 
         showNotification('success', `Theme "${theme.name}" has been activated successfully`)
     } catch (err) {
-        console.error('Failed to activate theme:', err)
         showNotification('error', err.message || `Failed to activate theme "${theme.name}"`)
     } finally {
         activatingTheme.value = null

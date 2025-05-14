@@ -464,10 +464,6 @@ const mobileMenuOpen = ref(false);
 
 const categories = ref<any[]>(categoriesStore.getCategories || []);
 
-const footerCategories = computed(() => {
-    return categories.value.slice(0, 6);
-});
-
 const mainNavCategories = computed(() => {
     const navCategories = categories.value?.filter((category: any) => category.mainNav) || [];
     navCategories.sort((a: any, b: any) => (a.mainNavIndex ?? 999) - (b.mainNavIndex ?? 999));
@@ -629,12 +625,3 @@ watch(isDarkMode, () => {
     applyTheme();
 });
 </script>
-
-<style>
-.line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-}
-</style>

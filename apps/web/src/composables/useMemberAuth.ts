@@ -1,8 +1,4 @@
-/**
- * Member authentication composable
- */
-import { ref, computed, watchEffect } from 'vue';
-
+import { ref, computed } from 'vue';
 const isBrowser = typeof window !== 'undefined';
 
 export default function useMemberAuth() {
