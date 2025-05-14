@@ -1,13 +1,11 @@
 import { computed } from 'vue';
 
-// Declare adsbygoogle for TypeScript
 declare global {
     interface Window {
         adsbygoogle: any[];
     }
 }
 
-// Helper function to handle boolean settings (could be 1, true, etc)
 const isTruthy = (value: any): boolean => {
     if (typeof value === 'boolean') return value;
     if (typeof value === 'string') {
@@ -21,7 +19,6 @@ export const useAds = (settings: any, page = 'generic') => {
         const rawSettings = settings || {};
         const processedSettings: Record<string, any> = {};
 
-        // Process settings - extract blog. prefix if present
         Object.keys(rawSettings).forEach(key => {
             if (key.startsWith('blog.')) {
                 const shortKey = key.replace('blog.', '');
@@ -32,11 +29,9 @@ export const useAds = (settings: any, page = 'generic') => {
         });
 
         const result: Record<string, any> = {
-            // Convert potential string values to proper booleans
             enableAds: isTruthy(processedSettings['enableAds']),
             showAdsLoggedIn: isTruthy(processedSettings['showAdsLoggedIn']),
 
-            // Default ad position settings by page type
             [`${page}PageHeader`]: processedSettings[`${page}PageHeader`] === undefined ? true : isTruthy(processedSettings[`${page}PageHeader`]),
             [`${page}PageSidebarTop`]: processedSettings[`${page}PageSidebarTop`] === undefined ? true : isTruthy(processedSettings[`${page}PageSidebarTop`]),
             [`${page}PageSidebarMid`]: processedSettings[`${page}PageSidebarMid`] === undefined ? true : isTruthy(processedSettings[`${page}PageSidebarMid`]),
@@ -46,7 +41,6 @@ export const useAds = (settings: any, page = 'generic') => {
             [`${page}PageAfterTitle`]: processedSettings[`${page}PageAfterTitle`] === undefined ? false : isTruthy(processedSettings[`${page}PageAfterTitle`]),
             [`${page}PageAfterCover`]: processedSettings[`${page}PageAfterCover`] === undefined ? false : isTruthy(processedSettings[`${page}PageAfterCover`]),
 
-            // AdSense settings
             enableAdSense: isTruthy(processedSettings['enableAdSense']),
             adSensePublisherId: processedSettings['adSensePublisherId'] || '',
             adSenseAutoAdsCode: processedSettings['adSenseAutoAdsCode'] || '',
@@ -61,7 +55,6 @@ export const useAds = (settings: any, page = 'generic') => {
             adSenseInArticle: processedSettings['adSenseInArticle'] || '',
             adSenseBelowContent: processedSettings['adSenseBelowContent'] || '',
 
-            // Custom Ads
             enableCustomAds: isTruthy(processedSettings['enableCustomAds']),
             customHeaderBanner: processedSettings['customHeaderBanner'] || '',
             customSidebarTop: processedSettings['customSidebarTop'] || '',
@@ -71,14 +64,12 @@ export const useAds = (settings: any, page = 'generic') => {
             customAfterTitle: processedSettings['customAfterTitle'] || '',
             customAfterCover: processedSettings['customAfterCover'] || '',
 
-            // Amazon Affiliate
             enableAmazonAds: isTruthy(processedSettings['enableAmazonAds']),
             amazonAssociateId: processedSettings['amazonAssociateId'] || '',
             amazonSidebarAd: processedSettings['amazonSidebarAd'] || '',
             amazonInContentAd: processedSettings['amazonInContentAd'] || '',
             amazonBelowContentAd: processedSettings['amazonBelowContentAd'] || '',
 
-            // Taboola Ads
             enableTaboolaAds: isTruthy(processedSettings['enableTaboolaAds']),
             taboolaPublisherId: processedSettings['taboolaPublisherId'] || '',
             taboolaBelowArticle: processedSettings['taboolaBelowArticle'] || '',
@@ -90,18 +81,15 @@ export const useAds = (settings: any, page = 'generic') => {
         return result;
     });
 
-    // Helper to get appropriate ad HTML based on position
     const getAdHtml = (position: string): string => {
         if (!adSettings.value.enableAds) return '';
 
-        // Check if position is enabled
         const positionSetting = `${page}Page${position.charAt(0).toUpperCase() + position.slice(1)}`;
-        if (positionSetting in adSettings.value && !adSettings.value[positionSetting]) {
+
+        if (positionSetting in adSettings.value && !adSettings.value[positionSetting])
             return '';
-        }
 
         if (adSettings.value.enableAdSense) {
-            // Map position to the correct AdSense setting key
             let adSenseSetting = '';
             switch (position) {
                 case 'header':
@@ -141,7 +129,6 @@ export const useAds = (settings: any, page = 'generic') => {
         }
 
         if (adSettings.value.enableCustomAds) {
-            // Map position to the correct custom ad setting key
             let customSetting = '';
             switch (position) {
                 case 'header':
@@ -205,10 +192,8 @@ export const useAds = (settings: any, page = 'generic') => {
         return '';
     };
 
-    // Load the AdSense script if enabled
     const loadAdScripts = () => {
         if (adSettings.value.enableAds) {
-            // Load AdSense if enabled
             if (adSettings.value.enableAdSense && adSettings.value.enableAdSenseAutoAds && adSettings.value.adSenseAutoAdsCode) {
                 const existingScript = document.getElementById('adsense-script');
                 if (!existingScript) {
@@ -225,16 +210,11 @@ export const useAds = (settings: any, page = 'generic') => {
                             script.src = scriptSrc;
                             script.crossOrigin = "anonymous";
                             head.appendChild(script);
-                        } else {
-                            console.error('Could not extract AdSense script URL from:', adSettings.value.adSenseAutoAdsCode);
                         }
-                    } catch (e) {
-                        console.error('Error parsing AdSense code:', e);
-                    }
+                    } catch (e) {}
                 }
             }
 
-            // Initialize AdSense ad units
             if (adSettings.value.enableAdSense && window.adsbygoogle) {
                 setTimeout(() => {
                     try {
@@ -243,52 +223,37 @@ export const useAds = (settings: any, page = 'generic') => {
                                 (window.adsbygoogle = window.adsbygoogle || []).push({});
                             }
                         });
-                    } catch (e) {
-                        console.error('AdSense initialization error:', e);
-                    }
+                    } catch (e) {}
                 }, 300);
             }
         }
     };
 
-    // Load sidebar left ad directly into DOM
     const loadSidebarLeftAd = (containerRef: HTMLElement | null) => {
         if (!adSettings.value.enableAds || !containerRef) return;
 
-        // Insert sidebar left ad code directly into DOM
         if (adSettings.value.adSenseSidebarLeft && containerRef) {
             try {
-                // Wait a bit for the DOM to be ready
                 setTimeout(() => {
-                    // Check if the reference is still valid
-                    if (!containerRef) {
+                    if (!containerRef)
                         return;
-                    }
 
-                    // Create a temporary div to parse the HTML
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = adSettings.value.adSenseSidebarLeft;
 
-                    // Get the ins element
                     const insElement = tempDiv.querySelector('ins');
+
                     if (insElement && containerRef) {
                         containerRef.appendChild(insElement);
 
-                        // Initialize AdSense for this specific ad
                         if (window.adsbygoogle) {
                             try {
                                 window.adsbygoogle.push({});
-                            } catch (e) {
-                                console.error('Error initializing left sidebar ad:', e);
-                            }
+                            } catch (e) {}
                         }
-                    } else {
-                        console.error('Could not find ins element in adSenseSidebarLeft HTML or container is no longer available');
                     }
                 }, 500);
-            } catch (e) {
-                console.error('Error inserting left sidebar ad:', e);
-            }
+            } catch (e) {}
         }
     };
 

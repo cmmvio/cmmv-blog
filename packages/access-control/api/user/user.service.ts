@@ -27,7 +27,6 @@ export class UserBlogService {
 
         if(users) {
             users.data.forEach((user: any) => {
-                console.log(user);
                 user.groups = (user.groups) ? user.groups?.split(',') : [];
                 user.roles = (user.roles) ? user.roles : [];
             });

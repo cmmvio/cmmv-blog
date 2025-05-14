@@ -7,6 +7,7 @@ import {
 } from "@cmmv/repository";
 
 export interface Theme {
+    namespace: string;
     name: string;
     description: string;
     author: string;
@@ -30,27 +31,19 @@ export class ThemesPublicService {
      */
     async getInstalledThemes() {
         const themeCurrentName = Config.get("blog.theme", "default");
-        const ThemesEntity = Repository.getEntity("ThemesEntity");
-
-        const themes = await Repository.findAll(ThemesEntity, {
-            installed: true,
-            limit: 100
-        });
-
+        const themes = await fetch(`${process.env.FRONTEND_URL}/themas`);
+        const themeList: any[] = await themes.json();
         let themesData: any[] = [];
 
-        themes?.data.map(theme => {
-
+        themeList?.map(theme => {
             themesData.push({
+                namespace: theme.namespace,
                 name: theme.name,
                 active: (theme.name.toLowerCase() === themeCurrentName.toLowerCase()),
-                installed: theme.installed,
-                lastCheck: theme.lastCheck,
                 description: theme.description,
                 author: theme.author,
                 version: theme.version,
                 preview: theme.preview,
-                url: theme.url,
             });
 
             return theme;
@@ -73,14 +66,12 @@ export class ThemesPublicService {
             });
 
             const themeData = {
+                namespace: theme.namespace,
                 name: theme.name,
                 description: theme.description,
                 author: theme.author,
                 version: theme.version,
                 preview: theme.preview,
-                installed: true,
-                lastCheck: new Date(),
-                url: theme.url,
             }
 
             if (existingTheme)
@@ -103,6 +94,18 @@ export class ThemesPublicService {
     async setActiveTheme(themeName: string) {
         Config.set("blog.theme", themeName.toLowerCase());
         await this.settingsService.updateSetting("blog.theme", themeName.toLowerCase());
+        const response = await fetch(`${process.env.FRONTEND_URL}/set-thema`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.API_SIGNATURE}`
+            },
+            body: JSON.stringify({
+                theme: themeName.toLowerCase()
+            })
+        });
+
+        console.log(await response.text());
         return { message: "Theme set as active" };
     }
 }

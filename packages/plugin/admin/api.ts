@@ -114,7 +114,6 @@ export function useApi() {
     }
 
     const login = async (credentials: { username: string; password: string; token?: string }) => {
-        // Always use root API for login
         const response = await fetch(`/api/auth/login`, {
             method: 'POST',
             headers: {

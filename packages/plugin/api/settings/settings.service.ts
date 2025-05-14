@@ -3,7 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 
 import {
-    Service
+    Service, Config
 } from "@cmmv/core";
 
 import {
@@ -318,6 +318,8 @@ VITE_DEFAULT_THEME="default"
         const settingTheme = await Repository.findOne(SettingsRepository, { key }, {
             select: [ "key", "flags" ]
         });
+
+        Config.set(key, value);
 
         if(settingTheme){
             await Repository.updateOne(SettingsRepository, { key }, {

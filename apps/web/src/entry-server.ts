@@ -1,16 +1,15 @@
-import * as fs from 'node:fs';
 import { createSSRApp } from 'vue';
 //@ts-ignore
 import { loadEnv } from 'vite';
 import { createHead } from '@unhead/vue/server'
 import { renderToString } from 'vue/server-renderer';
 import { createPiniaInstance } from "./store/index.js";
+import { useTheme } from './composables/useTheme.js';
 import { useSettingsStore } from './store/settings.js';
 import { useCategoriesStore } from "./store/categories.js";
 import { usePostsStore } from './store/posts.js';
 import { useMostAccessedPostsStore } from './store/mostaccessed.js';
 
-import ClientOnly from './components/ClientOnly.vue';
 import App from './App.vue';
 
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), 'VITE');
@@ -40,19 +39,6 @@ export async function setup(){
     if (!categories.ok)
         throw new Error('Failed to fetch categories');
 
-    const themes = import.meta.glob('./theme-*/theme.json', {
-        eager: true
-    });
-
-    await fetch(`${env.VITE_API_URL}/blog/themes`, {
-        method: 'POST',
-        body: JSON.stringify(themes),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${env.VITE_SIGNATURE}`
-        }
-    });
-
     settingsData = await settings.json();
     categoriesData = await categories.json();
     postsData = await posts.json();
@@ -71,7 +57,6 @@ export async function render(url: string) {
         const head = createHead();
         const pinia = createPiniaInstance();
 
-        app.component('ClientOnly', ClientOnly);
         app.use(pinia);
         app.use(head);
 
@@ -80,19 +65,12 @@ export async function render(url: string) {
         const postsStore = usePostsStore();
         const mostAccessedPostsStore = useMostAccessedPostsStore();
 
-        //Settings
         settingsStore.setSettings(settingsData);
-        let theme = settingsStore.getSetting('blog.theme', env.VITE_DEFAULT_THEME);
-        const routerModules = import.meta.glob('./theme-*/router.ts');
-        const importFn = routerModules[`./theme-${theme}/router.ts`];
-        //@ts-ignore
-        const { createRouter } = await importFn();
-        const router = createRouter();
-
         categoriesStore.setCategories(categoriesData);
         postsStore.setPosts(postsData.result.posts);
         mostAccessedPostsStore.setMostAccessedPosts(mostAccessedPostsData);
 
+        const { router } = await useTheme();
         router.push(url);
         await router.isReady();
 
@@ -112,7 +90,6 @@ export async function render(url: string) {
         const appFinal = createSSRApp(App);
         const headFinal = createHead();
 
-        appFinal.component('ClientOnly', ClientOnly);
         appFinal.use(router);
         appFinal.use(headFinal);
         appFinal.use(pinia);
@@ -168,7 +145,6 @@ async function resolveSSRData(obj: Record<string, Promise<any>>) {
                 const resolvedValue = value instanceof Promise ? await value : value;
                 return [key, resolvedValue];
             } catch (error) {
-                console.error(`Error resolving SSR data for key ${key}:`, error);
                 return [key, null];
             }
         })

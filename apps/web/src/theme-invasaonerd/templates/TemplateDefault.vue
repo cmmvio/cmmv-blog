@@ -165,30 +165,9 @@
             <router-view />
         </main>
 
-        <!-- Newsletter -->
-        <div class="container mx-auto px-4 mb-8">
-            <div class="bg-[#1a1a1a] rounded-lg p-8 text-center">
-                <div class="max-w-2xl mx-auto">
-                    <h3 class="text-2xl font-bold text-white mb-4">Fique por dentro de todas as novidades!</h3>
-                    <p class="text-gray-300 mb-6">Assine nossa newsletter e receba atualizações diárias sobre o mundo nerd diretamente no seu e-mail.</p>
-                    <form class="flex flex-col sm:flex-row gap-2" @submit.prevent="subscribeNewsletter">
-                        <input
-                            type="email"
-                            v-model="newsletterEmail"
-                            placeholder="Digite seu e-mail"
-                            required
-                            class="flex-grow px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff3e3e] border border-[#ff3e3e] text-white">
-                        <button type="submit" class="bg-[#ff3e3e] hover:bg-[#d12222] text-white font-semibold px-6 py-3 rounded-md transition-colors">
-                            Assinar
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <!-- Footer -->
         <footer class="bg-[#1a1a1a] text-white mt-auto">
-            <div class="container mx-auto px-4 py-12">
+            <div class="container mx-auto px-4 py-12 max-w-[1200px]">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
                         <h3 class="text-lg font-bold mb-4 pb-3 border-b-2 border-[#ff3e3e] inline-block">Sobre nós</h3>

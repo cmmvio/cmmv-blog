@@ -537,7 +537,6 @@ const loadUsers = async () => {
         loading.value = true
         error.value = null
 
-        // This is a simplified call - normally you would implement pagination/filtering here
         const response = await client.users.get()
 
         if (response.data && Array.isArray(response.data)) {
@@ -565,7 +564,6 @@ const loadUsers = async () => {
 
         loading.value = false
     } catch (err) {
-        console.error('Failed to load users:', err)
         loading.value = false
         error.value = err.message || 'Failed to load users'
         showNotification('error', 'Failed to load users')
@@ -577,7 +575,6 @@ const loadGroups = async () => {
         loadingGroups.value = true;
 
         const response = await client.groups.get();
-        console.log('Groups response:', response);
 
         if (response && Array.isArray(response.data)) {
             availableGroups.value = response.data;
@@ -585,35 +582,24 @@ const loadGroups = async () => {
             availableGroups.value = response;
         } else {
             availableGroups.value = [];
-            console.error('Unexpected groups response format:', response);
         }
 
         loadingGroups.value = false;
     } catch (err) {
-        console.error('Failed to load groups:', err);
         loadingGroups.value = false;
         showNotification('error', 'Failed to load groups');
     }
 };
 
-// Refresh data
 const refreshData = () => {
     loadUsers()
 }
 
-// Pagination methods
 const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > pagination.value.lastPage) return
     pagination.value.current = newPage
-    // In a real implementation, you would fetch the data for the new page
 }
 
-// Watch for filter changes
-watch(filters, () => {
-    // In a real implementation, you would fetch filtered data
-}, { deep: true })
-
-// Dialog methods
 const openAddDialog = () => {
     isEditing.value = false
     userForm.value = {
@@ -665,13 +651,11 @@ const closeDialog = () => {
     userToEdit.value = null
 }
 
-// Save user
 const saveUser = async () => {
     try {
         formLoading.value = true;
         formErrors.value = {};
 
-        // Validate
         if (!userForm.value.username.trim()) {
             formErrors.value.username = 'Username is required';
             formLoading.value = false;
@@ -690,7 +674,6 @@ const saveUser = async () => {
             return;
         }
 
-        // Prepare complete user data including groups
         const userData = {
             username: userForm.value.username.trim(),
             email: userForm.value.email.trim(),
@@ -698,31 +681,21 @@ const saveUser = async () => {
             blocked: userForm.value.blocked,
             verifyEmail: userForm.value.verifyEmail,
             root: userForm.value.root,
-            // Include groups directly in the user data
             groups: userForm.value.groups || []
         };
 
-        if (!isEditing.value) {
+        if (!isEditing.value)
             userData.password = userForm.value.password.trim();
-        }
-
-        console.log('Saving user with data:', userData);
 
         if (isEditing.value) {
-            // Update user with groups included
             const updateResponse = await client.users.update(userToEdit.value.id, userData);
-            console.log('User update response:', updateResponse);
 
-            if (userForm.value.verifyEmail) {
+            if (userForm.value.verifyEmail)
                 showNotification('success', 'User updated and verification email sent');
-            } else {
+            else
                 showNotification('success', 'User updated successfully');
-            }
         } else {
-            // Create user with groups included
             const createResponse = await client.users.create(userData);
-            console.log('User create response:', createResponse);
-
             showNotification('success', 'User created successfully');
         }
 
@@ -746,7 +719,6 @@ const blockUser = async (user) => {
         showNotification('success', `User ${user.username} blocked successfully`)
         refreshData()
     } catch (err) {
-        console.error('Failed to block user:', err)
         showNotification('error', err.message || 'Failed to block user')
     }
 }
@@ -757,7 +729,6 @@ const unblockUser = async (user) => {
         showNotification('success', `User ${user.username} unblocked successfully`)
         refreshData()
     } catch (err) {
-        console.error('Failed to unblock user:', err)
         showNotification('error', err.message || 'Failed to unblock user')
     }
 }
@@ -773,18 +744,17 @@ const closeDeleteDialog = () => {
 }
 
 const deleteUser = async () => {
-    if (!userToDelete.value) return
+    if (!userToDelete.value) return;
 
     try {
-        deleteLoading.value = true
-        await client.users.delete(userToDelete.value.id)
-        deleteLoading.value = false
-        closeDeleteDialog()
-        showNotification('success', 'User deleted successfully')
-        refreshData()
+        deleteLoading.value = true;
+        await client.users.delete(userToDelete.value.id);
+        deleteLoading.value = false;
+        closeDeleteDialog();
+        showNotification('success', 'User deleted successfully');
+        refreshData();
     } catch (err) {
-        deleteLoading.value = false
-        console.error('Failed to delete user:', err)
+        deleteLoading.value = false;
         showNotification('error', err.message || 'Failed to delete user')
     }
 }
@@ -795,11 +765,11 @@ const showNotification = (type, message) => {
         type,
         message,
         duration: 3000
-    }
+    };
 
     setTimeout(() => {
         notification.value.show = false
-    }, notification.value.duration)
+    }, notification.value.duration);
 }
 
 const toggleSort = (column) => {
