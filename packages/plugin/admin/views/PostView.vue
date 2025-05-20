@@ -157,6 +157,10 @@
                         class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Image">
                         <i class="fas fa-image h-3.5 w-3.5 text-neutral-600"></i>
                     </button>
+                    <button @click="insertAudio"
+                        class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Audio">
+                        <i class="fas fa-headphones h-3.5 w-3.5 text-neutral-600"></i>
+                    </button>
                     <button @click="insertTable"
                         class="p-1.5 rounded hover:bg-neutral-100 transition-colors w-8 h-8 flex items-center justify-center" title="Table">
                         <i class="fas fa-table h-3.5 w-3.5 text-neutral-600"></i>
@@ -302,6 +306,59 @@
                                         <label class="block text-sm font-medium text-neutral-400 mb-1">Schedule for</label>
                                         <input v-model="scheduleDate" type="datetime-local"
                                             class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                                        
+                                        <!-- Time adjustment buttons grid -->
+                                        <div class="grid grid-cols-4 gap-1 mt-2">
+                                            <button
+                                                @click="subtractOneHourFromSchedule"
+                                                class="px-2 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center bg-red-600 hover:bg-red-700 text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                                                </svg>
+                                                1h
+                                            </button>
+                                            <button
+                                                @click="subtractThirtyMinutesFromSchedule"
+                                                class="px-2 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center bg-yellow-600 hover:bg-yellow-700 text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                                                </svg>
+                                                30m
+                                            </button>
+                                            <button
+                                                @click="addThirtyMinutesToSchedule"
+                                                class="px-2 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center bg-yellow-600 hover:bg-yellow-700 text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                30m
+                                            </button>
+                                            <button
+                                                @click="addOneHourToSchedule"
+                                                class="px-2 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                1h
+                                            </button>
+                                        </div>
+                                        <div class="mt-3">
+                                            <div v-if="!hasDraftPosts" class="text-xs text-center text-yellow-500 mb-2">
+                                                Todos os rascunhos foram agendados!
+                                            </div>
+                                            <button 
+                                                v-if="hasDraftPosts"
+                                                @click="handleNextScheduledPost"
+                                                :disabled="handleNextScheduledPostLoading"
+                                                class="w-full px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-center"
+                                                :class="handleNextScheduledPostLoading ? 'bg-neutral-600 text-neutral-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'">
+                                                <svg v-if="handleNextScheduledPostLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                {{ handleNextScheduledPostLoading ? 'Processing...' : 'Save and Next Draft' }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -651,6 +708,10 @@
                     <div @click="insertVideo" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
                         <i class="fas fa-video h-5 w-5 text-neutral-400 mr-3"></i>
                         <span>Video</span>
+                    </div>
+                    <div @click="insertAudio" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
+                        <i class="fas fa-file-audio h-5 w-5 text-neutral-400 mr-3"></i>
+                        <span>Audio</span>
                     </div>
                     <div @click="insertTweet" class="flex items-center p-2 rounded hover:bg-neutral-700 cursor-pointer">
                         <i class="fab fa-twitter h-5 w-5 text-neutral-400 mr-3"></i>
@@ -1363,6 +1424,50 @@ const Reddit = Node.create({
   }
 })
 
+// Add Audio Node after Reddit
+const Audio = Node.create({
+  name: 'audio',
+  group: 'block',
+  atom: true,
+  selectable: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: '',
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div[data-audio-src]',
+        getAttrs: node => ({ src: node.getAttribute('data-audio-src') }),
+      },
+      {
+        tag: 'audio',
+        getAttrs: node => ({ src: node.getAttribute('src') }),
+      }
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    if (!HTMLAttributes.src) {
+      return ['div', { class: 'audio-invalid' }, 'Invalid Audio Source'];
+    }
+
+    return [
+      'div',
+      { class: 'audio-embed', 'data-audio-src': HTMLAttributes.src },
+      ['div', { class: 'audio-embed-actions' },
+        ['button', { class: 'audio-delete-button', title: 'Delete Audio' }, '×']
+      ],
+      ['audio', { controls: true, src: HTMLAttributes.src, style: 'width: 100%; margin-top: 5px;' }, 'Your browser does not support the audio element.']
+    ];
+  },
+});
+
 const adminClient = useAdminClient()
 const router = useRouter()
 const route = useRoute()
@@ -1559,6 +1664,7 @@ const editor = new Editor({
         Iframe,
         Tweet,
         Reddit, // Add Reddit extension
+        Audio, // Add Audio extension
     ],
     content: '',
     onUpdate: ({ editor }) => {
@@ -1683,6 +1789,8 @@ function insertDivider() {
 }
 
 const titleTextarea = ref(null)
+const LOCAL_STORAGE_SCHEDULE_KEY = 'postEditor_lastScheduleDate';
+const LOCAL_STORAGE_NEXT_SCHEDULE_KEY = 'postEditor_nextScheduleDate'; // Nova chave para a próxima data
 
 function autoResizeTitle() {
     const textarea = titleTextarea.value
@@ -1703,7 +1811,13 @@ onMounted(async () => {
             showNotification('error', 'Could not find the requested post')
             return
         }
+    } else {
+        // Se é um novo post, tentar carregar a última data de agendamento salva
+        loadSavedScheduleDate();
     }
+
+    // Verificar se há posts em draft disponíveis
+    checkDraftPostsAvailability();
 
     settings.value = await adminClient.settings.get()
 
@@ -2077,10 +2191,39 @@ function saveDraft() {
     // Set appropriate loading message based on post status
     if (post.value.status === 'cron') {
         loadingMessage.value = 'Saving scheduled post...';
-        // Preserve scheduled status
+        
+        // Salvar próxima data quando o post for agendado
+        try {
+            if (scheduleDate.value) {
+                const dateComponents = scheduleDate.value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+                if (dateComponents) {
+                    const [_, year, month, day, hours, minutes] = dateComponents;
+                    const currentScheduleDate = new Date(
+                        parseInt(year), 
+                        parseInt(month) - 1, 
+                        parseInt(day), 
+                        parseInt(hours), 
+                        parseInt(minutes)
+                    );
+                    
+                    if (!isNaN(currentScheduleDate.getTime())) {
+                        // Calcular próxima data (+1h)
+                        const nextScheduleDate = new Date(currentScheduleDate.getTime() + 60 * 60 * 1000);
+                        
+                        // Salvar para uso futuro
+                        localStorage.setItem(LOCAL_STORAGE_SCHEDULE_KEY, currentScheduleDate.toISOString());
+                        localStorage.setItem(LOCAL_STORAGE_NEXT_SCHEDULE_KEY, nextScheduleDate.toISOString());
+                        
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('[PostView] Error saving next schedule date:', error);
+        }
+    } else if (post.value.status === 'published') {
+        loadingMessage.value = 'Publishing post...';
     } else {
         loadingMessage.value = 'Saving draft...';
-        // Set to draft for other statuses
         post.value.status = 'draft';
     }
 
@@ -2089,7 +2232,8 @@ function saveDraft() {
     cleanContent = cleanContent
         .replace(/<div class="iframe-actions">.*?<\/div>/g, '')
         .replace(/<div class="tweet-embed-actions">.*?<\/div>/g, '')
-        .replace(/<div class="reddit-embed-actions">.*?<\/div>/g, '');
+        .replace(/<div class="reddit-embed-actions">.*?<\/div>/g, '')
+        .replace(/<div class="audio-embed-actions">.*?<\/div>/g, ''); // Adicionado para audio
 
     const postData = {
         ...post.value,
@@ -2183,6 +2327,9 @@ function showNotification(type, message) {
 
 async function loadPost(postId) {
     try {
+        fullPageLoading.value = true; // Adicionado para cobrir o carregamento inicial
+        loadingMessage.value = 'Loading post...'; // Mensagem de carregamento
+
         const response = await adminClient.posts.getById(postId)
 
         if (response) {
@@ -2242,6 +2389,30 @@ async function loadPost(postId) {
                 autoResizeTitle()
             })
 
+            // Processar scheduleTime da query após carregar o post
+            if (route.query.scheduleTime) {
+                const queryScheduleTime = new Date(route.query.scheduleTime);
+                if (!isNaN(queryScheduleTime.getTime())) {
+                    const year = queryScheduleTime.getFullYear();
+                    const month = String(queryScheduleTime.getMonth() + 1).padStart(2, '0');
+                    const day = String(queryScheduleTime.getDate()).padStart(2, '0');
+                    const hours = String(queryScheduleTime.getHours()).padStart(2, '0');
+                    const minutes = String(queryScheduleTime.getMinutes()).padStart(2, '0');
+                    
+                    scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                    post.value.status = 'cron';
+                    
+                    // Opcional: Salvar imediatamente o post com o novo horário agendado
+                    // await saveDraft(); // Descomente se desejar salvar automaticamente ao chegar
+
+                    // Limpar o query param para não aplicar novamente em refresh/navegação
+                    const currentQuery = { ...route.query };
+                    delete currentQuery.scheduleTime;
+                    // Usar router.replace para não adicionar ao histórico
+                    router.replace({ query: currentQuery });
+                }
+            }
+
             return true
         }
 
@@ -2250,6 +2421,8 @@ async function loadPost(postId) {
         console.error('Failed to load post:', error)
         showNotification('error', 'Failed to load post')
         return false
+    } finally {
+        fullPageLoading.value = false; // Garante que o loading é desativado
     }
 }
 
@@ -2284,6 +2457,162 @@ watch(() => expandedSections.value.social, (newValue) => {
 watch(() => expandedSections.value.advanced, (newValue) => {
     localStorage.setItem('postEditor_expandedAdvanced', JSON.stringify(newValue))
 })
+
+watch(scheduleDate, (newDate) => {
+    if (newDate) {
+        // Validar se a data é realmente uma data válida antes de salvar
+        try {
+            const dateObj = new Date(newDate);
+            if (!isNaN(dateObj.getTime())) {
+                const isoString = dateObj.toISOString();
+                localStorage.setItem(LOCAL_STORAGE_SCHEDULE_KEY, isoString);
+            } else {
+                console.warn('[PostView] Invalid date, not saving to localStorage:', newDate);
+                localStorage.removeItem(LOCAL_STORAGE_SCHEDULE_KEY);
+            }
+        } catch (error) {
+            console.error('[PostView] Error saving date to localStorage:', error);
+        }
+    } else {
+        localStorage.removeItem(LOCAL_STORAGE_SCHEDULE_KEY);
+    }
+}, { immediate: true }); // Usar immediate para salvar a data inicial se houver uma
+
+// Observar mudanças no status do post
+watch(() => post.value.status, (newStatus) => {
+    // Quando o status mudar para "Scheduled" (cron) e não houver data definida
+    if (newStatus === 'cron' && !scheduleDate.value) {
+        loadSavedScheduleDate();
+    }
+});
+
+function addOneHourToSchedule() {
+    let currentDateObj;
+    if (scheduleDate.value) {
+        const parts = scheduleDate.value.match(/^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})$/);
+        if (parts) {
+            currentDateObj = new Date(parseInt(parts[1]), parseInt(parts[2]) - 1, parseInt(parts[3]), parseInt(parts[4]), parseInt(parts[5]));
+        } else {
+            currentDateObj = new Date(scheduleDate.value); // Fallback, pode não ser ideal se o formato for inesperado
+        }
+    } else {
+        currentDateObj = new Date(); // Usa a data/hora atual se não houver nada definido
+    }
+
+    if (isNaN(currentDateObj.getTime())) {
+        currentDateObj = new Date(); // Se a data parseada for inválida, usa a atual
+    }
+
+    currentDateObj.setHours(currentDateObj.getHours() + 1);
+
+    const year = currentDateObj.getFullYear();
+    const month = String(currentDateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDateObj.getDate()).padStart(2, '0');
+    const hours = String(currentDateObj.getHours()).padStart(2, '0');
+    const minutes = String(currentDateObj.getMinutes()).padStart(2, '0');
+
+    scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    if (post.value.status !== 'cron') {
+        post.value.status = 'cron'; // Garante que o status é agendado
+    }
+    showNotification('success', 'Scheduled time updated by +1 hour.');
+}
+
+function subtractOneHourFromSchedule() {
+    let currentDateObj;
+    if (scheduleDate.value) {
+        const parts = scheduleDate.value.match(/^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})$/);
+        if (parts) {
+            currentDateObj = new Date(parseInt(parts[1]), parseInt(parts[2]) - 1, parseInt(parts[3]), parseInt(parts[4]), parseInt(parts[5]));
+        } else {
+            currentDateObj = new Date(scheduleDate.value);
+        }
+    } else {
+        currentDateObj = new Date();
+    }
+
+    if (isNaN(currentDateObj.getTime())) {
+        currentDateObj = new Date();
+    }
+
+    currentDateObj.setHours(currentDateObj.getHours() - 1);
+
+    const year = currentDateObj.getFullYear();
+    const month = String(currentDateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDateObj.getDate()).padStart(2, '0');
+    const hours = String(currentDateObj.getHours()).padStart(2, '0');
+    const minutes = String(currentDateObj.getMinutes()).padStart(2, '0');
+
+    scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    if (post.value.status !== 'cron') {
+        post.value.status = 'cron';
+    }
+    showNotification('success', 'Scheduled time updated by -1 hour.');
+}
+
+function addThirtyMinutesToSchedule() {
+    let currentDateObj;
+    if (scheduleDate.value) {
+        const parts = scheduleDate.value.match(/^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})$/);
+        if (parts) {
+            currentDateObj = new Date(parseInt(parts[1]), parseInt(parts[2]) - 1, parseInt(parts[3]), parseInt(parts[4]), parseInt(parts[5]));
+        } else {
+            currentDateObj = new Date(scheduleDate.value);
+        }
+    } else {
+        currentDateObj = new Date();
+    }
+
+    if (isNaN(currentDateObj.getTime())) {
+        currentDateObj = new Date();
+    }
+
+    currentDateObj.setMinutes(currentDateObj.getMinutes() + 30);
+
+    const year = currentDateObj.getFullYear();
+    const month = String(currentDateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDateObj.getDate()).padStart(2, '0');
+    const hours = String(currentDateObj.getHours()).padStart(2, '0');
+    const minutes = String(currentDateObj.getMinutes()).padStart(2, '0');
+
+    scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    if (post.value.status !== 'cron') {
+        post.value.status = 'cron';
+    }
+    showNotification('success', 'Scheduled time updated by +30 minutes.');
+}
+
+function subtractThirtyMinutesFromSchedule() {
+    let currentDateObj;
+    if (scheduleDate.value) {
+        const parts = scheduleDate.value.match(/^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})$/);
+        if (parts) {
+            currentDateObj = new Date(parseInt(parts[1]), parseInt(parts[2]) - 1, parseInt(parts[3]), parseInt(parts[4]), parseInt(parts[5]));
+        } else {
+            currentDateObj = new Date(scheduleDate.value);
+        }
+    } else {
+        currentDateObj = new Date();
+    }
+
+    if (isNaN(currentDateObj.getTime())) {
+        currentDateObj = new Date();
+    }
+
+    currentDateObj.setMinutes(currentDateObj.getMinutes() - 30);
+
+    const year = currentDateObj.getFullYear();
+    const month = String(currentDateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDateObj.getDate()).padStart(2, '0');
+    const hours = String(currentDateObj.getHours()).padStart(2, '0');
+    const minutes = String(currentDateObj.getMinutes()).padStart(2, '0');
+
+    scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    if (post.value.status !== 'cron') {
+        post.value.status = 'cron';
+    }
+    showNotification('success', 'Scheduled time updated by -30 minutes.');
+}
 
 function insertYouTubeVideo() {
     const input = prompt('Enter YouTube video URL or embed code:')
@@ -2333,6 +2662,16 @@ function insertYouTubeVideo() {
 
 function insertVideo() {
     insertYouTubeVideo()
+}
+
+function insertAudio() {
+    const url = prompt('Enter audio URL:');
+    if (url) {
+        editor.chain().focus().insertContent({
+            type: 'audio',
+            attrs: { src: url },
+        }).run();
+    }
 }
 
 const categoryFilter = ref('')
@@ -2387,7 +2726,6 @@ function addCoAuthor() {
     if (!selectedCoAuthor.value) return;
 
     if (postAuthorIds.value.includes(selectedCoAuthor.value)) {
-        console.log("User is already a co-author, not adding again");
         selectedCoAuthor.value = '';
         return;
     }
@@ -2571,6 +2909,34 @@ function handleImageClick(e) {
                         foundPos = pos;
                         return false;
                     }
+                }
+                return true;
+            });
+
+            if (foundPos > -1) {
+                editor.commands.setNodeSelection(foundPos);
+                e.preventDefault();
+            }
+        }
+    }
+
+    if (target.classList.contains('audio-delete-button') || target.closest('.audio-delete-button')) {
+        editor.chain().focus().deleteSelection().run();
+        e.preventDefault();
+        e.stopPropagation();
+    } else if (target.closest('.audio-embed') && !target.closest('audio')) {
+        const audioElement = target.closest('.audio-embed');
+        const audioSrc = audioElement.getAttribute('data-audio-src');
+
+        if (audioSrc) {
+            const { state } = editor;
+            let foundPos = -1;
+
+            state.doc.nodesBetween(0, state.doc.content.size, (node, pos) => {
+                if (foundPos > -1) return false;
+                if (node.type.name === 'audio' && node.attrs.src === audioSrc) {
+                    foundPos = pos;
+                    return false;
                 }
                 return true;
             });
@@ -2822,6 +3188,225 @@ function cancelGeneration() {
     aiGenerateJobId.value = '';
     aiGenerateLoading.value = false;
     showAIGenerateDialog.value = false;
+}
+
+const handleNextScheduledPostLoading = ref(false);
+const hasDraftPosts = ref(true); // Novo estado para controlar disponibilidade de drafts
+
+// Adicionar nova função aqui
+async function handleNextScheduledPost() {
+    if (!scheduleDate.value) {
+        showNotification('error', 'Please set a schedule time first.');
+        return;
+    }
+    if (post.value.status !== 'cron') {
+        showNotification('warn', 'Post status must be "Scheduled" to use this feature.');
+        return;
+    }
+
+    handleNextScheduledPostLoading.value = true;
+    // fullPageLoading será gerenciado por saveDraft e explicitamente depois
+
+    try {
+        // 1. Salvar o post atual. saveDraft() atualiza autoPublishAt e retorna uma promessa.
+        await saveDraft();
+        // post.value.id deve ter sido atualizado por saveDraft se for um novo post.
+
+        // 2. Buscar o próximo post draft
+        fullPageLoading.value = true; // Ativar para a busca e navegação
+        loadingMessage.value = 'Finding next draft post...';
+
+        const draftPostsResponse = await adminClient.posts.get({
+            limit: 5, // Pega alguns para ter mais chance de achar um diferente do atual
+            sort: 'asc',
+            sortBy: 'createdAt', 
+            status: 'draft' // Modificado: Tentar passar o status diretamente
+        });
+
+        let nextPostToLoad = null;
+        // Corrigir aqui para acessar a lista de posts corretamente
+        const postsList = draftPostsResponse.posts || (draftPostsResponse.data && draftPostsResponse.data.posts); 
+
+        if (postsList && postsList.length > 0) {
+            // Tenta encontrar um post draft que NÃO seja o atual.
+            nextPostToLoad = postsList.find(p => p.id !== post.value.id);
+
+            if (!nextPostToLoad && postsList.length > 0) { // Se não encontrou um diferente, e ainda há posts
+                if (postsList[0].id !== post.value.id) {
+                    // Se o primeiro da lista já é diferente, usa ele
+                    nextPostToLoad = postsList[0];
+                } else if (postsList.length > 1) {
+                    // Se o primeiro é o atual, mas há um segundo, usa o segundo
+                    nextPostToLoad = postsList[1];
+                }
+            }
+        }
+
+        if (nextPostToLoad) {
+            let currentScheduleDateObj;
+            const scheduleDateComponents = scheduleDate.value.match(/^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2})$/);
+            if (scheduleDateComponents) {
+                const [_, year, month, day, hours, minutes] = scheduleDateComponents;
+                currentScheduleDateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
+            } else {
+                currentScheduleDateObj = new Date(scheduleDate.value); // Fallback
+            }
+
+            if (isNaN(currentScheduleDateObj.getTime())) {
+                 showNotification('error', 'Invalid current schedule date format.');
+                 fullPageLoading.value = false;
+                 handleNextScheduledPostLoading.value = false;
+                 return;
+            }
+
+            const nextScheduleDateTime = new Date(currentScheduleDateObj.getTime() + (60 * 60 * 1000)); // Adiciona 1 hora
+
+            loadingMessage.value = `Loading post: ${nextPostToLoad.title || nextPostToLoad.id}...`;
+            router.push(`/post/${nextPostToLoad.id}?scheduleTime=${nextScheduleDateTime.toISOString()}`);
+            // Não desativar fullPageLoading aqui, deixar a navegação cuidar.
+        } else {
+            // Atualizar o estado de disponibilidade de posts draft quando não há mais
+            hasDraftPosts.value = false;
+            showNotification('success', 'No more draft posts found. All posts have been scheduled!');
+            fullPageLoading.value = false; // Desativa se não houver próximo post
+        }
+
+    } catch (error) {
+        // Erros de saveDraft já devem ter sido mostrados e fullPageLoading tratado por ele.
+        // Erros da busca de posts precisam desativar o fullPageLoading.
+        console.error('Error in handleNextScheduledPost:', error);
+        // Não mostrar notificação duplicada se saveDraft já mostrou.
+        if (!(error.message && error.message.includes('Failed to save post'))) {
+             showNotification('error', error.message || 'Failed to process next scheduled post.');
+        }
+        fullPageLoading.value = false;
+    } finally {
+        handleNextScheduledPostLoading.value = false;
+        // fullPageLoading é desativado se não houver navegação ou em erro aqui.
+        // Se houver navegação, o recarregamento do componente trata o fullPageLoading.
+    }
+}
+
+watch(() => route.params.id, (newId, oldId) => {
+    if (newId && newId !== oldId) {
+        //console.log(`[PostView] Route param id changed from ${oldId} to ${newId}. Reloading post.`);
+        // Limpar o estado do post antes de carregar um novo, se necessário
+        // resetPostState(); // Você precisaria criar essa função se quiser limpar tudo
+        editor.commands.setContent(''); // Limpa o editor
+        post.value.title = ''; // Limpa o título do post anterior
+        // Outras limpezas de estado do post podem ser necessárias aqui
+
+        loadPost(newId);
+    }
+});
+
+watch(() => route.query.scheduleTime, (newScheduleTime) => {
+    if (newScheduleTime && post.value.id === route.params.id) { // Aplica apenas se o post já carregado for o da rota atual
+        //console.log(`[PostView] scheduleTime query param changed to: ${newScheduleTime}. Applying to current post.`);
+        const queryScheduleDate = new Date(newScheduleTime);
+        if (!isNaN(queryScheduleDate.getTime())) {
+            const year = queryScheduleDate.getFullYear();
+            const month = String(queryScheduleDate.getMonth() + 1).padStart(2, '0');
+            const day = String(queryScheduleDate.getDate()).padStart(2, '0');
+            const hours = String(queryScheduleDate.getHours()).padStart(2, '0');
+            const minutes = String(queryScheduleDate.getMinutes()).padStart(2, '0');
+            
+            scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            post.value.status = 'cron';
+
+            // Limpar o query param para não aplicar novamente em refresh/navegação futura na mesma instância
+            const currentQuery = { ...route.query };
+            delete currentQuery.scheduleTime;
+            router.replace({ query: currentQuery }); 
+        } else {
+            console.warn('[PostView] Invalid scheduleTime in query param during watch:', newScheduleTime);
+        }
+    }
+}, { immediate: false }); // Não executar imediatamente na montagem inicial, pois loadPost já cuida disso
+
+// Função para carregar a data salva no localStorage
+function loadSavedScheduleDate() {
+    try {
+        // Primeiro tenta carregar a próxima data programada (para sequência)
+        const savedNextScheduleDate = localStorage.getItem(LOCAL_STORAGE_NEXT_SCHEDULE_KEY);
+        
+        if (savedNextScheduleDate) {
+            const dateObj = new Date(savedNextScheduleDate);
+            if (!isNaN(dateObj.getTime())) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const hours = String(dateObj.getHours()).padStart(2, '0');
+                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                
+                scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                
+                // Calcular a próxima data (+1h) para uso futuro
+                const nextDate = new Date(dateObj.getTime() + 60 * 60 * 1000);
+                localStorage.setItem(LOCAL_STORAGE_NEXT_SCHEDULE_KEY, nextDate.toISOString());
+                
+                return true;
+            }
+        }
+        
+        // Se não encontrou próxima data, tenta a última data normal
+        const savedScheduleDate = localStorage.getItem(LOCAL_STORAGE_SCHEDULE_KEY);
+        
+        if (savedScheduleDate) {
+            const dateObj = new Date(savedScheduleDate);
+            if (!isNaN(dateObj.getTime())) {
+                // Adicionar 1 hora à última data usada
+                const nextDateObj = new Date(dateObj.getTime() + 60 * 60 * 1000);
+                
+                const year = nextDateObj.getFullYear();
+                const month = String(nextDateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(nextDateObj.getDate()).padStart(2, '0');
+                const hours = String(nextDateObj.getHours()).padStart(2, '0');
+                const minutes = String(nextDateObj.getMinutes()).padStart(2, '0');
+                
+                scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                
+                // Salvar para uso futuro
+                localStorage.setItem(LOCAL_STORAGE_NEXT_SCHEDULE_KEY, nextDateObj.toISOString());
+                
+                return true;
+            }
+        }
+        
+        // Se nenhuma data foi encontrada, criar uma baseada na hora atual + 1h
+        const currentDate = new Date();
+        currentDate.setHours(currentDate.getHours() + 1);
+        
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        
+        scheduleDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Salvar para uso futuro
+        localStorage.setItem(LOCAL_STORAGE_NEXT_SCHEDULE_KEY, currentDate.toISOString());
+        localStorage.setItem(LOCAL_STORAGE_SCHEDULE_KEY, currentDate.toISOString());
+        
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+// Verificar se há posts em draft disponíveis
+async function checkDraftPostsAvailability() {
+    try {
+        const response = await adminClient.posts.get({
+            limit: 1,
+            status: 'draft'
+        });
+        
+        hasDraftPosts.value = response.posts && response.posts.length > 0;
+    } catch (error) {
+        hasDraftPosts.value = true; // Em caso de erro, assumir que há drafts por segurança
+    }
 }
 </script>
 
@@ -3185,6 +3770,122 @@ function cancelGeneration() {
     text-align: center;
     margin: 1rem 0;
 }
+
+/* Iframe wrapper styles */
+.iframe-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+    width: 100%;
+}
+
+.ProseMirror-selectednode .iframe-wrapper {
+    outline: 3px solid #4f46e5;
+    border-radius: 4px;
+}
+
+/* Delete button for iframes */
+.iframe-actions {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.ProseMirror-selectednode .iframe-actions {
+    opacity: 1;
+}
+
+.iframe-delete-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.iframe-delete-button:hover {
+    background-color: #dc2626;
+}
+
+/* Add these to your existing iframe styles */
+.ProseMirror .iframe-wrapper iframe {
+    pointer-events: none; /* disable pointer events when in editor */
+    width: 100%;
+    min-height: 315px;
+    border: none;
+}
+
+.ProseMirror-selectednode .iframe-wrapper iframe {
+    opacity: 0.7; /* dim the iframe when selected to show it's in edit mode */
+}
+
+/* Audio embed styles */
+.audio-embed {
+    position: relative;
+    margin: 1.5rem 0;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.ProseMirror-selectednode .audio-embed {
+    outline: 3px solid #4f46e5;
+    border-radius: 4px;
+}
+
+.audio-embed-actions {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.ProseMirror-selectednode .audio-embed-actions {
+    opacity: 1;
+}
+
+.audio-delete-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.audio-delete-button:hover {
+    background-color: #dc2626;
+}
+
+.audio-invalid {
+    padding: 1rem;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+    color: #ef4444;
+    text-align: center;
+    margin: 1rem 0;
+}
+
 
 /* Iframe wrapper styles */
 .iframe-wrapper {
