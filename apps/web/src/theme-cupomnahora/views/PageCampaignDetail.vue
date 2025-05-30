@@ -186,35 +186,10 @@
         </div>
     </div>
 
-    <!-- Modal de Cupom (simplificado, pode ser substituído pelo CouponScratchModal) -->
-    <div v-if="showCouponModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.5);">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto p-6">
-            <div class="text-center">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Seu cupom para {{ campaign?.name }}</h3>
-                <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Copie e cole este código no checkout:</p>
-                    <div class="flex items-center justify-center">
-                        <div class="bg-white border border-gray-300 rounded px-4 py-2 text-lg font-mono font-bold text-gray-800">
-                            {{ selectedCoupon?.code }}
-                        </div>
-                        <button @click="copyCouponCode" class="ml-2 p-2 bg-gray-200 hover:bg-gray-300 rounded">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                        </button>
-                    </div>
-                    <p v-if="codeCopied" class="text-sm text-indigo-600 mt-2">Copiado!</p>
-                </div>
-                <a :href="selectedCoupon?.link || selectedCoupon?.linkRef || '#'" target="_blank" 
-                   class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                    IR PARA A LOJA
-                </a>
-                <button @click="closeCouponModal" class="mt-4 text-gray-600 hover:text-gray-800">
-                    Fechar
-                </button>
-            </div>
-        </div>
-    </div>
+    <CouponScratchModal 
+        :visible="isScratchModalOpen" 
+        :coupon="selectedCouponForScratch"
+        @close="closeCouponModal" />
 </template>
 
 <script setup lang="ts">
@@ -224,6 +199,7 @@ import { useRoute } from 'vue-router';
 import { vue3 } from '@cmmv/blog/client';
 import { vue3 as affiliateVue3 } from '@cmmv/affiliate/client';
 import { useSettingsStore } from '../../store/settings';
+import CouponScratchModal from '../components/CouponScratchModal.vue';
 
 const route = useRoute();
 const blogAPI = vue3.useBlog();
@@ -239,10 +215,9 @@ const error = ref<string | null>(null);
 // Estado para filtros
 const activeFilter = ref('all'); // 'all', 'codes', 'offers', 'expired'
 
-// Estado para modal de cupom
-const showCouponModal = ref(false);
-const selectedCoupon = ref<any>(null);
-const codeCopied = ref(false);
+// Estado para modal de cupom (usaremos o CouponScratchModal)
+const isScratchModalOpen = ref(false); // Novo estado para o CouponScratchModal
+const selectedCouponForScratch = ref<any | null>(null); // Novo estado
 
 // Contadores para os filtros
 const codesCount = computed(() => coupons.value.filter(coupon => coupon.code).length);
@@ -337,84 +312,11 @@ const loadData = async () => {
         loading.value = false;
     }
 };
-/*
-// Função auxiliar para gerar cupons simulados baseados na campanha
-const generateDummyCoupons = () => {
-    if (!campaign.value) return;
-    
-    const campaignName = campaign.value.name;
-    const dummyCoupons = [];
-    
-    // Gerar entre 5 e 10 cupons aleatórios
-    const numCoupons = Math.floor(Math.random() * 6) + 5;
-    
-    for (let i = 0; i < numCoupons; i++) {
-        const hasCode = Math.random() > 0.3; // 70% dos cupons terão código
-        const discountValue = Math.floor(Math.random() * 60) + 5; // Desconto entre 5% e 65%
-        
-        // Determina se é um cupom expirado (30% de chance)
-        const isExpired = Math.random() > 0.7;
-        let expirationDate = new Date();
-        
-        if (isExpired) {
-            // Data no passado (1-30 dias atrás)
-            const randomDaysExpired = Math.floor(Math.random() * 30) + 1;
-            expirationDate.setDate(expirationDate.getDate() - randomDaysExpired);
-        } else {
-            // Data no futuro (1-30 dias à frente)
-            const randomDaysValid = Math.floor(Math.random() * 30) + 1;
-            expirationDate.setDate(expirationDate.getDate() + randomDaysValid);
-        }
-        
-        const couponTitles = [
-            `Aproveite até ${discountValue}% OFF utilizando cupom ${campaignName}`,
-            `Ganhe até ${discountValue}% OFF em suas compras com código ${campaignName}`,
-            `Utilize código ${campaignName} e garanta Eletroportáteis com até ${discountValue}% OFF`,
-            `Seus pedidos com até ${discountValue}% OFF aplicando o cupom ${campaignName}`,
-            `Use voucher ${campaignName} e tenha ${discountValue}% de desconto em Bicicletas`
-        ];
-        
-        const couponDescriptions = [
-            `Desconto válido para seleção de produtos do link.`,
-            `Válido nos Eletrodomésticos do link. Aplique o código na página de pagamento.`,
-            `Aproveite Frete Grátis em suas compras (confira as regras no site). Desconto válido para eletroportáteis.`,
-            `Válido para seleção do link. Aplique o cupom na página de pagamento.`,
-            `Desconto válido na seleção do link.`
-        ];
-        
-        dummyCoupons.push({
-            id: `coup-${i}-${Date.now()}`,
-            title: couponTitles[i % couponTitles.length],
-            code: hasCode ? generateRandomCode(6) : null,
-            description: couponDescriptions[i % couponDescriptions.length],
-            expiration: expirationDate,
-            type: hasCode ? 'code' : 'offer',
-            typeDiscount: discountValue,
-            cashbackPercentage: Math.random() > 0.5 ? Math.floor(Math.random() * 10) + 1 : null,
-            oldCashbackPercentage: Math.random() > 0.7 ? Math.floor(Math.random() * 5) + 1 : null,
-            linkRef: `https://${campaign.value.domain || 'example.com'}`
-        });
-        
-    }
-    
-    coupons.value = dummyCoupons;
-};
 
-// Gerar código aleatório para cupons
-const generateRandomCode = (length: number) => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-};
-*/
 // Formatar data para exibição
-const formatDate = (date: Date | string) => {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleDateString('pt-BR');
+const formatDate = (dateString: string | Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
 // Alterar filtro ativo
@@ -422,31 +324,52 @@ const setFilter = (filter: string) => {
     activeFilter.value = filter;
 };
 
-// Funções para o modal de cupom
 const openCouponModal = (coupon: any) => {
-    selectedCoupon.value = coupon;
-    showCouponModal.value = true;
-    codeCopied.value = false;
+    // Atribuir dados ao cupom selecionado para o modal, incluindo infos da campanha
+    selectedCouponForScratch.value = {
+        ...coupon, 
+        campaignName: campaign.value?.name,
+        campaignLogo: campaign.value?.logo
+    };
+    isScratchModalOpen.value = true; // Mostrar o modal
+
+    // Abrir o deeplink em uma nova aba e tentar manter o foco (lógica de PageHome.vue)
+    if (coupon && coupon.deeplink) {
+        // Atrasar a abertura para garantir que o modal esteja visível e melhorar a chance de foco
+        setTimeout(() => {
+            const activeElement = document.activeElement as HTMLElement; // Guardar elemento com foco
+            
+            const newWindow = window.open(coupon.deeplink, '_blank'); // Abrir deeplink
+            
+            window.focus(); // Retornar foco para a janela atual
+            
+            // Tentar restaurar o foco para o elemento que estava ativo antes da abertura da nova aba
+            if (activeElement && typeof activeElement.focus === 'function') {
+                try {
+                    activeElement.focus();
+                } catch (e) {
+                    console.error('[PageCampaignDetail] Erro ao tentar restaurar foco para activeElement:', e);
+                }
+            }
+            
+            // Fallback para focar no body se o elemento ativo não puder ser focado
+            setTimeout(() => {
+                window.focus();
+                document.body.focus();
+            }, 100); // Pequeno atraso para garantir que o foco seja aplicado
+
+        }, 200); // Atraso de 200ms como em PageHome.vue
+    } else {
+        // Opcional: Logar apenas se houver uma falha inesperada de dados, mas não para cada caso sem deeplink
+        // if (!coupon || !coupon.deeplink) {
+        //     console.warn('[PageCampaignDetail] Tentativa de abrir deeplink falhou: dados do cupom incompletos.', coupon);
+        // }
+    }
 };
 
 const closeCouponModal = () => {
-    showCouponModal.value = false;
-    selectedCoupon.value = null;
-};
-
-const copyCouponCode = () => {
-    if (!selectedCoupon.value?.code) return;
-    
-    navigator.clipboard.writeText(selectedCoupon.value.code)
-        .then(() => {
-            codeCopied.value = true;
-            setTimeout(() => {
-                codeCopied.value = false;
-            }, 3000);
-        })
-        .catch(err => {
-            console.error('Erro ao copiar: ', err);
-        });
+    isScratchModalOpen.value = false;        // Fechar o CouponScratchModal
+    selectedCouponForScratch.value = null;
 };
 
 // Função para extrair percentual de desconto do título

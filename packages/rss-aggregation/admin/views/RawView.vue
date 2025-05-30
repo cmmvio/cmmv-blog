@@ -97,12 +97,41 @@
                     </svg>
                     Refresh
                 </button>
-                <button @click="openBulkReprocessDialog" class="px-2.5 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium rounded-md transition-colors flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                    </svg>
-                    Bulk Reprocess
-                </button>
+                <!-- More actions dropdown -->
+                <div class="relative" data-more-actions-toggle>
+                    <button
+                        @click="toggleMoreActionsDropdown"
+                        class="px-2.5 py-1 bg-neutral-700 hover:bg-neutral-600 text-white text-xs font-medium rounded-md transition-colors flex items-center"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                        </svg>
+                        More
+                    </button>
+                    <!-- More actions dropdown menu -->
+                    <div v-if="showMoreActionsDropdown" class="absolute right-0 mt-2 w-48 bg-neutral-800 border border-neutral-700 rounded-md shadow-lg z-10">
+                        <div class="py-1">
+                            <button
+                                @click="openBulkReprocessDialog"
+                                class="w-full px-4 py-2 text-left text-sm text-white hover:bg-neutral-700 flex items-center"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                                </svg>
+                                Bulk Reprocess
+                            </button>
+                            <button
+                                @click="openBulkDeleteDialog"
+                                class="w-full px-4 py-2 text-left text-sm text-white hover:bg-neutral-700 flex items-center"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Mass Exclusion
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -942,6 +971,169 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Bulk Delete Dialog -->
+        <div v-if="showBulkDeleteDialog" class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4" style="backdrop-filter: blur(4px);">
+            <div class="bg-neutral-800 rounded-lg shadow-xl max-w-2xl w-full p-6">
+                <div class="flex justify-between items-center mb-4 border-b border-neutral-700 pb-3">
+                    <h3 class="text-xl font-semibold text-white">Mass Exclusion</h3>
+                    <button @click="closeBulkDeleteDialog" class="text-neutral-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-md font-medium text-white">Select items to delete</h4>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="selectAllItemsForDelete" v-model="selectAllForDelete" @change="toggleSelectAllForDelete" class="mr-2 h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-neutral-600 bg-neutral-700">
+                            <label for="selectAllItemsForDelete" class="text-sm text-neutral-300">Selecionar Todos Visíveis</label>
+                        </div>
+                    </div>
+                    <div v-if="loading" class="py-4 flex justify-center">
+                        <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                    <div v-else-if="feedItems.length === 0" class="py-4 text-center text-neutral-400">
+                        No items to delete.
+                    </div>
+                    <div v-else class="max-h-80 overflow-y-auto border border-neutral-700 rounded-md">
+                        <div class="divide-y divide-neutral-700">
+                            <div v-for="item in feedItems" :key="item.id" class="flex items-center p-3 hover:bg-neutral-750">
+                                <input
+                                    type="checkbox"
+                                    :id="'delete-item-' + item.id"
+                                    v-model="selectedItemsForDelete"
+                                    :value="item.id"
+                                    class="mr-3 h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-neutral-600 bg-neutral-700"
+                                >
+                                <label :for="'delete-item-' + item.id" class="text-sm text-white cursor-pointer flex-1 truncate mr-3">
+                                    {{ item.title }}
+                                </label>
+                                <span class="text-xs text-neutral-400">{{ getChannelName(item.channel) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-500 mt-2">Only items currently visible in the main list are shown here. Use the filters on the main page to refine the selection if needed.</p>
+                </div>
+
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-neutral-700">
+                    <button
+                        @click="closeBulkDeleteDialog"
+                        class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors"
+                        :disabled="bulkDeleteLoading"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        @click="confirmBulkDelete"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+                        :disabled="selectedItemsForDelete.length === 0 || bulkDeleteLoading"
+                    >
+                        <span v-if="bulkDeleteLoading" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Deleting...
+                        </span>
+                        <span v-else>Delete {{ selectedItemsForDelete.length }} Items</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Delete Confirmation Dialog -->
+        <div v-if="showBulkDeleteConfirmation" class="fixed inset-0 bg-black/75 flex items-center justify-center z-[60] p-4" style="backdrop-filter: blur(4px);">
+            <div class="bg-neutral-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-white">Confirm Delete</h3>
+                    <button @click="showBulkDeleteConfirmation = false" class="text-neutral-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <p class="text-neutral-300 mb-3">Are you sure you want to delete <strong>{{ selectedItemsForDelete.length }}</strong> items?</p>
+                    <p class="text-red-400 text-sm mb-4">This action cannot be undone.</p>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button
+                        @click="showBulkDeleteConfirmation = false"
+                        class="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-md transition-colors"
+                        :disabled="bulkDeleteLoading"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        @click="startBulkDelete"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+                        :disabled="bulkDeleteLoading"
+                    >
+                        <span v-if="bulkDeleteLoading" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Excluindo...
+                        </span>
+                        <span v-else>Confirmar Exclusão</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Delete Progress Overlay -->
+        <div v-if="bulkDeleteLoading" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4" style="backdrop-filter: blur(4px);">
+            <div class="bg-neutral-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="text-center mb-4">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500 mb-3"></div>
+                    <h3 class="text-lg font-medium text-white">Deleting Items</h3>
+                    <p class="text-neutral-400 mt-1">Please wait...</p>
+                </div>
+
+                <div class="w-full bg-neutral-700 rounded-full h-4 mb-3">
+                    <div
+                        class="bg-red-600 h-4 rounded-full transition-all duration-300 ease-out"
+                        :style="{ width: `${(bulkDeleteProgress.completed / bulkDeleteProgress.total) * 100}%` }"
+                    ></div>
+                </div>
+
+                <div class="text-center text-sm text-neutral-300 mb-4">
+                    <span>{{ bulkDeleteProgress.completed }} of {{ bulkDeleteProgress.total }} items deleted</span>
+                </div>
+
+                <div v-if="bulkDeleteProgress.currentItem" class="mb-4">
+                    <p class="text-sm text-neutral-400">Deleting currently:</p>
+                    <p class="text-sm font-medium text-white truncate">{{ bulkDeleteProgress.currentItem }}</p>
+                </div>
+
+                <div v-if="bulkDeleteProgress.processedItems.length > 0" class="mt-4">
+                    <p class="text-sm text-neutral-400 mb-2">Recently deleted:</p>
+                    <div class="max-h-32 overflow-y-auto">
+                        <div v-for="(item, index) in bulkDeleteProgress.processedItems.slice().reverse().slice(0, 5)" :key="index"
+                            class="flex items-center py-1 border-b border-neutral-700 last:border-b-0">
+                            <div :class="item.success ? 'text-green-500' : 'text-red-500'" class="mr-2">
+                                <svg v-if="item.success" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                            <div class="flex-1 truncate text-sm">
+                                <span v-if="item.success" class="text-neutral-300">{{ item.title }}</span>
+                                <span v-else class="text-red-400">{{ item.title }} - {{ item.error }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1870,18 +2062,24 @@ const classifyWithAI = async (): Promise<void> => {
     }
 };
 
-onMounted(async () => {
+onMounted(() => {
     // Add click-outside handling for search dropdown
     document.addEventListener('click', (event) => {
         const target = event.target as HTMLElement;
         if (!target.closest('[data-search-toggle]') && !target.closest('.absolute') && showSearchDropdown.value) {
             showSearchDropdown.value = false;
         }
+
+        // Add click-outside handling for more actions dropdown
+        if (!target.closest('[data-more-actions-toggle]') && showMoreActionsDropdown.value) {
+            showMoreActionsDropdown.value = false;
+        }
     });
 
-    await loadChannels();
-    await loadFeedItems();
-    await loadCategories();
+    // Load initial data
+    loadChannels();
+    loadFeedItems();
+    loadCategories();
 });
 
 const getRelevanceClass = (relevance: number): string => {
@@ -2181,6 +2379,114 @@ const createCategory = async (): Promise<void> => {
     } finally {
         createCategoryLoading.value = false;
     }
+};
+
+const showBulkDeleteDialog = ref<boolean>(false);
+const selectAllForDelete = ref<boolean>(false);
+const selectedItemsForDelete = ref<string[]>([]);
+const bulkDeleteLoading = ref<boolean>(false);
+const bulkDeleteProgress = ref({
+    total: 0,
+    completed: 0,
+    currentItem: null as string | null, // Correção aqui
+    processedItems: [] as { id: string; title: string; success: boolean; error?: string }[]
+});
+
+const showBulkDeleteConfirmation = ref<boolean>(false);
+
+const openBulkDeleteDialog = (): void => {
+    showBulkDeleteDialog.value = true;
+};
+
+const closeBulkDeleteDialog = (): void => {
+    showBulkDeleteDialog.value = false;
+};
+
+const toggleSelectAllForDelete = (): void => {
+    if (selectAllForDelete.value) {
+        selectedItemsForDelete.value = feedItems.value.map(item => item.id);
+    } else {
+        selectedItemsForDelete.value = [];
+    }
+};
+
+watch(selectedItemsForDelete, (newVal) => {
+    selectAllForDelete.value = newVal.length > 0 && newVal.length === feedItems.value.length;
+});
+
+const confirmBulkDelete = async (): Promise<void> => {
+    if (selectedItemsForDelete.value.length === 0) return;
+    
+    // Mostrar diálogo de confirmação
+    showBulkDeleteConfirmation.value = true;
+};
+
+const startBulkDelete = async (): Promise<void> => {
+    if (selectedItemsForDelete.value.length === 0) return;
+
+    try {
+        bulkDeleteLoading.value = true;
+        bulkDeleteProgress.value = {
+            total: selectedItemsForDelete.value.length,
+            completed: 0,
+            currentItem: null,
+            processedItems: []
+        };
+
+        const itemsToDelete = [...selectedItemsForDelete.value]; // Criar uma cópia
+
+        for (const itemId of itemsToDelete) {
+            const item = feedItems.value.find(i => i.id === itemId);
+            if (!item) continue;
+
+            bulkDeleteProgress.value.currentItem = item.title;
+
+            try {
+                // Chamar a API para excluir o item
+                await feedClient.raw.deleteRaw(itemId);
+                
+                bulkDeleteProgress.value.processedItems.push({
+                    id: item.id,
+                    title: item.title,
+                    success: true
+                });
+            } catch (err: unknown) {
+                const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+                bulkDeleteProgress.value.processedItems.push({
+                    id: item.id,
+                    title: item.title,
+                    success: false,
+                    error: errorMsg
+                });
+                console.error(`Falha ao excluir item ${item.id}:`, err);
+            }
+            bulkDeleteProgress.value.completed++;
+        }
+
+        const successCount = bulkDeleteProgress.value.processedItems.filter(r => r.success).length;
+        if (successCount === bulkDeleteProgress.value.total) {
+            showNotification('success', `${successCount} itens foram excluídos com sucesso.`);
+        } else {
+            showNotification('warning', `${successCount} de ${bulkDeleteProgress.value.total} itens foram excluídos. Verifique o console para erros.`);
+        }
+
+        showBulkDeleteConfirmation.value = false;
+        selectedItemsForDelete.value = [];
+        await refreshData();
+    } catch (err: unknown) {
+        console.error('Falha ao excluir itens:', err);
+        showNotification('error', err instanceof Error ? err.message : 'Falha ao excluir itens');
+    } finally {
+        bulkDeleteLoading.value = false;
+        showBulkDeleteConfirmation.value = false;
+        closeBulkDeleteDialog();
+    }
+};
+
+const showMoreActionsDropdown = ref<boolean>(false);
+
+const toggleMoreActionsDropdown = (): void => {
+    showMoreActionsDropdown.value = !showMoreActionsDropdown.value;
 };
 </script>
 

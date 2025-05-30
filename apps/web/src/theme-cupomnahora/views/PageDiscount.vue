@@ -4,24 +4,6 @@
             <div class="bg-white rounded-lg p-6">
                 <h1 class="text-3xl font-bold text-gray-800 mb-8">Encontre cupons de desconto em nossas principais lojas</h1>
 
-                <!-- Barra de Busca -->
-                <div class="mb-10 w-full max-w-2xl mx-auto">
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            v-model="searchQuery" 
-                            @input="performSearch" 
-                            placeholder="Buscar por loja, marca ou cupom..." 
-                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        >
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Lojas mais populares -->
                 <div v-if="!isSearching && searchQuery.length < 2">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Lojas mais populares</h2>
@@ -70,14 +52,6 @@
                                 :key="campaign.id" 
                                 :href="`/desconto/${campaign.slug}`"
                                 class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded transition-colors">
-                                <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center">
-                                    <img v-if="campaign.logo" :src="campaign.logo" :alt="campaign.name" class="max-w-full max-h-full">
-                                    <div v-else class="w-10 h-10 bg-gray-200 flex items-center justify-center rounded-full">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                        </svg>
-                                    </div>
-                                </div>
                                 <span class="text-sm">{{ campaign.name }}</span>
                             </a>
                         </div>

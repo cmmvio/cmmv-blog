@@ -153,7 +153,7 @@ export class CouponsServiceTools {
             order: {
                 expiration: "DESC"
             },
-            select: ["title", "code", "description", "expiration", "type", "typeDiscount", "linkRef"]
+            select: ["title", "code", "description", "expiration", "type", "typeDiscount", "linkRef", "deeplink"]
         });
 
         return (coupons) ? coupons.data : [];
@@ -193,7 +193,7 @@ export class CouponsServiceTools {
             order: {
                 views: "DESC"
             },
-            select: ["title", "code", "description", "expiration", "type", "typeDiscount", "views", "campaign"]
+            select: ["title", "code", "description", "expiration", "type", "typeDiscount", "views", "campaign", "deeplink"]
         });
 
         const campaignIds = (coupons) ? coupons.data.map((coupon: any) => coupon.campaign) : [];
@@ -249,7 +249,7 @@ export class CouponsServiceTools {
                 views: "DESC"
             },
             take: 25, // Changed from limit to take as per TypeORM standards for FindManyOptions
-            select: ["title", "code", "description", "expiration", "type", "typeDiscount", "views", "campaign", "linkRef"]
+            select: ["title", "code", "description", "expiration", "type", "typeDiscount", "views", "campaign", "linkRef", "deeplink"]
         });
 
         if (!couponsResult || !couponsResult.data || couponsResult.data.length === 0) {

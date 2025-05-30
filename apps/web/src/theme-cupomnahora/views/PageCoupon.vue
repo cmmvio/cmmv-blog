@@ -4,7 +4,7 @@
             <div class="bg-white rounded-lg p-6">
                 <h1 class="text-3xl font-bold text-gray-800 mb-8">Encontre cupons de desconto em nossas principais categorias</h1>
 
-                <!-- Barra de Busca -->
+                <!-- Barra de Busca 
                 <div class="mb-10 w-full max-w-2xl mx-auto">
                     <div class="relative">
                         <input 
@@ -21,7 +21,7 @@
                         </div>
                     </div>
                 </div>
-
+                -->
                 <!-- Top 20 Categorias -->
                 <div v-if="!isSearching && searchQuery.length < 2">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Top 20 Categorias</h2>

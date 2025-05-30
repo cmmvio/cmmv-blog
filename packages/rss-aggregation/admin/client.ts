@@ -31,7 +31,8 @@ export const useFeedClient = () => {
         createRaw: (data: any) => api.authRequest(`feed/raw`, "POST", data),
         cleanAllRaws: () => api.authRequest(`feed/raw/cleanAllRaws`, "GET"),
         cleanChannelRaws: (channelId: string) => api.authRequest(`feed/raw/cleanChannelRaws/${channelId}`, "GET"),
-        classifyRawsWithAI: () => api.authRequest(`feed/raw/classifyRawsWithAI`, "POST")
+        classifyRawsWithAI: () => api.authRequest(`feed/raw/classifyRawsWithAI`, "POST"),
+        deleteRaw: (id: string) => api.authRequest(`feed/raw/${id}`, "DELETE")
     };
 
     const parser = {
