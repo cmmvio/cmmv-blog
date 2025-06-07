@@ -1,4 +1,5 @@
 import * as vue3Composable from './client.vue3';
+import { useProfile } from './profile.client';
 export const vue3 = vue3Composable;
 
 export default {
@@ -7,6 +8,9 @@ export default {
 
 export type {
     ICategory,
-    ITag
+    ITag,
+    IUserProfile
 } from './interfaces';
+
+export { useProfile };
 
