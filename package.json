@@ -1,6 +1,6 @@
 {
     "name": "@cmmv/blog",
-    "version": "0.1.90",
+    "version": "0.1.92",
     "description": "Blog plugin for CMMV",
     "keywords": [
         "cmmv",

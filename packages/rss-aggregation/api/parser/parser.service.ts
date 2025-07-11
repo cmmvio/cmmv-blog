@@ -352,20 +352,53 @@ ${truncatedHtml}
 
                 parsers = findResult?.data || [];
 
-                if (parsers.length === 0){
-                    this.logger.log(`No parsers found for URL ${urlDecoded}. Skipping detailed parsing.`);
+                if (parsers.length === 0) {
+                    this.logger.log(`No parsers found for URL ${urlDecoded}. Attempting generic extraction.`);
+
+                    // Fallback genérico: tentar extrair título, imagem e corpo básico
+                    const html = await this.fetchHTML(urlDecoded);
+                    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+                    const extractedTitle = titleMatch ? titleMatch[1].trim() : '';
+
+                    const imgMatch = html.match(/<img[^>]+(?:src|data-src)=["']([^"']+)["']/i);
+                    let extractedImg = imgMatch ? this.resolveUrl(imgMatch[1], urlDecoded) : '';
+
+                    // Tentar meta og:image se não achar
+                    if (!extractedImg) {
+                        const ogMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+                        if (ogMatch) extractedImg = this.resolveUrl(ogMatch[1], urlDecoded);
+                    }
+
+                    if (!extractedImg) {
+                        const twMatch = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i);
+                        if (twMatch) extractedImg = this.resolveUrl(twMatch[1], urlDecoded);
+                    }
+
+                    // Extrair corpo entre <article> ou <body>
+                    let bodyContent = '';
+                    const articleMatch = html.match(/<article[\s\S]*?<\/article>/i);
+                    if (articleMatch) {
+                        bodyContent = articleMatch[0];
+                    } else {
+                        const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+                        if (bodyMatch) bodyContent = bodyMatch[1];
+                    }
+
+                    if (bodyContent.length > 5000)
+                        bodyContent = bodyContent.substring(0, 5000) + '...';
+
                     return {
                         success: true,
                         data: {
-                            title: '',
-                            content: '',
-                            featureImage: '',
+                            title: extractedTitle,
+                            content: bodyContent,
+                            featureImage: extractedImg,
                             category: '',
                             pubDate: new Date(),
                             link: urlDecoded,
-                            confidence: 0
+                            confidence: 5
                         },
-                        message: "No specific parser found. Content not updated."
+                        message: "Generic extraction applied."
                     };
                 }
             }
@@ -388,16 +421,15 @@ ${truncatedHtml}
                 confidence: 0
             };
 
-            const parsePromises = parsers.map((parser: { id: any; }) => {
-                return Promise.race([
+            // Aumentamos o timeout global por parser para 6 s.
+            const PARSER_TIMEOUT_MS = 6000;
+
+            const parsePromises = parsers.map((parser: { id: any }) =>
+                Promise.race([
                     this.processParserWithTimeout(parser, html, urlDecoded),
-                    new Promise(resolve => {
-                        setTimeout(() => {
-                            resolve(null);
-                        }, 1000);
-                    })
-                ]);
-            });
+                    new Promise(resolve => setTimeout(() => resolve(null), PARSER_TIMEOUT_MS))
+                ])
+            );
 
             const results = await Promise.all(parsePromises);
             const validResults = results.filter(result => result !== null) as any[];

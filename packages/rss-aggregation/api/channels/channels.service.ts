@@ -360,6 +360,17 @@ export class ChannelsService {
                     featureImage = item.enclosure.$.url;
                 else if (item.enclosure && item.enclosure.url)
                     featureImage = item.enclosure.url;
+                // NOVO: tenta <media:thumbnail> ou primeira <img> do conteúdo
+                else if (item['media:thumbnail'] && item['media:thumbnail'].$?.url)
+                    featureImage = item['media:thumbnail'].$.url;
+                else if (item['media:thumbnail'] && item['media:thumbnail'].url)
+                    featureImage = item['media:thumbnail'].url;
+
+                // Fallback: extrair primeira <img> do conteúdo HTML
+                if (!featureImage && content) {
+                    const imgMatch = content.match(/<img[^>]+src=[\"']([^\"']+)[\"']/i);
+                    if (imgMatch) featureImage = imgMatch[1];
+                }
 
                 if (item.pubDate)
                     pubDate = new Date(item.pubDate);
@@ -395,6 +406,15 @@ export class ChannelsService {
 
                 if (item['media:content'] && item['media:content'].$?.url)
                     featureImage = item['media:content'].$.url;
+                // NOVO: tenta <media:thumbnail>
+                else if (item['media:thumbnail'] && item['media:thumbnail'].$?.url)
+                    featureImage = item['media:thumbnail'].$.url;
+
+                // Fallback: extrair primeira <img> do conteúdo para Atom
+                if (!featureImage && content) {
+                    const imgMatch = content.match(/<img[^>]+src=[\"']([^\"']+)[\"']/i);
+                    if (imgMatch) featureImage = imgMatch[1];
+                }
 
                 if (item.published)
                     pubDate = new Date(item.published);
